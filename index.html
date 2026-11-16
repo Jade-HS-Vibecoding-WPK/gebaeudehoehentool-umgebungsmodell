@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Höhentool Umgebungsmodell</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { --bg:#fbf8f1; --card:#fefcf8; --panel:#fcfaf5; --line:#ece4d3; --text:#000; --leise:#3a3a3a; --blau:#ffffff; --blau-dunkel:#f1ece0; --blau-hell:#ffffff; --gelb:#c98d86; --orange:#e0b8b2; --gruen:#000; --auswahl:#2d5d63; --feld:#fffefb; --rand:#d9cfba; --rahmen:#6b6256; --weiss:rgba(255,255,255,.75); }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--text); font:14px/1.5 "Century Gothic", "CenturyGothic", "URW Gothic", "Avant Garde", "Questrial", "Didact Gothic", Futura, "Trebuchet MS", sans-serif; }
+  header { height:56px; display:flex; align-items:center; gap:18px; padding:0 20px; background:var(--panel); border-bottom:1px solid var(--line); }
+  header h1 { font-size:17px; margin:0; font-weight:700; letter-spacing:.04em; color:#000; text-transform:uppercase; white-space:nowrap; }
+  header #zaehler { margin-left:auto; font-size:13px; }
+  main { display:grid; grid-template-columns:350px minmax(0,1fr) 320px; height:calc(100% - 56px); }
+  aside, section.mitte { min-height:0; }
+  aside { overflow:auto; padding:14px; }
+  aside.links { border-right:1px solid var(--line); }
+  aside.rechts { border-left:1px solid var(--line); background:var(--panel); }
+  .schritt { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:12px; box-shadow:0 1px 2px rgba(90,60,40,.06); }
+  .schritt h2 { margin:0 0 6px; font-size:14px; letter-spacing:.02em; display:flex; align-items:center; gap:8px; }
+  .nr { display:inline-flex; width:20px; height:20px; border-radius:50%; background:#fff; color:#000; border:1px solid var(--rahmen); font-size:12px; font-weight:700; align-items:center; justify-content:center; flex:none; }
+  .schritt p { margin:4px 0 8px; color:var(--leise); font-size:13px; }
+  label { display:block; font-size:12px; color:var(--leise); margin:4px 0; }
+  input[type=text], select { width:100%; padding:6px 8px; border:1px solid var(--rand); border-radius:6px; font:inherit; background:var(--feld); color:var(--text); }
+  input[type=text]:focus, select:focus { outline:2px solid var(--weiss); border-color:var(--rahmen); }
+  input[type=checkbox] { accent-color:#6b6256; }
+  .zwei { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  button, .knopf { font:inherit; padding:7px 12px; border:1px solid var(--rand); border-radius:7px; background:var(--feld); color:var(--text); cursor:pointer; transition:background .15s, border-color .15s; }
+  button:hover:not(:disabled), .knopf:hover { background:var(--weiss); border-color:var(--rahmen); }
+  button:disabled { opacity:.45; cursor:default; }
+  button.haupt { background:#fff; border-color:var(--rahmen); color:#000; font-weight:700; }
+  button.haupt:hover:not(:disabled) { background:var(--blau-dunkel); border-color:#000; }
+  button.klein { padding:3px 8px; font-size:12px; }
+  button.aktiv { background:var(--weiss); border-color:var(--rahmen); box-shadow:inset 0 0 0 1px var(--rahmen); }
+  .reihe { display:flex; gap:6px; flex-wrap:wrap; margin:6px 0; }
+  .meldung { font-size:12.5px; margin-top:6px; color:var(--leise); }
+  .meldung.ok { color:var(--gruen); } .meldung.warn { color:#000; font-weight:700; }
+  .leise { color:var(--leise); }
+  .chip { display:inline-block; padding:1px 9px; border-radius:10px; font-size:12px; background:#ece3d2; }
+  .chip.gelb { background:#c98d86; } .chip.orange { background:#e0b8b2; } .chip.blau { background:var(--weiss); border:1px solid var(--rahmen); } .chip.grau { background:#ece3d2; }
+  .mitte { display:flex; flex-direction:column; }
+  .tabs { display:flex; gap:2px; padding:8px 12px 0; }
+  .tabs button { border-radius:8px 8px 0 0; border-bottom:none; background:#f1eadb; }
+  .tabs button.aktiv { background:var(--weiss); font-weight:700; color:#000; }
+  .seiten { flex:1; min-height:0; margin:0 14px 14px; background:var(--feld); border:1px solid var(--line); border-radius:0 8px 8px 8px; position:relative; overflow:hidden; }
+  .seite { display:none; position:absolute; inset:0; } .seite.aktiv { display:block; }
+  canvas { width:100%; height:100%; display:block; touch-action:none; }
+  #karte { cursor:grab; }
+  .overlay { position:absolute; left:10px; top:10px; background:rgba(254,252,248,.94); padding:6px 10px; border-radius:6px; font-size:12px; border:1px solid var(--line); }
+  #dropHinweis { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:24px; pointer-events:none; }
+  .dropbox { text-align:center; max-width:520px; padding:44px 36px; border:2px dashed var(--rahmen); border-radius:14px; background:rgba(255,255,255,.45); }
+  .dropgross { font-size:26px; font-weight:700; letter-spacing:.02em; color:#000; }
+  .dropklein { margin-top:10px; font-size:14px; color:#000; }
+  body.zieht .dropbox { background:var(--weiss); border-style:solid; }
+  body.zieht #seite_karte { background:var(--weiss); }
+  #glFehler { display:none; position:absolute; inset:30% 10% auto; padding:16px; background:#fff; border:1px solid var(--rahmen); border-radius:8px; }
+  .legende { position:absolute; left:10px; bottom:10px; background:rgba(254,252,248,.94); padding:6px 10px; border-radius:6px; font-size:12px; border:1px solid var(--line); }
+  .legende span.f { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-2px; border:1px solid #0003; }
+  table { border-collapse:collapse; width:100%; }
+  #seite_liste { overflow:auto; }
+  #liste th { text-align:left; position:sticky; top:0; background:#f5efe2; padding:8px; border-bottom:1px solid var(--line); font-weight:700; }
+  #liste td { padding:6px 8px; border-bottom:1px solid #f0e9da; }
+  #liste tr[data-id] { cursor:pointer; } #liste tr[data-id]:hover { background:var(--weiss); } #liste tr.sel { background:var(--weiss); box-shadow:inset 3px 0 0 var(--rahmen); }
+  td.z { text-align:right; font-variant-numeric:tabular-nums; }
+  .listenkopf { display:flex; gap:10px; align-items:center; padding:8px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--feld); z-index:2; }
+  .listenkopf select { width:auto; }
+  aside.rechts h3 { margin:0 0 8px; font-size:15px; } aside.rechts h4 { margin:14px 0 6px; font-size:13px; }
+  table.eig td { padding:2px 0; vertical-align:top; } table.eig td:first-child { color:var(--leise); width:48%; padding-right:8px; }
+  .hinweis { margin:8px 0; padding:7px 9px; background:#fff; border:1px solid var(--line); border-radius:6px; font-size:12.5px; }
+  .dachwahl { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; }
+  button.dach { display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 2px; position:relative; font-size:12px; }
+  button.dach svg { width:40px; height:26px; } button.dach em { position:absolute; top:-7px; right:-2px; background:#fff; color:#000; border:1px solid var(--rahmen); font-style:normal; font-size:10px; padding:0 5px; border-radius:8px; }
+  .hoehen { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .zeile { display:flex; gap:6px; align-items:center; margin:6px 0; flex-wrap:wrap; }
+  .zeile label { margin:0; flex:1; }
+  #hinweisZip { display:none; font-size:12px; color:var(--leise); margin-top:6px; }
+  @media (max-width: 1100px) { main { grid-template-columns:300px minmax(0,1fr); } aside.rechts { display:none; } }
+
+  /* Schrift: kleiner und leichter */
+  html, body { font-size:12.5px; }
+  header h1 { font-size:14px; font-weight:400; letter-spacing:.08em; }
+  header #zaehler { font-size:12px; }
+  .schritt h2 { font-size:13px; font-weight:400; }
+  .nr { font-size:11px; font-weight:400; width:19px; height:19px; }
+  .schritt p { font-size:12px; }
+  label { font-size:11.5px; }
+  button.haupt { font-weight:400; }
+  button.klein { font-size:11px; }
+  .meldung { font-size:12px; } .meldung.warn { font-weight:400; }
+  .chip { font-size:11px; }
+  .tabs button.aktiv { font-weight:400; }
+  .overlay, .legende { font-size:11.5px; }
+  .dropgross { font-size:20px; font-weight:400; letter-spacing:.04em; }
+  .dropklein { font-size:13px; }
+  #liste th { font-weight:400; font-size:12px; }
+  aside.rechts h3 { font-size:14px; font-weight:400; } aside.rechts h4 { font-size:12px; font-weight:400; }
+  .hinweis { font-size:12px; }
+  button.dach { font-size:11px; }
+  b, strong { font-weight:400; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Höhentool Umgebungsmodell</h1>
+  <span class="leise">Grundrisse aus OpenStreetMap, Höhen und Dachformen aus einem TopoExport-Export</span>
+  <div id="zaehler">Noch keine Gebäude geladen.</div>
+</header>
+<main>
+  <aside class="links">
+    <div class="schritt">
+      <h2><span class="nr">1</span> Gebiet</h2>
+      <p>Nur nötig, wenn du Gebäude von OpenStreetMap laden willst: Mitte und Größe des Gebiets eintragen.</p>
+      <div class="zwei"><div><label>Breite Ost-West (m)</label><input type="text" id="fBreite"></div><div><label>Länge Nord-Süd (m)</label><input type="text" id="fLaenge"></div></div>
+      <div class="zwei"><div><label>Mitte Breitengrad</label><input type="text" id="fLat"></div><div><label>Mitte Längengrad</label><input type="text" id="fLon"></div></div>
+      <div class="reihe"><button id="btnDemo" class="klein">Beispieldaten ausprobieren</button></div>
+    </div>
+    <div class="schritt">
+      <h2><span class="nr">2</span> Gebäude aus OpenStreetMap</h2>
+      <p>Lädt Grundrisse, Namen und Gebäudeart im oben eingetragenen Gebiet.</p>
+      <div class="reihe"><button id="osmLaden" class="haupt">Von OpenStreetMap laden</button></div>
+      <div class="reihe"><label class="knopf" style="margin:0">Oder OSM-Datei (.json) laden<input id="osmDatei" type="file" accept=".json" hidden></label></div>
+      <div id="osmMeldung" class="meldung"></div>
+    </div>
+    <div class="schritt">
+      <h2><span class="nr">3</span> TopoExport-Datei</h2>
+      <p>3D-Export der Gebäude (OBJ, DXF oder STL). Du kannst die Datei auch auf die Seite ziehen.</p>
+      <div class="reihe"><label class="knopf haupt" style="margin:0;background:#fff;color:#000;border-color:var(--rahmen)">Datei auswählen<input id="expDatei" type="file" accept=".obj,.dxf,.stl,.txt" hidden></label></div>
+      <div class="zwei">
+        <div><label>Höhenachse <span id="achseInfo" class="leise"></span></label><select id="achse"><option value="auto">automatisch</option><option value="z">Z</option><option value="y">Y</option><option value="x">X</option></select></div>
+        <div><label>Einheit <span id="einheitInfo" class="leise"></span></label><select id="einheit"><option value="auto">automatisch</option><option value="m">Meter</option><option value="cm">Zentimeter</option><option value="mm">Millimeter</option></select></div>
+      </div>
+      <div id="expMeldung" class="meldung"></div>
+    </div>
+    <div class="schritt">
+      <h2><span class="nr">4</span> Prüfen</h2>
+      <p>Wo die Dachform unsicher ist (helleres Rot), bietest du die Dachformen zur Auswahl an. Klicke dazu das Gebäude an.</p>
+      <div class="reihe"><button id="naechstes" disabled>Nächstes unsicheres Gebäude</button></div>
+      <div id="pruefMeldung" class="meldung"></div>
+    </div>
+    <div class="schritt">
+      <h2><span class="nr">5</span> Export</h2>
+      <div class="zwei"><div><label>Maßstab 1 :</label><input type="text" id="massstab" value="500"></div><div><label>Druckbett (mm)</label><input type="text" id="bett" value="220"></div></div>
+      <div id="stlInfo" class="meldung"></div>
+      <div class="reihe"><button id="btnGLB" disabled>3D-Modell (GLB)</button><button id="btnCSV" disabled>Maßliste (CSV)</button><button id="btnSTL" disabled>Druckdatei (STL)</button></div>
+      <div id="hinweisZip">In dieser Ansicht werden GLB und STL als ZIP-Datei gespeichert.</div>
+      <div id="exportMeldung" class="meldung"></div>
+    </div>
+  </aside>
+  <section class="mitte">
+    <div class="tabs"><button id="tab_karte" class="aktiv">Karte</button><button id="tab_d3">3D-Modell</button><button id="tab_liste">Liste</button></div>
+    <div class="seiten">
+      <div id="seite_karte" class="seite aktiv"><canvas id="karte"></canvas>
+        <div id="dropHinweis"><div class="dropbox"><div class="dropgross">Datei hierher ziehen</div><div class="dropklein">Drag &amp; Drop: 3D-Export (.obj, .dxf, .stl) oder OSM-Daten (.json) einfach auf diese Fläche ziehen.</div></div></div>
+      </div>
+      <div id="seite_d3" class="seite"><canvas id="ansicht3d"></canvas>
+        <div class="overlay">Ziehen: drehen · Umschalt + Ziehen oder rechte Maustaste: verschieben · Mausrad: zoomen · Klick: Gebäude wählen <button id="ansichtZurueck" class="klein">Ansicht zurücksetzen</button></div>
+        <div class="legende"><div><span class="f" style="background:#a6625b"></span>Maße vollständig</div><div><span class="f" style="background:#c98d86"></span>Dachform unsicher / Hinweis</div><div><span class="f" style="background:#e0b8b2"></span>Höhe fehlt (Grundplatte)</div><div><span class="f" style="background:#6f3a35"></span>Nur im Export</div></div>
+        <div id="glFehler">3D-Darstellung (WebGL) ist in diesem Browser nicht verfügbar. Die Liste und der Export funktionieren trotzdem.</div>
+      </div>
+      <div id="seite_liste" class="seite">
+        <div class="listenkopf"><label style="margin:0">Anzeigen</label><select id="filter"><option value="alle">alle Gebäude</option><option value="unsicher">Dachform unsicher</option><option value="fehlt">Höhe fehlt</option><option value="manuell">manuell</option><option value="export">nur im Export</option></select><span id="listeAnzahl" class="leise"></span></div>
+        <table id="liste"><thead><tr><th>Gebäude</th><th>Länge m</th><th>Breite m</th><th>Traufe m</th><th>First m</th><th>Dachform</th><th>Status</th></tr></thead><tbody id="listeBody"></tbody></table>
+      </div>
+    </div>
+  </section>
+  <aside class="rechts" id="details"></aside>
+</main>
+<script>/* Umgebungsmodell – Kern der Web-App (ohne Oberfläche, ohne Abhängigkeiten).
+   Alles in Metern. Koordinaten im Modell: x = Ost, y = Nord, z = oben. */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.UM = factory();
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+  const U = {};
+
+  // ------------------------------------------------------------------ Geo
+  U.projection = function (lat0, lon0) {
+    const ky = (Math.PI / 180) * 6378137;
+    const kx = ky * Math.cos((lat0 * Math.PI) / 180);
+    return {
+      fwd: (lat, lon) => [(lon - lon0) * kx, (lat - lat0) * ky],
+      inv: (x, y) => [lat0 + y / ky, lon0 + x / kx],
+    };
+  };
+  U.bboxFromCenter = function (lat0, lon0, breiteOW, laengeNS) {
+    const dlat = laengeNS / 2 / 111320;
+    const dlon = breiteOW / 2 / (111320 * Math.cos((lat0 * Math.PI) / 180));
+    return { s: lat0 - dlat, w: lon0 - dlon, n: lat0 + dlat, e: lon0 + dlon };
+  };
+  U.parseNum = function (t) {
+    if (t === null || t === undefined) return null;
+    const m = /^\s*(-?\d+(?:[.,]\d+)?)\s*(m|meter)?\s*$/i.exec(String(t));
+    return m ? parseFloat(m[1].replace(',', '.')) : null;
+  };
+
+  // ------------------------------------------------------------------ 2D-Geometrie
+  const cross = (a, b, c) => (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+  U.signedArea = function (p) {
+    let s = 0;
+    for (let i = 0; i < p.length; i++) {
+      const a = p[i], b = p[(i + 1) % p.length];
+      s += a[0] * b[1] - b[0] * a[1];
+    }
+    return s / 2;
+  };
+  function distPointLine(p, a, b) {
+    const l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    if (l < 1e-12) return Math.hypot(p[0] - a[0], p[1] - a[1]);
+    return Math.abs(cross(a, b, p)) / l;
+  }
+  U.cleanRing = function (pts, tol) {
+    tol = tol === undefined ? 0.01 : tol;
+    let p = pts.map((q) => [q[0], q[1]]);
+    if (p.length > 1 && Math.hypot(p[0][0] - p[p.length - 1][0], p[0][1] - p[p.length - 1][1]) < tol) p.pop();
+    const n1 = [];
+    for (const q of p) {
+      if (!n1.length || Math.hypot(q[0] - n1[n1.length - 1][0], q[1] - n1[n1.length - 1][1]) >= tol) n1.push(q);
+    }
+    p = n1;
+    let changed = true;
+    while (changed && p.length > 3) {
+      changed = false;
+      for (let i = 0; i < p.length; i++) {
+        const a = p[(i + p.length - 1) % p.length], b = p[i], c = p[(i + 1) % p.length];
+        if (distPointLine(b, a, c) < tol) { p.splice(i, 1); changed = true; break; }
+      }
+    }
+    if (p.length >= 3 && U.signedArea(p) < 0) p.reverse();
+    return p;
+  };
+  U.convexHull = function (points) {
+    const pts = points.map((p) => [p[0], p[1]]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    if (pts.length <= 2) return pts;
+    const lo = [];
+    for (const p of pts) {
+      while (lo.length >= 2 && cross(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop();
+      lo.push(p);
+    }
+    const up = [];
+    for (let i = pts.length - 1; i >= 0; i--) {
+      const p = pts[i];
+      while (up.length >= 2 && cross(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop();
+      up.push(p);
+    }
+    lo.pop(); up.pop();
+    return lo.concat(up);
+  };
+  U.minRect = function (pts) {
+    const h = U.convexHull(pts);
+    const n = h.length;
+    if (n < 3) return null;
+    let best = null;
+    for (let i = 0; i < n; i++) {
+      const p = h[i], q = h[(i + 1) % n];
+      const d = Math.hypot(q[0] - p[0], q[1] - p[1]);
+      if (d < 1e-9) continue;
+      const ex = (q[0] - p[0]) / d, ey = (q[1] - p[1]) / d, nx = -ey, ny = ex;
+      let umin = Infinity, umax = -Infinity, vmin = Infinity, vmax = -Infinity;
+      for (const r of h) {
+        const u = (r[0] - p[0]) * ex + (r[1] - p[1]) * ey;
+        const v = (r[0] - p[0]) * nx + (r[1] - p[1]) * ny;
+        if (u < umin) umin = u; if (u > umax) umax = u;
+        if (v < vmin) vmin = v; if (v > vmax) vmax = v;
+      }
+      const area = (umax - umin) * (vmax - vmin);
+      if (!best || area < best.area) best = { area, p, ex, ey, nx, ny, umin, umax, vmin, vmax };
+    }
+    if (!best) return null;
+    const du = best.umax - best.umin, dv = best.vmax - best.vmin;
+    let ax, ay, bx, by, a0, a1, b0, b1;
+    if (du >= dv) { ax = best.ex; ay = best.ey; bx = best.nx; by = best.ny; a0 = best.umin; a1 = best.umax; b0 = best.vmin; b1 = best.vmax; }
+    else { ax = best.nx; ay = best.ny; bx = -best.ex; by = -best.ey; a0 = best.vmin; a1 = best.vmax; b0 = -best.umax; b1 = -best.umin; }
+    const P = best.p;
+    const pt = (a, b) => [P[0] + a * ax + b * bx, P[1] + a * ay + b * by];
+    return { laenge: Math.max(du, dv), breite: Math.min(du, dv), ecken: [pt(a0, b0), pt(a1, b0), pt(a1, b1), pt(a0, b1)] };
+  };
+  function inTri(p, a, b, c) {
+    const eps = 1e-9;
+    return cross(a, b, p) > eps && cross(b, c, p) > eps && cross(c, a, p) > eps;
+  }
+  U.triangulate = function (pts) {
+    const idx = pts.map((_, i) => i);
+    const tris = [];
+    let ok = true, guard = 0;
+    while (idx.length > 3) {
+      if (++guard > 10 * pts.length * pts.length + 100) { ok = false; break; }
+      const m = idx.length;
+      let found = false;
+      for (let k = 0; k < m; k++) {
+        const i0 = idx[(k + m - 1) % m], i1 = idx[k], i2 = idx[(k + 1) % m];
+        const a = pts[i0], b = pts[i1], c = pts[i2];
+        if (cross(a, b, c) <= 1e-9) continue;
+        let blocked = false;
+        for (const j of idx) {
+          if (j === i0 || j === i1 || j === i2) continue;
+          if (inTri(pts[j], a, b, c)) { blocked = true; break; }
+        }
+        if (blocked) continue;
+        tris.push([i0, i1, i2]);
+        idx.splice(k, 1);
+        found = true;
+        break;
+      }
+      if (!found) {
+        ok = false;
+        tris.push([idx[idx.length - 1], idx[0], idx[1]]);
+        idx.shift();
+      }
+    }
+    if (idx.length === 3) tris.push([idx[0], idx[1], idx[2]]);
+    return { tris, ok };
+  };
+  U.polyCentroid = function (p) {
+    let a = 0, cx = 0, cy = 0;
+    for (let i = 0; i < p.length; i++) {
+      const q = p[i], r = p[(i + 1) % p.length];
+      const f = q[0] * r[1] - r[0] * q[1];
+      a += f; cx += (q[0] + r[0]) * f; cy += (q[1] + r[1]) * f;
+    }
+    if (Math.abs(a) < 1e-9) return [p[0][0], p[0][1]];
+    return [cx / (3 * a), cy / (3 * a)];
+  };
+  U.pointInPoly = function (pt, poly) {
+    let inside = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const xi = poly[i][0], yi = poly[i][1], xj = poly[j][0], yj = poly[j][1];
+      if ((yi > pt[1]) !== (yj > pt[1]) && pt[0] < ((xj - xi) * (pt[1] - yi)) / (yj - yi) + xi) inside = !inside;
+    }
+    return inside;
+  };
+
+  // Vieleck im Raum (z. B. Dachfläche aus OBJ/DXF) in Dreiecke zerlegen; Orientierung bleibt erhalten
+  function triangulateFace(pts) {
+    const n = pts.length;
+    if (n < 3) return [];
+    if (n === 3) return [[0, 1, 2]];
+    let nx = 0, ny = 0, nz = 0;
+    for (let i = 0; i < n; i++) {
+      const a = pts[i], b = pts[(i + 1) % n];
+      nx += (a[1] - b[1]) * (a[2] + b[2]);
+      ny += (a[2] - b[2]) * (a[0] + b[0]);
+      nz += (a[0] - b[0]) * (a[1] + b[1]);
+    }
+    const ax = Math.abs(nx), ay = Math.abs(ny), az = Math.abs(nz);
+    let proj, sign;
+    if (az >= ax && az >= ay) { proj = pts.map((p) => [p[0], p[1]]); sign = nz >= 0 ? 1 : -1; }
+    else if (ax >= ay) { proj = pts.map((p) => [p[1], p[2]]); sign = nx >= 0 ? 1 : -1; }
+    else { proj = pts.map((p) => [p[2], p[0]]); sign = ny >= 0 ? 1 : -1; }
+    if (n === 4 && sign > 0 && cross(proj[0], proj[1], proj[2]) > 0 && cross(proj[1], proj[2], proj[3]) > 0 &&
+        cross(proj[2], proj[3], proj[0]) > 0 && cross(proj[3], proj[0], proj[1]) > 0) return [[0, 1, 2], [0, 2, 3]];
+    const order = sign > 0 ? proj.map((_, i) => i) : proj.map((_, i) => n - 1 - i);
+    const res = U.triangulate(order.map((i) => proj[i]));
+    return res.tris.map((t) => {
+      const a = order[t[0]], b = order[t[1]], c = order[t[2]];
+      return sign > 0 ? [a, b, c] : [a, c, b];
+    });
+  }
+
+  // ------------------------------------------------------------------ Dateiformate
+  U.parseOBJ = function (text) {
+    const verts = [], groups = new Map(), warnings = [];
+    let cur = 'Objekt';
+    for (const raw of text.split(/\r?\n/)) {
+      if (raw.length < 2) continue;
+      const c0 = raw[0], c1 = raw[1];
+      if (c0 === 'v' && c1 === ' ') {
+        const p = raw.trim().split(/\s+/);
+        verts.push([parseFloat(p[1]), parseFloat(p[2]), parseFloat(p[3])]);
+      } else if ((c0 === 'o' || c0 === 'g') && c1 === ' ') {
+        cur = raw.slice(2).trim() || cur;
+      } else if (c0 === 'f' && c1 === ' ') {
+        const p = raw.trim().split(/\s+/).slice(1);
+        const face = p.map((s) => {
+          let i = parseInt(s.split('/')[0], 10);
+          i = i < 0 ? verts.length + i : i - 1;
+          return verts[i];
+        });
+        if (face.some((v) => !v)) continue;
+        let g = groups.get(cur);
+        if (!g) { g = []; groups.set(cur, g); }
+        for (const t of triangulateFace(face)) g.push([face[t[0]], face[t[1]], face[t[2]]]);
+      }
+    }
+    return { groups: [...groups].map(([name, tris]) => ({ name, tris })), warnings };
+  };
+
+  U.parseSTL = function (buf) {
+    const u8 = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
+    const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+    const tris = [];
+    if (u8.byteLength >= 84) {
+      const n = dv.getUint32(80, true);
+      if (84 + 50 * n === u8.byteLength) {
+        for (let i = 0; i < n; i++) {
+          const o = 84 + 50 * i + 12;
+          const t = [];
+          for (let k = 0; k < 3; k++) t.push([dv.getFloat32(o + 12 * k, true), dv.getFloat32(o + 12 * k + 4, true), dv.getFloat32(o + 12 * k + 8, true)]);
+          tris.push(t);
+        }
+        return { groups: [{ name: 'STL', tris }], warnings: [] };
+      }
+    }
+    let text = '';
+    for (let i = 0; i < u8.length; i += 65536) text += String.fromCharCode.apply(null, u8.subarray(i, i + 65536));
+    const re = /vertex\s+(\S+)\s+(\S+)\s+(\S+)/g;
+    let m, cur = [];
+    while ((m = re.exec(text))) {
+      cur.push([parseFloat(m[1]), parseFloat(m[2]), parseFloat(m[3])]);
+      if (cur.length === 3) { tris.push(cur); cur = []; }
+    }
+    return { groups: [{ name: 'STL', tris }], warnings: tris.length ? [] : ['STL-Datei enthält keine Dreiecke'] };
+  };
+
+  // DXF: liest ASCII- und Binär-DXF (AutoCAD ab 2000). Unterstützt 3DFACE, POLYLINE (Polyface) und MESH.
+  function dxfGruppenBinaer(u8) {
+    const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+    const dec = new TextDecoder('windows-1252');
+    const out = [];
+    let i = 22;
+    const n = u8.length;
+    while (i + 2 <= n) {
+      const c = dv.getUint16(i, true); i += 2;
+      let v;
+      if (c < 10 || (c >= 100 && c <= 102) || c === 105 || (c >= 300 && c <= 309) || (c >= 320 && c <= 369) || (c >= 390 && c <= 399) ||
+          (c >= 410 && c <= 419) || (c >= 430 && c <= 439) || (c >= 470 && c <= 481) || c === 999 || (c >= 1000 && c <= 1009)) {
+        let j = i; while (j < n && u8[j] !== 0) j++;
+        v = dec.decode(u8.subarray(i, j)); i = j + 1;
+      } else if ((c >= 10 && c <= 59) || (c >= 110 && c <= 149) || (c >= 210 && c <= 239) || (c >= 460 && c <= 469) || (c >= 1010 && c <= 1059)) {
+        v = dv.getFloat64(i, true); i += 8;
+      } else if ((c >= 60 && c <= 79) || (c >= 170 && c <= 179) || (c >= 270 && c <= 289) || (c >= 370 && c <= 389) || (c >= 400 && c <= 409) || (c >= 1060 && c <= 1070)) {
+        v = dv.getInt16(i, true); i += 2;
+      } else if ((c >= 90 && c <= 99) || (c >= 420 && c <= 429) || (c >= 440 && c <= 459) || c === 1071) {
+        v = dv.getInt32(i, true); i += 4;
+      } else if (c >= 160 && c <= 169) {
+        v = Number(dv.getBigInt64(i, true)); i += 8;
+      } else if (c >= 290 && c <= 299) {
+        v = u8[i]; i += 1;
+      } else if (c >= 310 && c <= 319) {
+        const l = u8[i]; v = null; i += 1 + l;
+      } else throw new Error('DXF: unbekannter Gruppencode ' + c);
+      out.push([c, v]);
+    }
+    return out;
+  }
+  function dxfGruppenText(text) {
+    const L = text.split(/\r?\n/), out = [];
+    for (let i = 0; i + 1 < L.length; i += 2) {
+      const c = parseInt(L[i].trim(), 10);
+      if (!isFinite(c)) continue;
+      out.push([c, L[i + 1].trim()]);
+    }
+    return out;
+  }
+  U.parseDXF = function (src) {
+    let G;
+    const u8 = typeof src === 'string' ? null : (src instanceof Uint8Array ? src : new Uint8Array(src));
+    if (u8) {
+      let head = ''; for (let i = 0; i < Math.min(22, u8.length); i++) head += String.fromCharCode(u8[i]);
+      G = head.indexOf('AutoCAD Binary DXF') === 0 ? dxfGruppenBinaer(u8) : dxfGruppenText(new TextDecoder('utf-8').decode(u8));
+    } else G = dxfGruppenText(src);
+    const ents = [];
+    let cur = null, inEntities = false;
+    for (let i = 0; i < G.length; i++) {
+      const code = G[i][0], val = G[i][1];
+      if (code === 0) {
+        if (val === 'SECTION') { cur = null; continue; }
+        if (val === 'ENDSEC') { cur = null; inEntities = false; continue; }
+        cur = { type: val, p: [] };
+        if (inEntities) ents.push(cur);
+      } else if (code === 2 && cur === null && val === 'ENTITIES') {
+        inEntities = true;
+      } else if (cur) cur.p.push([code, val]);
+    }
+    const num = (e, code) => { const f = e.p.find((q) => q[0] === code); return f ? parseFloat(f[1]) : 0; };
+    const layerOf = (e) => { const f = e.p.find((q) => q[0] === 8); return f ? String(f[1]) : 'Layer0'; };
+    const groups = new Map(), warnings = [], unsupported = new Map();
+    const add = (name, tri) => { let g = groups.get(name); if (!g) { g = []; groups.set(name, g); } g.push(tri); };
+    let nMesh = 0;
+    for (let i = 0; i < ents.length; i++) {
+      const e = ents[i];
+      if (e.type === '3DFACE') {
+        const v = [0, 1, 2, 3].map((k) => [num(e, 10 + k), num(e, 20 + k), num(e, 30 + k)]);
+        const same = (a, b) => a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
+        const L2 = layerOf(e);
+        if (same(v[2], v[3])) add(L2, [v[0], v[1], v[2]]);
+        else { add(L2, [v[0], v[1], v[2]]); add(L2, [v[0], v[2], v[3]]); }
+      } else if (e.type === 'MESH') {
+        // SubD-Netz: 92 = Anzahl Punkte, dann je Punkt 10/20/30; 93 = Länge der Flächenliste, dann 90-Werte (Anzahl, Indizes ...)
+        const verts = [], fl = [];
+        let nv = -1, nf = -1, k = 0, px = null, py = null;
+        for (const [c, v] of e.p) {
+          if (c === 92 && nv < 0) { nv = v; continue; }
+          if (nv >= 0 && verts.length < nv) {
+            if (c === 10) px = v; else if (c === 20) py = v; else if (c === 30) verts.push([px, py, v]);
+            continue;
+          }
+          if (c === 93 && nf < 0) { nf = v; continue; }
+          if (nf >= 0 && k < nf && c === 90) { fl.push(v); k++; }
+        }
+        const layer = layerOf(e), name = layer + '#' + (++nMesh);
+        for (let p = 0; p < fl.length;) {
+          const cnt = fl[p++];
+          const face = fl.slice(p, p + cnt).map((q) => verts[q]);
+          p += cnt;
+          if (cnt < 3 || face.some((q) => !q)) continue;
+          for (const t of triangulateFace(face)) add(name, [face[t[0]], face[t[1]], face[t[2]]]);
+        }
+      } else if (e.type === 'POLYLINE') {
+        const flags = num(e, 70);
+        const layer = layerOf(e);
+        const pv = [], faces = [];
+        let j = i + 1;
+        for (; j < ents.length && ents[j].type !== 'SEQEND'; j++) {
+          if (ents[j].type !== 'VERTEX') continue;
+          const f = num(ents[j], 70);
+          if ((f & 128) && !(f & 64)) faces.push([71, 72, 73, 74].map((c) => Math.abs(num(ents[j], c))).filter((x) => x > 0));
+          else pv.push([num(ents[j], 10), num(ents[j], 20), num(ents[j], 30)]);
+        }
+        i = j;
+        if (flags & 64) {
+          for (const f of faces) {
+            const face = f.map((k) => pv[k - 1]).filter(Boolean);
+            if (face.length < 3) continue;
+            for (const t of triangulateFace(face)) add(layer, [face[t[0]], face[t[1]], face[t[2]]]);
+          }
+        } else unsupported.set('POLYLINE', (unsupported.get('POLYLINE') || 0) + 1);
+      } else if (e.type !== 'VERTEX' && e.type !== 'SEQEND') {
+        unsupported.set(e.type, (unsupported.get(e.type) || 0) + 1);
+      }
+    }
+    // Viele Ebenen (z. B. TopoExport): nur Gebäude-Ebene verwenden
+    const namen = [...groups.keys()];
+    const ebeneVon = (n) => n.split('#')[0];
+    const geb = namen.filter((n) => /BUILDING|GEBAEUDE|GEBÄUDE/i.test(ebeneVon(n)));
+    if (geb.length && geb.length < namen.length) {
+      const verworfen = [...new Set(namen.filter((n) => !geb.includes(n)).map(ebeneVon))];
+      for (const n of namen) if (!geb.includes(n)) groups.delete(n);
+      warnings.push('Nur die Gebäude-Ebene wurde gelesen (übersprungen: ' + verworfen.join(', ') + ').');
+    }
+    if (!groups.size) {
+      warnings.push('DXF enthält keine lesbaren Flächen' + (unsupported.size ? '. Gefunden: ' + [...unsupported].map(([k, v]) => k + ' x' + v).join(', ') : '') + '. Bitte als OBJ exportieren.');
+    }
+    return { groups: [...groups].map(([name, tris]) => ({ name, tris })), warnings };
+  };
+
+  U.parseModelFile = function (name, arrayBuffer) {
+    const ext = (name.split('.').pop() || '').toLowerCase();
+    const u8 = new Uint8Array(arrayBuffer);
+    const dec = () => new TextDecoder('utf-8').decode(u8);
+    if (ext === 'obj') return U.parseOBJ(dec());
+    if (ext === 'stl') return U.parseSTL(u8);
+    if (ext === 'dxf') return U.parseDXF(u8);
+    if (ext === 'ifc' || ext === 'pdf' || ext === 'svg') {
+      return { groups: [], warnings: ['Das Format .' + ext + ' wird nicht gelesen. Bitte OBJ, DXF oder STL exportieren.'] };
+    }
+    const t = dec();
+    if (/^\s*(solid|facet)/i.test(t.slice(0, 200))) return U.parseSTL(u8);
+    if (/\nf\s/.test(t)) return U.parseOBJ(t);
+    return { groups: [], warnings: ['Dateiformat nicht erkannt. Erlaubt: OBJ, DXF, STL.'] };
+  };
+
+  // ------------------------------------------------------------------ Gebäude aus Dreiecken trennen
+  U.splitComponents = function (groups) {
+    const comps = [];
+    for (const g of groups) {
+      const ids = new Map(), parent = [];
+      const find = (a) => { while (parent[a] !== a) { parent[a] = parent[parent[a]]; a = parent[a]; } return a; };
+      const vid = (v) => {
+        const k = Math.round(v[0] * 1000) + ',' + Math.round(v[1] * 1000) + ',' + Math.round(v[2] * 1000);
+        let id = ids.get(k);
+        if (id === undefined) { id = parent.length; ids.set(k, id); parent.push(id); }
+        return id;
+      };
+      const tv = g.tris.map((t) => t.map(vid));
+      for (const t of tv) {
+        const a = find(t[0]);
+        for (let k = 1; k < 3; k++) { const b = find(t[k]); if (a !== b) parent[b] = a; }
+      }
+      const byRoot = new Map();
+      g.tris.forEach((t, i) => {
+        const r = find(tv[i][0]);
+        let c = byRoot.get(r);
+        if (!c) { c = []; byRoot.set(r, c); }
+        c.push(t);
+      });
+      let k = 0;
+      for (const tris of byRoot.values()) {
+        k++;
+        comps.push({ name: byRoot.size > 1 ? g.name + '_' + k : g.name, tris });
+      }
+    }
+    return comps;
+  };
+
+  // Achsen und Einheit. up: 'x'|'y'|'z'|'auto'; unit: Faktor auf Meter; flip: 0..3 (Spiegelung Ost/Nord)
+  U.guessUp = function (groups) {
+    const mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
+    for (const g of groups) for (const t of g.tris) for (const v of t) for (let k = 0; k < 3; k++) { if (v[k] < mn[k]) mn[k] = v[k]; if (v[k] > mx[k]) mx[k] = v[k]; }
+    const ext = [mx[0] - mn[0], mx[1] - mn[1], mx[2] - mn[2]];
+    let up = 2;
+    for (let k = 0; k < 3; k++) if (ext[k] < ext[up]) up = k;
+    return { up: 'xyz'[up], extents: ext };
+  };
+  U.guessUnit = function (extents, up, expected) {
+    const idx = { x: 0, y: 1, z: 2 }[up];
+    const hor = extents.filter((_, i) => i !== idx);
+    const L = Math.max(hor[0], hor[1]);
+    const cands = [['m', 1], ['cm', 0.01], ['mm', 0.001]];
+    let best = cands[0];
+    if (expected) {
+      let bd = Infinity;
+      for (const c of cands) {
+        const d = Math.abs(Math.log((L * c[1]) / expected));
+        if (d < bd) { bd = d; best = c; }
+      }
+    } else if (L > 200000) best = cands[2];
+    else if (L > 20000) best = cands[1];
+    return { name: best[0], factor: best[1] };
+  };
+  U.toENU = function (tris, opt) {
+    const s = opt.unit || 1;
+    const up = opt.up || 'z';
+    const flip = opt.flip || 0;
+    const sx = flip & 1 ? -1 : 1, sy = flip & 2 ? -1 : 1;
+    const mirror = sx * sy < 0;
+    const map = (v) => {
+      let e, n, u;
+      if (up === 'z') { e = v[0]; n = v[1]; u = v[2]; }
+      else if (up === 'y') { e = v[0]; n = -v[2]; u = v[1]; }
+      else { e = v[1]; n = v[2]; u = v[0]; }
+      return [sx * e * s, sy * n * s, u * s];
+    };
+    return tris.map((t) => {
+      const a = map(t[0]), b = map(t[1]), c = map(t[2]);
+      return mirror ? [a, c, b] : [a, b, c];
+    });
+  };
+
+  // ------------------------------------------------------------------ Gebäude analysieren (Höhen, Dachform)
+  const DACH_NAMEN = { flat: 'Flachdach', skillion: 'Pultdach', gabled: 'Satteldach', hipped: 'Walmdach', pyramidal: 'Pyramidendach' };
+  U.DACH_NAMEN = DACH_NAMEN;
+
+  U.analyzeComponent = function (tris) {
+    let zmin = Infinity, zmax = -Infinity;
+    for (const t of tris) for (const v of t) { if (v[2] < zmin) zmin = v[2]; if (v[2] > zmax) zmax = v[2]; }
+    const roof = [];
+    let projArea = 0, cx = 0, cy = 0;
+    const hullPts = [];
+    for (const t of tris) {
+      for (const v of t) hullPts.push(v);
+      const ux = t[1][0] - t[0][0], uy = t[1][1] - t[0][1], uz = t[1][2] - t[0][2];
+      const vx = t[2][0] - t[0][0], vy = t[2][1] - t[0][1], vz = t[2][2] - t[0][2];
+      let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+      const len = Math.hypot(nx, ny, nz);
+      if (len < 1e-12) continue;
+      const area = len / 2;
+      const upz = nz / len;
+      if (Math.abs(upz) <= 0.15) continue; // Wand
+      if (Math.max(t[0][2], t[1][2], t[2][2]) < zmin + 0.05 && zmax - zmin > 0.2) continue; // Unterseite (auf Bodenniveau)
+      if (upz < 0) { nx = -nx; ny = -ny; nz = -nz; }
+      const nzu = Math.abs(nz) / len;
+      const az = Math.atan2(ny, nx);
+      const slope = Math.acos(Math.min(1, nzu));
+      const pa = Math.abs(nz) / 2;
+      projArea += pa;
+      cx += pa * (t[0][0] + t[1][0] + t[2][0]) / 3;
+      cy += pa * (t[0][1] + t[1][1] + t[2][1]) / 3;
+      roof.push({ t, area, pa, az, slope });
+    }
+    const hull = U.convexHull(hullPts);
+    const centroid = projArea > 1e-9 ? [cx / projArea, cy / projArea] : U.polyCentroid(hull);
+    const footArea = projArea > 1e-9 ? projArea : Math.abs(U.signedArea(hull));
+    const res = { zmin, zmax, centroid, footArea, hull, shape: 'flat', confidence: 0, candidates: [], eaveRel: zmax - zmin, ridgeRel: zmax - zmin, azimuth: null, note: '' };
+    const roofArea = roof.reduce((s, r) => s + r.area, 0);
+    if (!roof.length || roofArea < 1e-9) { res.note = 'Keine Dachflächen gefunden'; res.confidence = 0.2; res.candidates = ['flat', 'gabled', 'hipped', 'pyramidal', 'skillion']; return res; }
+    const FLAT = (5 * Math.PI) / 180;
+    let flatArea = 0;
+    const clusters = [];
+    for (const r of roof.slice().sort((a, b) => b.area - a.area)) {
+      if (r.slope < FLAT) { flatArea += r.area; continue; }
+      let c = clusters.find((k) => {
+        let d = Math.abs(k.az - r.az); if (d > Math.PI) d = 2 * Math.PI - d;
+        return d < (20 * Math.PI) / 180 && Math.abs(k.slope - r.slope) < (8 * Math.PI) / 180;
+      });
+      if (!c) { c = { az: r.az, slope: r.slope, area: 0 }; clusters.push(c); }
+      c.area += r.area;
+    }
+    const sig = clusters.filter((c) => c.area / roofArea >= 0.07).sort((a, b) => b.area - a.area);
+    const flatShare = flatArea / roofArea;
+    let eaveZ = Infinity;
+    for (const r of roof) for (const v of r.t) if (v[2] < eaveZ) eaveZ = v[2];
+    res.eaveRel = eaveZ - zmin;
+    res.ridgeRel = zmax - zmin;
+    const angDiff = (a, b) => { let d = Math.abs(a - b); if (d > Math.PI) d = 2 * Math.PI - d; return d; };
+    const opposite = (a, b) => Math.abs(angDiff(a, b) - Math.PI) < (25 * Math.PI) / 180;
+    const apexCount = (() => {
+      const top = [];
+      for (const r of roof) for (const v of r.t) if (v[2] > zmax - 0.05) top.push(v);
+      const keys = new Set(top.map((v) => Math.round(v[0] * 10) + ',' + Math.round(v[1] * 10)));
+      return keys.size;
+    })();
+    if (sig.length === 0) {
+      res.shape = 'flat'; res.eaveRel = res.ridgeRel; res.confidence = flatShare > 0.85 ? 1 : 0.6;
+      res.candidates = ['flat', 'gabled', 'hipped', 'pyramidal', 'skillion'];
+    } else if (sig.length === 1 && flatShare < 0.2) {
+      res.shape = 'skillion'; res.azimuth = sig[0].az; res.confidence = 0.85;
+      res.candidates = ['skillion', 'gabled', 'flat', 'hipped', 'pyramidal'];
+    } else if (sig.length === 2 && opposite(sig[0].az, sig[1].az) && flatShare < 0.25) {
+      res.shape = 'gabled'; res.azimuth = sig[0].az; res.confidence = 0.95;
+      res.candidates = ['gabled', 'hipped', 'flat', 'skillion', 'pyramidal'];
+    } else if (sig.length === 4 && flatShare < 0.25) {
+      const pairs = (opposite(sig[0].az, sig[1].az) && opposite(sig[2].az, sig[3].az)) ||
+        (opposite(sig[0].az, sig[2].az) && opposite(sig[1].az, sig[3].az)) ||
+        (opposite(sig[0].az, sig[3].az) && opposite(sig[1].az, sig[2].az));
+      res.azimuth = sig[0].az;
+      if (pairs && apexCount === 1) { res.shape = 'pyramidal'; res.confidence = 0.9; res.candidates = ['pyramidal', 'hipped', 'gabled', 'flat', 'skillion']; }
+      else if (pairs) { res.shape = 'hipped'; res.confidence = 0.9; res.candidates = ['hipped', 'pyramidal', 'gabled', 'flat', 'skillion']; }
+      else { res.shape = 'hipped'; res.confidence = 0.3; res.candidates = ['hipped', 'gabled', 'pyramidal', 'flat', 'skillion']; res.note = 'Dachflächen passen zu keiner Standardform'; }
+    } else {
+      res.shape = sig.length === 3 ? 'hipped' : 'gabled';
+      res.confidence = 0.3;
+      res.candidates = sig.length === 3 ? ['hipped', 'gabled', 'pyramidal', 'flat', 'skillion'] : ['gabled', 'hipped', 'flat', 'pyramidal', 'skillion'];
+      res.note = sig.length + ' unterschiedliche Dachflächen erkannt (z. B. Krüppelwalm oder Dachaufbauten)';
+    }
+    return res;
+  };
+
+  // Sind alle Gebäude flach, ist der Export vermutlich LoD1 (Blockmodell ohne Dachformen)
+  U.markLod1 = function (comps) {
+    const flat = comps.filter((c) => c.shape === 'flat').length;
+    const lod1 = comps.length >= 10 && flat / comps.length >= 0.98;
+    comps.forEach((c) => { c.lod1Like = lod1; });
+    return lod1;
+  };
+
+  // ------------------------------------------------------------------ Zuordnung Export <-> OSM
+  U.alignAndMatch = function (comps, osm, opt) {
+    opt = opt || {};
+    const ratioOk = (a, b) => { const r = a / b; return r > 0.4 && r < 2.5; };
+    let best = null;
+    const flips = opt.flips || [0, 1, 2, 3];
+    for (const flip of flips) {
+      const sx = flip & 1 ? -1 : 1, sy = flip & 2 ? -1 : 1;
+      const votes = new Map();
+      for (let i = 0; i < comps.length; i++) {
+        const c = comps[i];
+        const cx = sx * c.centroid[0], cy = sy * c.centroid[1];
+        for (let j = 0; j < osm.length; j++) {
+          const o = osm[j];
+          if (!ratioOk(c.footArea, o.area)) continue;
+          const dx = o.centroid[0] - cx, dy = o.centroid[1] - cy;
+          const key = Math.round(dx / 2) + ',' + Math.round(dy / 2);
+          let v = votes.get(key);
+          if (!v) { v = { n: 0, sx: 0, sy: 0, kx: Math.round(dx / 2), ky: Math.round(dy / 2) }; votes.set(key, v); }
+          v.n++;
+        }
+      }
+      // Nachbarzellen mitzählen
+      let top = null;
+      for (const v of votes.values()) {
+        let n = 0;
+        for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) { const w = votes.get((v.kx + a) + ',' + (v.ky + b)); if (w) n += w.n; }
+        if (!top || n > top.n) top = { n, kx: v.kx, ky: v.ky };
+      }
+      if (top && (!best || top.n > best.votes)) best = { flip, votes: top.n, kx: top.kx, ky: top.ky, sx, sy };
+    }
+    if (!best) return { ok: false, reason: 'Keine passenden Gebäude gefunden', matches: new Map(), unmatchedComps: comps.map((_, i) => i), flip: 0, dx: 0, dy: 0, score: 0 };
+    // Verschiebung verfeinern
+    const sx = best.sx, sy = best.sy;
+    let sdx = 0, sdy = 0, sn = 0;
+    for (const c of comps) {
+      for (const o of osm) {
+        if (!ratioOk(c.footArea, o.area)) continue;
+        const dx = o.centroid[0] - sx * c.centroid[0], dy = o.centroid[1] - sy * c.centroid[1];
+        if (Math.abs(dx - best.kx * 2) < 4 && Math.abs(dy - best.ky * 2) < 4) { sdx += dx; sdy += dy; sn++; }
+      }
+    }
+    const dx = sn ? sdx / sn : best.kx * 2, dy = sn ? sdy / sn : best.ky * 2;
+    const pairs = [];
+    comps.forEach((c, i) => {
+      const x = sx * c.centroid[0] + dx, y = sy * c.centroid[1] + dy;
+      osm.forEach((o, j) => {
+        const d = Math.hypot(o.centroid[0] - x, o.centroid[1] - y);
+        const tol = Math.max(6, 0.35 * Math.sqrt(o.area));
+        if (d <= tol && ratioOk(c.footArea, o.area)) pairs.push({ i, j, d });
+      });
+    });
+    pairs.sort((a, b) => a.d - b.d);
+    const usedC = new Set(), usedO = new Set(), matches = new Map();
+    for (const p of pairs) {
+      if (usedC.has(p.i) || usedO.has(p.j)) continue;
+      usedC.add(p.i); usedO.add(p.j); matches.set(p.j, p.i);
+    }
+    const unmatchedComps = comps.map((_, i) => i).filter((i) => !usedC.has(i));
+    const score = matches.size / Math.max(1, Math.min(comps.length, osm.length));
+    return { ok: score >= 0.25, reason: score >= 0.25 ? '' : 'Nur ' + matches.size + ' Gebäude konnten zugeordnet werden', matches, unmatchedComps, flip: best.flip, dx, dy, score };
+  };
+
+  // ------------------------------------------------------------------ Körper bauen
+  function koerper(ring, tops, roof) {
+    const n = ring.length;
+    const V = [];
+    for (let i = 0; i < n; i++) V.push([ring[i][0], ring[i][1], 0]);
+    for (let i = 0; i < n; i++) V.push([ring[i][0], ring[i][1], tops[i]]);
+    const T = [];
+    const tr = U.triangulate(ring);
+    for (const t of tr.tris) T.push([t[0], t[2], t[1]]);
+    for (let i = 0; i < n; i++) {
+      const j = (i + 1) % n;
+      T.push([i, j, n + j]);
+      T.push([i, n + j, n + i]);
+    }
+    if (!roof) {
+      for (const t of tr.tris) T.push([n + t[0], n + t[1], n + t[2]]);
+    } else {
+      const [p0, p1, p2, p3] = roof.ecken;
+      const zr = roof.zFirst;
+      const lr = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]);
+      const wr = Math.hypot(p2[0] - p1[0], p2[1] - p1[1]);
+      const ux = (p1[0] - p0[0]) / lr, uy = (p1[1] - p0[1]) / lr;
+      const m0 = [(p0[0] + p3[0]) / 2, (p0[1] + p3[1]) / 2];
+      const m1 = [(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2];
+      let r0, r1;
+      if (roof.art === 'gabled') { r0 = m0; r1 = m1; }
+      else if (roof.art === 'hipped' && lr > wr + 1e-6) {
+        r0 = [m0[0] + (ux * wr) / 2, m0[1] + (uy * wr) / 2];
+        r1 = [m1[0] - (ux * wr) / 2, m1[1] - (uy * wr) / 2];
+      } else { const c = [(m0[0] + m1[0]) / 2, (m0[1] + m1[1]) / 2]; r0 = r1 = c; }
+      if (roof.r0) r0 = roof.r0;
+      if (roof.r1) r1 = roof.r1;
+      const i0 = V.length;
+      V.push([r0[0], r0[1], zr]);
+      let i1;
+      if (r1 === r0) i1 = i0; else { i1 = V.length; V.push([r1[0], r1[1], zr]); }
+      const t0 = n, t1 = n + 1, t2 = n + 2, t3 = n + 3;
+      for (const tri of [[t0, t1, i1], [t0, i1, i0], [t2, t3, i0], [t2, i0, i1], [t1, t2, i1], [t3, t0, i0]]) {
+        if (new Set(tri).size === 3) T.push(tri);
+      }
+    }
+    return { V, T, ok: tr.ok };
+  }
+  U.edgesClosed = function (T) {
+    const c = new Map();
+    for (const t of T) for (let k = 0; k < 3; k++) { const key = t[k] + ',' + t[(k + 1) % 3]; c.set(key, (c.get(key) || 0) + 1); }
+    for (const [key, n] of c) {
+      const [a, b] = key.split(',');
+      if (n !== 1 || c.get(b + ',' + a) !== 1) return false;
+    }
+    return true;
+  };
+  U.volume = function (m) {
+    let v = 0;
+    for (const t of m.T) {
+      const a = m.V[t[0]], b = m.V[t[1]], c = m.V[t[2]];
+      v += (a[0] * (b[1] * c[2] - c[1] * b[2]) - a[1] * (b[0] * c[2] - c[0] * b[2]) + a[2] * (b[0] * c[1] - c[0] * b[1])) / 6;
+    }
+    return v;
+  };
+
+  // Gebäude erzeugen. rec: {id, osm:{osm_typ,osm_id,tags,ring,centroid,area}|null, comp:analysiertes Bauteil|null (Koordinaten schon ausgerichtet), user:{shape,eave,first,roofH,lowSide}}
+  U.makeBuilding = function (rec, cfg) {
+    cfg = cfg || {};
+    const user = rec.user || {};
+    const osm = rec.osm, comp = rec.comp;
+    const tags = osm ? osm.tags : {};
+    const hints = [];
+    let ringSrc = osm ? osm.ring : comp.hull;
+    let ring = U.cleanRing(ringSrc);
+    if (ring.length < 3) return null;
+    const area = Math.abs(U.signedArea(ring));
+    const rect = U.minRect(ring);
+    if (!rect || area < 0.5) return null;
+    const fill = area / (rect.laenge * rect.breite);
+    const rectOk = fill >= (cfg.rectTol || 0.95);
+    if (!osm) hints.push('Nur im Export vorhanden (Umriss vereinfacht als konvexe Hülle)');
+    if (osm && osm.holeHint) hints.push(osm.holeHint);
+
+    // Höhen
+    let first = null, eave = null, heightSrc = null;
+    const lod1 = !!(comp && comp.lod1Like);
+    if (user.first !== undefined && user.first !== null) { first = user.first; eave = user.eave !== undefined ? user.eave : null; heightSrc = 'manuell'; }
+    else if (comp) { first = comp.ridgeRel; eave = lod1 ? null : comp.eaveRel; heightSrc = 'TopoExport'; }
+    else {
+      const h = U.parseNum(tags.height), rh = U.parseNum(tags['roof:height']);
+      if (h && h > 0) { first = h; eave = rh && rh > 0 && rh < h ? h - rh : null; heightSrc = 'OSM'; }
+    }
+    if (first !== null && first <= 0.05) first = null;
+
+    // Dachform
+    const supported = ['flat', 'skillion', 'gabled', 'hipped', 'pyramidal'];
+    const osmShape = (tags['roof:shape'] || '').trim().toLowerCase();
+    let shape = null, shapeSrc = '', uncertain = false, candidates = ['flat', 'gabled', 'hipped', 'pyramidal', 'skillion'];
+    if (user.shape) { shape = user.shape; shapeSrc = 'manuell gewählt'; }
+    else if (comp && !lod1) {
+      candidates = comp.candidates.slice();
+      if (comp.confidence >= 0.8) { shape = comp.shape; shapeSrc = 'aus Export erkannt'; if (osmShape && supported.includes(osmShape) && osmShape !== shape) hints.push('OSM nennt "' + osmShape + '", der Export zeigt ' + DACH_NAMEN[shape]); }
+      else {
+        uncertain = true;
+        if (osmShape && supported.includes(osmShape)) { shape = osmShape; shapeSrc = 'OSM (unbestätigt)'; candidates = [osmShape].concat(candidates.filter((c) => c !== osmShape)); }
+        else { shape = comp.shape; shapeSrc = 'Vorschlag (unsicher)'; }
+        if (comp.note) hints.push(comp.note);
+      }
+    } else if (osmShape && supported.includes(osmShape)) { shape = osmShape; shapeSrc = 'OSM'; candidates = [osmShape].concat(candidates.filter((c) => c !== osmShape)); }
+    else if (first !== null) { uncertain = true; shape = 'flat'; shapeSrc = 'Vorschlag (unsicher)'; hints.push(lod1 ? 'Export ohne Dachformen (LoD1): bitte Dachform wählen' : 'Dachform unbekannt: bitte wählen'); }
+    else shape = 'flat';
+
+    // Dach-Höhe bei gewählter geneigter Form ohne Traufhöhe
+    let roofHAssumed = false;
+    if (first !== null && shape !== 'flat' && (eave === null || eave === undefined)) {
+      const rh = user.roofH !== undefined ? user.roofH : null;
+      if (rh && rh > 0 && rh < first) { eave = first - rh; roofHAssumed = user.roofHDefault === true; }
+    }
+
+    // Maße und Körper
+    let tops = null, roof = null, bodyRing = ring, plate = false;
+    let outEave = null, outFirst = null, shapeText = DACH_NAMEN[shape];
+    const needsRect = ['gabled', 'hipped', 'pyramidal', 'skillion'].includes(shape);
+    if (first === null) {
+      plate = true;
+      tops = ring.map(() => cfg.plateThickness || 1);
+      shapeText = 'flach (Platzhalter)';
+      shape = 'flat';
+    } else if (shape === 'flat') {
+      tops = ring.map(() => first); outEave = first; outFirst = first;
+    } else if (eave === null || eave === undefined) {
+      tops = ring.map(() => first); outFirst = first; outEave = null;
+      shapeText = DACH_NAMEN[shape] + ' (nur Höhe bekannt, als Flachdach gebaut)';
+      hints.push('Traufhöhe unbekannt: Dach wird erst nach Eingabe der Dachhöhe gebaut');
+    } else if (!rectOk) {
+      tops = ring.map(() => eave); outEave = eave; outFirst = first;
+      shapeText = DACH_NAMEN[shape] + ' (vereinfacht, Grundriss nicht rechteckig)';
+      hints.push('Grundriss nicht rechteckig: Körper nur bis Traufhöhe mit flachem Dach');
+    } else {
+      let ecken = rect.ecken;
+      if (shape === 'skillion') {
+        // tiefe Seite bestimmen (Richtung, in die das Dach abfällt)
+        let az = comp && comp.azimuth !== null && comp.azimuth !== undefined ? comp.azimuth : null;
+        if (user.lowSide) az = { O: 0, N: Math.PI / 2, W: Math.PI, S: -Math.PI / 2 }[user.lowSide];
+        if (az === null) az = -Math.PI / 2;
+        const dir = [Math.cos(az), Math.sin(az)];
+        let bestK = 0, bestD = -Infinity;
+        for (let k = 0; k < 4; k++) {
+          const a = ecken[k], b = ecken[(k + 1) % 4];
+          const ex = b[0] - a[0], ey = b[1] - a[1], l = Math.hypot(ex, ey);
+          const nrm = [ey / l, -ex / l];
+          const d = nrm[0] * dir[0] + nrm[1] * dir[1];
+          if (d > bestD) { bestD = d; bestK = k; }
+        }
+        bodyRing = ecken;
+        const lowA = bestK, lowB = (bestK + 1) % 4;
+        tops = ecken.map((_, i) => (i === lowA || i === lowB ? eave : first));
+        outEave = eave; outFirst = first;
+      } else {
+        const orient = (tags['roof:orientation'] || '').trim().toLowerCase();
+        if (comp && !lod1 && comp.azimuth !== null && comp.azimuth !== undefined && comp.confidence >= 0.8 && shape === comp.shape) {
+          const theta = Math.atan2(ecken[1][1] - ecken[0][1], ecken[1][0] - ecken[0][0]);
+          let d = Math.abs(comp.azimuth + Math.PI / 2 - theta) % Math.PI;
+          if (d > Math.PI / 2) d = Math.PI - d;
+          if (d > Math.PI / 4) ecken = [ecken[1], ecken[2], ecken[3], ecken[0]];
+        } else if (orient === 'across') ecken = [ecken[1], ecken[2], ecken[3], ecken[0]];
+        if (user.across) ecken = [ecken[1], ecken[2], ecken[3], ecken[0]];
+        bodyRing = ecken;
+        tops = ecken.map(() => eave);
+        roof = { ecken, zFirst: first, art: shape };
+        outEave = eave; outFirst = first;
+      }
+      if (fill < 0.99) hints.push('Grundriss durch umschließendes Rechteck ersetzt (Füllgrad ' + Math.round(fill * 100) + ' %)');
+    }
+    if (roofHAssumed) hints.push('Dachhöhe ' + (first - eave).toFixed(1) + ' m ist ein Eingabewert, bitte prüfen');
+
+    const m = koerper(bodyRing, tops, roof);
+    const closed = m.ok && U.edgesClosed(m.T);
+    if (!closed) hints.push('Körper nicht wasserdicht (Grundriss evtl. ungültig)');
+
+    let status;
+    if (plate) status = 'Höhe fehlt';
+    else if (uncertain) status = 'Dachform unsicher';
+    else if (heightSrc === 'manuell' || shapeSrc === 'manuell gewählt') status = 'manuell';
+    else status = 'ok';
+    const r2 = (x) => (x === null || x === undefined ? null : Math.round(x * 100) / 100);
+    const levels = U.parseNum(tags['building:levels']);
+    if (plate && levels) hints.push('Geschosse laut OSM: ' + levels + ' (nicht in Meter umgerechnet)');
+
+    const props = {
+      id: rec.id,
+      osm_id: osm ? osm.osm_typ + '/' + osm.osm_id : '',
+      name: tags.name || (comp && !osm ? comp.name : '') || '',
+      gebaeudeart: tags.building || '',
+      laenge_m: r2(rect.laenge), breite_m: r2(rect.breite),
+      traufhoehe_m: r2(outEave), firsthoehe_m: r2(outFirst),
+      dachform: shapeText,
+      dachform_quelle: plate ? '' : shapeSrc,
+      hoehenquelle: plate ? '' : heightSrc,
+      geschosse: levels,
+      grundflaeche_m2: Math.round(area * 10) / 10,
+      status,
+      hinweise: hints.join('; '),
+      mesh_geschlossen: !!closed,
+    };
+    let material = 'ok';
+    if (plate) material = 'fehlt'; else if (uncertain) material = 'unsicher'; else if (!osm) material = 'export'; else if (hints.length) material = 'hinweis';
+    return { id: rec.id, V: m.V, T: m.T, props, material, shape, uncertain, candidates, needsEave: first !== null && shape !== 'flat' && (eave === null || eave === undefined), lod1, hasComp: !!comp, first, eave };
+  };
+
+  // ------------------------------------------------------------------ OSM lesen
+  U.osmToBuildings = function (data, proj) {
+    const out = [], skipped = [];
+    for (const el of data.elements || []) {
+      const kennung = el.type + '/' + el.id;
+      const tags = el.tags || {};
+      let geom = null, hole = null;
+      if (el.type === 'way') {
+        geom = el.geometry;
+        if (!geom || geom.length < 4) { skipped.push([kennung, 'zu wenige Punkte']); continue; }
+        if (geom[0].lat !== geom[geom.length - 1].lat || geom[0].lon !== geom[geom.length - 1].lon) { skipped.push([kennung, 'nicht geschlossen']); continue; }
+      } else if (el.type === 'relation') {
+        const outer = (el.members || []).filter((m) => m.role === 'outer' && m.geometry);
+        const inner = (el.members || []).filter((m) => m.role === 'inner');
+        if (outer.length !== 1) { skipped.push([kennung, 'Multipolygon mit ' + outer.length + ' Außenringen']); continue; }
+        geom = outer[0].geometry;
+        if (geom[0].lat !== geom[geom.length - 1].lat || geom[0].lon !== geom[geom.length - 1].lon) { skipped.push([kennung, 'Außenring nicht geschlossen']); continue; }
+        if (inner.length) hole = 'Innenhof/Loch im Grundriss wurde ignoriert';
+      } else continue;
+      const ring = U.cleanRing(geom.map((p) => proj.fwd(p.lat, p.lon)));
+      if (ring.length < 3) { skipped.push([kennung, 'ungültiger Grundriss']); continue; }
+      out.push({ osm_typ: el.type, osm_id: el.id, tags, ring, centroid: U.polyCentroid(ring), area: Math.abs(U.signedArea(ring)), holeHint: hole });
+    }
+    return { buildings: out, skipped };
+  };
+
+  // ------------------------------------------------------------------ Export
+  const MAT = {
+    ok: [0.651, 0.384, 0.357], hinweis: [0.788, 0.553, 0.525], fehlt: [0.878, 0.722, 0.698], unsicher: [0.788, 0.553, 0.525], export: [0.435, 0.227, 0.208],
+  };
+  U.MAT = MAT;
+  const MAT_ORDER = ['ok', 'hinweis', 'fehlt', 'export'];
+  const MAT_NAME = { ok: 'Gebäude', hinweis: 'Gebäude mit Hinweis', fehlt: 'Höhe fehlt', export: 'Nur im Export' };
+  function pad4(len) { return (4 - (len % 4)) % 4; }
+  U.buildGLB = function (buildings, meta) {
+    const chunks = [], bufferViews = [], accessors = [], meshes = [], nodes = [{ name: 'Umgebungsmodell', children: [], extras: meta }];
+    let offset = 0;
+    const pushBuf = (arr) => {
+      const bytes = new Uint8Array(arr.buffer, arr.byteOffset, arr.byteLength);
+      const start = offset;
+      chunks.push(bytes);
+      offset += bytes.length;
+      const p = pad4(bytes.length);
+      if (p) { chunks.push(new Uint8Array(p)); offset += p; }
+      return { start, len: bytes.length };
+    };
+    for (const b of buildings) {
+      const pos = new Float32Array(b.V.length * 3);
+      b.V.forEach((v, i) => { pos[3 * i] = v[0]; pos[3 * i + 1] = v[2]; pos[3 * i + 2] = -v[1]; });
+      const idx = new Uint32Array(b.T.length * 3);
+      b.T.forEach((t, i) => { idx[3 * i] = t[0]; idx[3 * i + 1] = t[1]; idx[3 * i + 2] = t[2]; });
+      const bp = pushBuf(pos), bi = pushBuf(idx);
+      const bvp = bufferViews.length;
+      bufferViews.push({ buffer: 0, byteOffset: bp.start, byteLength: bp.len, target: 34962 });
+      const bvi = bufferViews.length;
+      bufferViews.push({ buffer: 0, byteOffset: bi.start, byteLength: bi.len, target: 34963 });
+      const mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
+      for (let i = 0; i < pos.length; i += 3) for (let k = 0; k < 3; k++) { if (pos[i + k] < mn[k]) mn[k] = pos[i + k]; if (pos[i + k] > mx[k]) mx[k] = pos[i + k]; }
+      const ap = accessors.length;
+      accessors.push({ bufferView: bvp, componentType: 5126, count: b.V.length, type: 'VEC3', min: mn, max: mx });
+      const ai = accessors.length;
+      accessors.push({ bufferView: bvi, componentType: 5125, count: idx.length, type: 'SCALAR' });
+      const matKey = b.material === 'unsicher' ? 'hinweis' : b.material;
+      meshes.push({ name: b.id, primitives: [{ attributes: { POSITION: ap }, indices: ai, material: MAT_ORDER.indexOf(matKey), mode: 4 }] });
+      nodes[0].children.push(nodes.length);
+      nodes.push({ name: b.id, mesh: meshes.length - 1, extras: b.props });
+    }
+    const gltf = {
+      asset: { version: '2.0', generator: 'Umgebungsmodell Web-App' },
+      scene: 0, scenes: [{ nodes: [0] }], nodes, meshes, accessors, bufferViews,
+      buffers: [{ byteLength: offset }],
+      materials: MAT_ORDER.map((k) => ({ name: MAT_NAME[k], pbrMetallicRoughness: { baseColorFactor: MAT[k].concat([1]), metallicFactor: 0, roughnessFactor: 1 } })),
+    };
+    const enc = new TextEncoder();
+    let json = enc.encode(JSON.stringify(gltf));
+    const jp = pad4(json.length);
+    if (jp) { const j2 = new Uint8Array(json.length + jp).fill(0x20); j2.set(json); json = j2; }
+    const bin = new Uint8Array(offset);
+    let o = 0;
+    for (const c of chunks) { bin.set(c, o); o += c.length; }
+    const total = 12 + 8 + json.length + 8 + bin.length;
+    const out = new Uint8Array(total);
+    const dv = new DataView(out.buffer);
+    out.set([0x67, 0x6c, 0x54, 0x46], 0);
+    dv.setUint32(4, 2, true); dv.setUint32(8, total, true);
+    dv.setUint32(12, json.length, true); out.set([0x4a, 0x53, 0x4f, 0x4e], 16); out.set(json, 20);
+    const p = 20 + json.length;
+    dv.setUint32(p, bin.length, true); out.set([0x42, 0x49, 0x4e, 0x00], p + 4); out.set(bin, p + 8);
+    return out;
+  };
+
+  U.buildSTL = function (buildings, factor) {
+    let n = 0;
+    for (const b of buildings) n += b.T.length;
+    let mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
+    for (const b of buildings) for (const v of b.V) for (let k = 0; k < 3; k++) { if (v[k] < mn[k]) mn[k] = v[k]; if (v[k] > mx[k]) mx[k] = v[k]; }
+    const out = new Uint8Array(84 + 50 * n);
+    const dv = new DataView(out.buffer);
+    const head = 'Umgebungsmodell STL (Millimeter)';
+    for (let i = 0; i < head.length; i++) out[i] = head.charCodeAt(i);
+    dv.setUint32(80, n, true);
+    let o = 84;
+    for (const b of buildings) {
+      for (const t of b.T) {
+        const a = b.V[t[0]], bb = b.V[t[1]], c = b.V[t[2]];
+        const ux = bb[0] - a[0], uy = bb[1] - a[1], uz = bb[2] - a[2], vx = c[0] - a[0], vy = c[1] - a[1], vz = c[2] - a[2];
+        let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+        const l = Math.hypot(nx, ny, nz) || 1;
+        dv.setFloat32(o, nx / l, true); dv.setFloat32(o + 4, ny / l, true); dv.setFloat32(o + 8, nz / l, true);
+        let q = o + 12;
+        for (const v of [a, bb, c]) {
+          dv.setFloat32(q, (v[0] - mn[0]) * factor, true); dv.setFloat32(q + 4, (v[1] - mn[1]) * factor, true); dv.setFloat32(q + 8, (v[2] - mn[2]) * factor, true);
+          q += 12;
+        }
+        o += 50;
+      }
+    }
+    return { data: out, size: [(mx[0] - mn[0]) * factor, (mx[1] - mn[1]) * factor, (mx[2] - mn[2]) * factor], triangles: n };
+  };
+
+  const CSV_COLS = [['id', 'ID'], ['osm_id', 'OSM-Objekt'], ['name', 'Name'], ['gebaeudeart', 'Gebäudeart'], ['laenge_m', 'Länge [m]'], ['breite_m', 'Breite [m]'],
+    ['traufhoehe_m', 'Traufhöhe [m]'], ['firsthoehe_m', 'Firsthöhe [m]'], ['dachform', 'Dachform'], ['dachform_quelle', 'Dachform-Quelle'], ['hoehenquelle', 'Höhenquelle'],
+    ['geschosse', 'Geschosse'], ['grundflaeche_m2', 'Grundfläche [m²]'], ['status', 'Status'], ['hinweise', 'Hinweise'], ['mesh_geschlossen', 'Wasserdicht']];
+  U.CSV_COLS = CSV_COLS;
+  U.buildCSV = function (buildings) {
+    const fmt = (v) => {
+      if (v === null || v === undefined) return '';
+      if (typeof v === 'boolean') return v ? 'ja' : 'nein';
+      if (typeof v === 'number') return String(v).replace('.', ',');
+      const s = String(v);
+      return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+    const lines = [CSV_COLS.map((c) => c[1]).join(';')];
+    for (const b of buildings) lines.push(CSV_COLS.map((c) => fmt(b.props[c[0]])).join(';'));
+    return '﻿' + lines.join('\r\n') + '\r\n';
+  };
+
+  // ------------------------------------------------------------------ Beispieldaten (für Tests und zum Ausprobieren)
+  U.demo = function () {
+    const lat0 = 53.5149291, lon0 = 8.1358768;
+    const proj = U.projection(lat0, lon0);
+    const rect = (cx, cy, l, w, deg) => {
+      const a = (deg * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a);
+      return [[-l / 2, -w / 2], [l / 2, -w / 2], [l / 2, w / 2], [-l / 2, w / 2]].map(([x, y]) => [cx + x * c - y * s, cy + x * s + y * c]);
+    };
+    const lform = (ox, oy) => [[0, 0], [20, 0], [20, 8], [8, 8], [8, 20], [0, 20]].map(([x, y]) => [ox + x, oy + y]);
+    const list = [
+      { id: 1, ring: rect(-150, 120, 20, 10, 30), eave: 8, first: 12, shape: 'gabled', tags: { building: 'house', name: 'Satteldach-Haus' } },
+      { id: 2, ring: rect(-60, 120, 12, 12, 0), eave: 9, first: 9, shape: 'flat', tags: { building: 'yes' } },
+      { id: 3, ring: rect(40, 120, 30, 15, 0), eave: 11, first: 14, shape: 'hipped', tags: { building: 'yes', name: 'Walmdach-Haus' } },
+      { id: 4, ring: rect(130, 120, 10, 10, 0), eave: 9, first: 12, shape: 'pyramidal', tags: { building: 'yes' } },
+      { id: 5, ring: rect(-150, 20, 14, 8, 10), eave: 4, first: 7, shape: 'skillion', low: -Math.PI / 2, tags: { building: 'yes' } },
+      { id: 6, ring: rect(-60, 20, 18, 8, 0), eave: 8, first: 11, shape: 'gabled', across: true, tags: { building: 'yes' } },
+      { id: 7, ring: rect(40, 20, 16, 9, 0), eave: 6, first: 9.5, shape: 'halfhip', tags: { building: 'house', 'roof:shape': 'gabled' } },
+      { id: 8, ring: lform(100, -10), eave: 10, first: 10, shape: 'flat', tags: { building: 'yes' } },
+      { id: 9, ring: rect(-150, -100, 15, 10, 0), tags: { building: 'yes', 'building:levels': '3' }, noExport: true },
+      { id: 10, ring: rect(-60, -100, 10, 10, 0), tags: { building: 'yes', 'roof:shape': 'gabled' }, noExport: true, noGeom: false },
+      { id: 11, ring: rect(40, -100, 12, 8, 0), eave: 5, first: 8, shape: 'gabled', tags: { building: 'yes' }, exportOnly: true },
+    ];
+    const elements = [];
+    const objVerts = [], objFaces = [];
+    const OFF = [435120.5, 5930480.25]; // Koordinatenursprung des "Exports"
+    const meshes = [];
+    for (const b of list) {
+      if (!b.exportOnly) {
+        const geo = b.ring.concat([b.ring[0]]).map((p) => { const ll = proj.inv(p[0], p[1]); return { lat: ll[0], lon: ll[1] }; });
+        elements.push({ type: 'way', id: 1000 + b.id, tags: b.tags, geometry: geo });
+      }
+      if (b.noExport) continue;
+      const ring = U.cleanRing(b.ring);
+      const r = U.minRect(ring);
+      let m;
+      if (b.shape === 'flat') m = koerper(ring, ring.map(() => b.first), null);
+      else if (b.shape === 'skillion') {
+        const e = r.ecken; const dir = [Math.cos(b.low), Math.sin(b.low)];
+        let bk = 0, bd = -Infinity;
+        for (let k = 0; k < 4; k++) { const a = e[k], c = e[(k + 1) % 4]; const ex = c[0] - a[0], ey = c[1] - a[1], l = Math.hypot(ex, ey); const d = (ey / l) * dir[0] + (-ex / l) * dir[1]; if (d > bd) { bd = d; bk = k; } }
+        m = koerper(e, e.map((_, i) => (i === bk || i === (bk + 1) % 4 ? b.eave : b.first)), null);
+      } else {
+        let e = r.ecken;
+        if (b.across) e = [e[1], e[2], e[3], e[0]];
+        const roof = { ecken: e, zFirst: b.first, art: b.shape === 'halfhip' ? 'gabled' : b.shape };
+        if (b.shape === 'halfhip') {
+          const w = Math.hypot(e[2][0] - e[1][0], e[2][1] - e[1][1]);
+          const lr = Math.hypot(e[1][0] - e[0][0], e[1][1] - e[0][1]);
+          const ux = (e[1][0] - e[0][0]) / lr, uy = (e[1][1] - e[0][1]) / lr;
+          const m0 = [(e[0][0] + e[3][0]) / 2, (e[0][1] + e[3][1]) / 2];
+          roof.r0 = [m0[0] + (ux * w) / 2, m0[1] + (uy * w) / 2];
+        }
+        m = koerper(e, e.map(() => b.eave), roof);
+      }
+      meshes.push(m);
+    }
+    // OBJ im "Y oben"-System, versetzt, in Zentimetern, mit Gebäude-Gruppen
+    let obj = '# Beispiel-Export (Y oben, Zentimeter)\n';
+    let vbase = 0, gi = 0;
+    for (const m of meshes) {
+      gi++;
+      obj += 'o Gebaeude_' + gi + '\n';
+      for (const v of m.V) obj += 'v ' + ((v[0] + OFF[0]) * 100).toFixed(1) + ' ' + (v[2] * 100).toFixed(1) + ' ' + (-(v[1] + OFF[1]) * 100).toFixed(1) + '\n';
+      for (const t of m.T) obj += 'f ' + (vbase + t[0] + 1) + ' ' + (vbase + t[1] + 1) + ' ' + (vbase + t[2] + 1) + '\n';
+      vbase += m.V.length;
+    }
+    return { osm: { elements }, obj, lat: lat0, lon: lon0, list };
+  };
+
+  U.koerper = koerper;
+  return U;
+});
+</script>
+<script>/* Umgebungsmodell – Oberfläche */
+(function () {
+  'use strict';
+  const U = window.UM;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s === null || s === undefined ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  const START = { lat: 51.1657, lon: 10.4515, w: 500, l: 500 }; // Kartenmitte Deutschland, neutraler Startpunkt
+  const S = {
+    area: Object.assign({}, START),
+    proj: null, osmRaw: null, osmList: [], osmSkipped: [],
+    exp: null, expInfo: null,
+    recs: [], built: [], byId: new Map(), user: {},
+    sel: null, match: null, lod1: false, filter: 'alle', dl: null, warnings: [],
+  };
+  const CFG = { plateThickness: 1, rectTol: 0.95 };
+  const STATUS_FARBE = { ok: '#a6625b', hinweis: '#c98d86', fehlt: '#e0b8b2', unsicher: '#c98d86', export: '#6f3a35' };
+
+  // ---------------------------------------------------------------- Hilfen
+  function meldung(id, text, art) {
+    const el = $(id);
+    if (!el) return;
+    el.textContent = text || '';
+    el.className = 'meldung ' + (art || '');
+  }
+  async function dateiLaden(file) { return await file.arrayBuffer(); }
+
+  // ---------------------------------------------------------------- Speichern
+  function crc32(u8) {
+    let c, crc = 0xffffffff;
+    if (!crc32.t) { crc32.t = []; for (let n = 0; n < 256; n++) { c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; crc32.t[n] = c >>> 0; } }
+    for (let i = 0; i < u8.length; i++) crc = crc32.t[(crc ^ u8[i]) & 255] ^ (crc >>> 8);
+    return (crc ^ 0xffffffff) >>> 0;
+  }
+  function zipStore(files) {
+    const enc = new TextEncoder();
+    const parts = [], central = [];
+    let off = 0;
+    for (const f of files) {
+      const name = enc.encode(f.name), data = f.data, crc = crc32(data);
+      const h = new DataView(new ArrayBuffer(30));
+      h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
+      h.setUint16(10, 0, true); h.setUint16(12, 0x21, true); h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true);
+      h.setUint16(26, name.length, true); h.setUint16(28, 0, true);
+      parts.push(new Uint8Array(h.buffer), name, data);
+      const c = new DataView(new ArrayBuffer(46));
+      c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(10, 0, true);
+      c.setUint16(12, 0, true); c.setUint16(14, 0x21, true); c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true);
+      c.setUint16(28, name.length, true); c.setUint32(42, off, true);
+      central.push(new Uint8Array(c.buffer), name);
+      off += 30 + name.length + data.length;
+    }
+    const csize = central.reduce((s, p) => s + p.length, 0);
+    const e = new DataView(new ArrayBuffer(22));
+    e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, csize, true); e.setUint32(16, off, true);
+    const all = parts.concat(central, [new Uint8Array(e.buffer)]);
+    const out = new Uint8Array(all.reduce((s, p) => s + p.length, 0));
+    let o = 0;
+    for (const p of all) { out.set(p, o); o += p.length; }
+    return out;
+  }
+  async function speichern(name, daten) {
+    const u8 = typeof daten === 'string' ? new TextEncoder().encode(daten) : daten;
+    if (S.dl) {
+      const ext = name.split('.').pop().toLowerCase();
+      let fn = name, data = u8;
+      if (!['csv', 'txt', 'json', 'zip'].includes(ext)) { fn = name + '.zip'; data = zipStore([{ name, data: u8 }]); }
+      try { await S.dl.save({ filename: fn, data: data }); meldung('exportMeldung', fn + ' gespeichert.', 'ok'); }
+      catch (e) { meldung('exportMeldung', e && e.code === 'declined' ? 'Speichern abgebrochen.' : 'Speichern nicht möglich: ' + ((e && e.message) || e), 'warn'); }
+      return;
+    }
+    const blob = new Blob([u8], { type: 'application/octet-stream' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    meldung('exportMeldung', name + ' gespeichert (Ordner "Downloads").', 'ok');
+  }
+
+  // ---------------------------------------------------------------- Karte
+  const M = { lat: START.lat, lon: START.lon, z: 6, tiles: new Map(), drag: null, dirty: true };
+  const mapCv = $('karte');
+  const mctx = mapCv.getContext('2d');
+  const lon2x = (lon, z) => ((lon + 180) / 360) * Math.pow(2, z) * 256;
+  const lat2y = (lat, z) => { const s = Math.sin((lat * Math.PI) / 180); return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * Math.pow(2, z) * 256; };
+  const x2lon = (x, z) => (x / (Math.pow(2, z) * 256)) * 360 - 180;
+  const y2lat = (y, z) => { const n = Math.PI - (2 * Math.PI * y) / (Math.pow(2, z) * 256); return (180 / Math.PI) * Math.atan(Math.sinh(n)); };
+  function mapView() {
+    const w = mapCv.clientWidth, h = mapCv.clientHeight;
+    return { w, h, x0: lon2x(M.lon, M.z) - w / 2, y0: lat2y(M.lat, M.z) - h / 2 };
+  }
+  const toPx = (lat, lon, v) => [lon2x(lon, M.z) - v.x0, lat2y(lat, M.z) - v.y0];
+  const fromPx = (px, py, v) => [y2lat(py + v.y0, M.z), x2lon(px + v.x0, M.z)];
+  function rectPx(v) {
+    const b = U.bboxFromCenter(S.area.lat, S.area.lon, S.area.w, S.area.l);
+    const a = toPx(b.n, b.w, v), c = toPx(b.s, b.e, v);
+    return { x1: a[0], y1: a[1], x2: c[0], y2: c[1] };
+  }
+  function mapDraw() {
+    M.dirty = false;
+    const dpr = window.devicePixelRatio || 1;
+    const w = mapCv.clientWidth, h = mapCv.clientHeight;
+    if (!w || !h) return;
+    if (mapCv.width !== Math.round(w * dpr)) { mapCv.width = Math.round(w * dpr); mapCv.height = Math.round(h * dpr); }
+    mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    mctx.fillStyle = '#f8f3e8'; mctx.fillRect(0, 0, w, h);
+    const v = mapView();
+    // Grundrisse
+    const rings = [];
+    if (S.recs.length) S.recs.forEach((r) => { const b = S.byId.get(r.id); rings.push({ ring: r.osm ? r.osm.ring : r.comp.hull, farbe: b ? STATUS_FARBE[b.material] : '#ccc', id: r.id }); });
+    else S.osmList.forEach((o) => rings.push({ ring: o.ring, farbe: '#d3b3ad', id: null }));
+    if (S.proj) {
+      for (const r of rings) {
+        mctx.beginPath();
+        r.ring.forEach((p, i) => { const ll = S.proj.inv(p[0], p[1]); const q = toPx(ll[0], ll[1], v); if (i) mctx.lineTo(q[0], q[1]); else mctx.moveTo(q[0], q[1]); });
+        mctx.closePath();
+        mctx.fillStyle = r.id && r.id === S.sel ? '#2d5d63' : r.farbe;
+        mctx.globalAlpha = 0.85; mctx.fill(); mctx.globalAlpha = 1;
+        mctx.strokeStyle = '#4a2a25'; mctx.lineWidth = 0.7; mctx.stroke();
+      }
+    }
+  }
+  function mapPointer(e) { const b = mapCv.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; }
+  mapCv.addEventListener('pointerdown', (e) => {
+    mapCv.setPointerCapture(e.pointerId);
+    const [px, py] = mapPointer(e);
+    let mode = 'pan';
+        M.drag = { mode, px, py, lat: M.lat, lon: M.lon, alat: S.area.lat, alon: S.area.lon, moved: false };
+  });
+  mapCv.addEventListener('pointermove', (e) => {
+    if (!M.drag) return;
+    const [px, py] = mapPointer(e);
+    const d = M.drag;
+    if (Math.abs(px - d.px) + Math.abs(py - d.py) > 3) d.moved = true;
+    if (d.mode === 'pan') {
+      const v0 = { w: mapCv.clientWidth, h: mapCv.clientHeight, x0: lon2x(d.lon, M.z) - mapCv.clientWidth / 2, y0: lat2y(d.lat, M.z) - mapCv.clientHeight / 2 };
+      M.lon = x2lon(lon2x(d.lon, M.z) - (px - d.px), M.z); M.lat = y2lat(lat2y(d.lat, M.z) - (py - d.py), M.z);
+    } else if (d.mode === 'move') {
+      S.area.lon = x2lon(lon2x(d.alon, M.z) + (px - d.px), M.z); S.area.lat = y2lat(lat2y(d.alat, M.z) + (py - d.py), M.z);
+      feldSync();
+    } else {
+      const v = mapView(); const ll = fromPx(px, py, v);
+      const ky = (Math.PI / 180) * 6378137, kx = ky * Math.cos((S.area.lat * Math.PI) / 180);
+      S.area.w = Math.max(50, Math.round((Math.abs(ll[1] - S.area.lon) * kx * 2) / 10) * 10);
+      S.area.l = Math.max(50, Math.round((Math.abs(ll[0] - S.area.lat) * ky * 2) / 10) * 10);
+      feldSync();
+    }
+    M.dirty = true;
+  });
+  mapCv.addEventListener('pointerup', (e) => {
+    const d = M.drag; M.drag = null;
+    if (d && !d.moved && d.mode !== 'resize' && S.proj) {
+      const [px, py] = mapPointer(e); const v = mapView(); const ll = fromPx(px, py, v);
+      const p = S.proj.fwd(ll[0], ll[1]);
+      const hit = S.recs.find((r) => U.pointInPoly(p, r.osm ? r.osm.ring : r.comp.hull));
+      if (hit) waehle(hit.id);
+    }
+  });
+  mapCv.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    M.z = Math.max(3, Math.min(19, M.z + (e.deltaY < 0 ? 1 : -1)));
+    M.dirty = true;
+  }, { passive: false });
+  function feldSync() {
+    $('fLat').value = S.area.lat.toFixed(6); $('fLon').value = S.area.lon.toFixed(6);
+    $('fBreite').value = S.area.w; $('fLaenge').value = S.area.l;
+  }
+  function felderLesen() {
+    const f = (id) => parseFloat(String($(id).value).replace(',', '.'));
+    const lat = f('fLat'), lon = f('fLon'), w = f('fBreite'), l = f('fLaenge');
+    if (isFinite(lat) && isFinite(lon) && w > 0 && l > 0) { S.area = { lat, lon, w, l }; M.lat = lat; M.lon = lon; M.dirty = true; hinweisGebietGeaendert(); }
+  }
+  ['fLat', 'fLon', 'fBreite', 'fLaenge'].forEach((id) => $(id).addEventListener('change', felderLesen));
+  function hinweisGebietGeaendert() {
+    if (S.osmRaw && S.proj && (Math.abs(S.proj.lat0 - S.area.lat) > 1e-5 || Math.abs(S.proj.lon0 - S.area.lon) > 1e-5)) {
+      meldung('osmMeldung', 'Das Rechteck wurde verschoben. Bitte die Gebäude neu von OpenStreetMap laden.', 'warn');
+    }
+  }
+  function mapZoomAufGebiet() {
+    // Ansicht auf die geladenen Grundrisse einpassen
+    if (!S.proj) return;
+    const rings = S.recs.length ? S.recs.map((r) => (r.osm ? r.osm.ring : r.comp.hull)) : S.osmList.map((o) => o.ring);
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    rings.forEach((ring) => ring.forEach((p) => { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; }));
+    if (!isFinite(x0)) return;
+    const a = S.proj.inv(x0, y0), b = S.proj.inv(x1, y1);
+    M.lat = (a[0] + b[0]) / 2; M.lon = (a[1] + b[1]) / 2;
+    const w = mapCv.clientWidth || 800, h = mapCv.clientHeight || 600;
+    for (let z = 19; z >= 3; z--) {
+      if (Math.abs(lon2x(b[1], z) - lon2x(a[1], z)) < w * 0.85 && Math.abs(lat2y(a[0], z) - lat2y(b[0], z)) < h * 0.85) { M.z = z; break; }
+    }
+    M.dirty = true;
+  }
+
+  // ---------------------------------------------------------------- OSM
+  function osmUebernehmen(daten, quelle) {
+    S.proj = U.projection(S.area.lat, S.area.lon);
+    S.proj.lat0 = S.area.lat; S.proj.lon0 = S.area.lon;
+    S.osmRaw = daten;
+    const r = U.osmToBuildings(daten, S.proj);
+    const hw = S.area.w / 2, hl = S.area.l / 2;
+    const alle = r.buildings.length;
+    S.osmList = r.buildings.filter((b) => Math.abs(b.centroid[0]) <= hw && Math.abs(b.centroid[1]) <= hl);
+    S.osmSkipped = r.skipped;
+    meldung('osmMeldung', S.osmList.length + ' Gebäude aus ' + quelle + ' im Rechteck' + (alle > S.osmList.length ? ' (' + (alle - S.osmList.length) + ' außerhalb ignoriert)' : '') +
+      (r.skipped.length ? ', ' + r.skipped.length + ' übersprungen (z. B. Multipolygone)' : '') + '.', 'ok');
+    verarbeiten();
+    M.dirty = true;
+  }
+  async function osmLaden() {
+    const b = U.bboxFromCenter(S.area.lat, S.area.lon, S.area.w, S.area.l);
+    const q = '[out:json][timeout:120];(way["building"](' + [b.s, b.w, b.n, b.e].join(',') + ');relation["building"](' + [b.s, b.w, b.n, b.e].join(',') + '););out geom;';
+    const urls = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
+    $('osmLaden').disabled = true;
+    let letzter = '';
+    for (const url of urls) {
+      for (let versuch = 1; versuch <= 2; versuch++) {
+        meldung('osmMeldung', 'Lade von ' + new URL(url).host + ' (Versuch ' + versuch + ') …', '');
+        try {
+          const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 90000);
+          const res = await fetch(url, { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: ctl.signal });
+          clearTimeout(to);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const daten = await res.json();
+          $('osmLaden').disabled = false;
+          return osmUebernehmen(daten, 'OpenStreetMap');
+        } catch (e) { letzter = String((e && e.message) || e); await new Promise((r) => setTimeout(r, 4000)); }
+      }
+    }
+    $('osmLaden').disabled = false;
+    meldung('osmMeldung', 'OpenStreetMap ist von hier aus nicht erreichbar (' + letzter + '). Lade stattdessen eine OSM-Datei (.json) hoch (Knopf darunter).', 'warn');
+  }
+  $('osmLaden').addEventListener('click', osmLaden);
+  $('osmDatei').addEventListener('change', async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    try { osmUebernehmen(JSON.parse(new TextDecoder().decode(await dateiLaden(f))), 'Datei ' + f.name); }
+    catch (err) { meldung('osmMeldung', 'Datei konnte nicht gelesen werden: ' + err.message, 'warn'); }
+    e.target.value = '';
+  });
+
+  // ---------------------------------------------------------------- Export-Datei (TopoExport)
+  async function exportDateiLaden(file) {
+    meldung('expMeldung', 'Lese ' + file.name + ' …', '');
+    await new Promise((r) => setTimeout(r, 30));
+    try {
+      const res = U.parseModelFile(file.name, await dateiLaden(file));
+      S.warnings = res.warnings || [];
+      if (!res.groups.length) { meldung('expMeldung', (res.warnings[0] || 'Keine Flächen gefunden.'), 'warn'); return; }
+      S.exp = { name: file.name, groups: res.groups };
+      verarbeiten();
+    } catch (err) { meldung('expMeldung', 'Datei konnte nicht gelesen werden: ' + err.message, 'warn'); }
+  }
+  $('expDatei').addEventListener('change', (e) => { const f = e.target.files[0]; if (f) exportDateiLaden(f); e.target.value = ''; });
+  window.addEventListener('dragleave', (e) => { if (!e.relatedTarget) document.body.classList.remove('zieht'); });
+  ['dragover', 'drop'].forEach((ev) => window.addEventListener(ev, (e) => {
+    e.preventDefault();
+    document.body.classList.toggle('zieht', ev === 'dragover');
+    if (ev === 'drop' && e.dataTransfer.files[0]) {
+      const f = e.dataTransfer.files[0];
+      if (/\.json$/i.test(f.name)) f.arrayBuffer().then((b) => osmUebernehmen(JSON.parse(new TextDecoder().decode(b)), 'Datei ' + f.name));
+      else exportDateiLaden(f);
+    }
+  }));
+  $('achse').addEventListener('change', verarbeiten);
+  $('einheit').addEventListener('change', verarbeiten);
+
+  // ---------------------------------------------------------------- Verarbeiten
+  function verarbeiten() {
+    S.recs = [];
+    const komp = [];
+    let info = '';
+    S.match = null; S.lod1 = false;
+    if (S.exp) {
+      const groups = S.exp.groups;
+      const g = U.guessUp(groups);
+      const up = $('achse').value === 'auto' ? g.up : $('achse').value;
+      const u = U.guessUnit(g.extents, up, Math.max(S.area.w, S.area.l));
+      const factor = $('einheit').value === 'auto' ? u.factor : { m: 1, cm: 0.01, mm: 0.001 }[$('einheit').value];
+      const einheitName = $('einheit').value === 'auto' ? u.name : $('einheit').value;
+      const comps = U.splitComponents(groups);
+      const pass0 = comps.map((c) => { const a = U.analyzeComponent(U.toENU(c.tris, { up, unit: factor, flip: 0 })); a.name = c.name; return a; });
+      let flip = 0, dx = 0, dy = 0, match = null;
+      if (S.osmList.length) {
+        match = U.alignAndMatch(pass0, S.osmList);
+        flip = match.flip; dx = match.dx; dy = match.dy;
+      } else {
+        let sx = 0, sy = 0; pass0.forEach((a) => { sx += a.centroid[0]; sy += a.centroid[1]; });
+        dx = -sx / Math.max(1, pass0.length); dy = -sy / Math.max(1, pass0.length);
+      }
+      const analyzed = comps.map((c) => {
+        const t = U.toENU(c.tris, { up, unit: factor, flip }).map((tri) => tri.map((v) => [v[0] + dx, v[1] + dy, v[2]]));
+        const a = U.analyzeComponent(t); a.name = c.name; return a;
+      });
+      S.lod1 = U.markLod1(analyzed);
+      S.match = match;
+      if (!S.proj) { S.proj = U.projection(S.area.lat, S.area.lon); S.proj.lat0 = S.area.lat; S.proj.lon0 = S.area.lon; }
+      S.osmList.forEach((o, j) => {
+        const ci = match ? match.matches.get(j) : undefined;
+        const id = o.osm_typ + '_' + o.osm_id;
+        S.recs.push({ id, osm: o, comp: ci !== undefined ? analyzed[ci] : null, user: S.user[id] || (S.user[id] = {}) });
+      });
+      let rest = match ? match.unmatchedComps : analyzed.map((_, i) => i);
+      const hw = S.area.w / 2, hl = S.area.l / 2;
+      const drop = { aussen: 0, klein: 0, teil: 0 };
+      if (match) {
+        rest = rest.filter((ci) => {
+          const a = analyzed[ci], c = a.centroid;
+          if (Math.abs(c[0]) > hw || Math.abs(c[1]) > hl) { drop.aussen++; return false; }
+          if (a.footArea < 5) { drop.klein++; return false; }
+          if (S.osmList.some((o) => U.pointInPoly([c[0], c[1]], o.ring))) { drop.teil++; return false; }
+          return true;
+        });
+      }
+      rest.forEach((ci) => { const id = 'export_' + analyzed[ci].name; S.recs.push({ id, osm: null, comp: analyzed[ci], user: S.user[id] || (S.user[id] = {}) }); });
+      info = comps.length + ' Gebäude in ' + S.exp.name + ' erkannt (Höhenachse ' + up.toUpperCase() + ', Einheit ' + einheitName + ')';
+      if (match) {
+        info += '; ' + match.matches.size + ' mit OSM-Gebäuden verbunden' + (rest.length ? ', ' + rest.length + ' weitere nur im Export (dunkelrot, ohne OSM-Grundriss)' : '');
+        const verw = [];
+        if (drop.teil) verw.push(drop.teil + ' Teile/Anbauten von OSM-Gebäuden');
+        if (drop.klein) verw.push(drop.klein + ' Kleinstobjekte unter 5 m²');
+        if (drop.aussen) verw.push(drop.aussen + ' außerhalb des Rechtecks');
+        if (verw.length) info += '. Nicht übernommen: ' + verw.join(', ');
+        const ohne = S.osmList.length - match.matches.size;
+        if (ohne) info += '. ' + ohne + ' OSM-Gebäude ohne Gegenstück im Export (Höhe fehlt)';
+      }
+      let art = 'ok';
+      if (match && !match.ok) { info += '. ACHTUNG: ' + match.reason + '. Prüfe Gebiet, Höhenachse und Einheit.'; art = 'warn'; }
+      if (S.lod1) { info += '. Der Export enthält nur flache Dächer (LoD1?): Dachformen müssen gewählt werden.'; art = 'warn'; }
+      if (!S.osmList.length) { info += '. Ohne OSM-Gebäude werden die Umrisse aus dem Export genommen.'; art = 'warn'; }
+      if (S.warnings.length) info += ' ' + S.warnings.join(' ');
+      meldung('expMeldung', info, art);
+      $('achse').value === 'auto' && ($('achseInfo').textContent = '(erkannt: ' + up.toUpperCase() + ')');
+      $('einheitInfo').textContent = $('einheit').value === 'auto' ? '(erkannt: ' + einheitName + ')' : '';
+    } else {
+      S.osmList.forEach((o) => { const id = o.osm_typ + '_' + o.osm_id; S.recs.push({ id, osm: o, comp: null, user: S.user[id] || (S.user[id] = {}) }); });
+    }
+    baueAlle();
+    mapZoomAufGebiet();
+  }
+  function baueAlle() {
+    S.built = []; S.byId = new Map();
+    for (const r of S.recs) {
+      r.user = S.user[r.id] || (S.user[r.id] = {});
+      const b = U.makeBuilding(r, CFG);
+      if (b) { S.built.push(b); S.byId.set(b.id, b); }
+    }
+    aktualisieren();
+  }
+  function baueEins(id) {
+    const r = S.recs.find((x) => x.id === id); if (!r) return;
+    const b = U.makeBuilding(r, CFG);
+    const i = S.built.findIndex((x) => x.id === id);
+    if (b && i >= 0) { S.built[i] = b; S.byId.set(id, b); }
+    aktualisieren();
+  }
+
+  // ---------------------------------------------------------------- Anzeige-Aktualisierung
+  function zaehlen() {
+    const z = { gesamt: S.built.length, unsicher: 0, fehlt: 0, manuell: 0, ok: 0, export: 0 };
+    S.built.forEach((b) => { const s = b.props.status; if (s === 'Dachform unsicher') z.unsicher++; else if (s === 'Höhe fehlt') z.fehlt++; else if (s === 'manuell') z.manuell++; else z.ok++; if (b.material === 'export') z.export++; });
+    return z;
+  }
+  function aktualisieren() {
+    $('dropHinweis').style.display = S.built.length ? 'none' : 'flex';
+    const z = zaehlen();
+    $('zaehler').innerHTML = z.gesamt ? '<b>' + z.gesamt + '</b> Gebäude · <span class="chip gelb">' + z.unsicher + ' Dachform unsicher</span> <span class="chip orange">' + z.fehlt + ' Höhe fehlt</span> <span class="chip blau">' + z.manuell + ' manuell</span>' : 'Noch keine Gebäude geladen.';
+    meldung('pruefMeldung', z.gesamt ? (z.unsicher ? z.unsicher + ' Gebäude brauchen eine Dachform-Auswahl (gelb). Klicke ein Gebäude an oder nutze den Knopf.' : 'Keine offenen Dachform-Fragen.') : '', z.unsicher ? 'warn' : 'ok');
+    $('naechstes').disabled = !z.unsicher;
+    ['btnGLB', 'btnCSV', 'btnSTL'].forEach((i) => { $(i).disabled = !z.gesamt; });
+    stlInfo();
+    listeZeichnen();
+    gl.setData();
+    M.dirty = true;
+    zeigeDetails();
+  }
+  function stlInfo() {
+    if (!S.built.length) { $('stlInfo').textContent = ''; return; }
+    const mass = parseFloat($('massstab').value), bett = parseFloat($('bett').value);
+    const mn = [Infinity, Infinity], mx = [-Infinity, -Infinity];
+    S.built.forEach((b) => b.V.forEach((v) => { for (let k = 0; k < 2; k++) { if (v[k] < mn[k]) mn[k] = v[k]; if (v[k] > mx[k]) mx[k] = v[k]; } }));
+    const bx = ((mx[0] - mn[0]) * 1000) / mass, by = ((mx[1] - mn[1]) * 1000) / mass;
+    let t = 'Größe bei 1:' + mass + ': ' + bx.toFixed(0) + ' x ' + by.toFixed(0) + ' mm.';
+    if (Math.max(bx, by) > bett) t += ' Passt nicht auf ein Druckbett von ' + bett + ' mm. Nötig wäre mindestens 1:' + Math.ceil(((Math.max(mx[0] - mn[0], mx[1] - mn[1]) * 1000) / bett) / 10) * 10 + ' oder eine Teilung in Kacheln.';
+    $('stlInfo').textContent = t;
+    $('stlInfo').className = 'meldung ' + (Math.max(bx, by) > bett ? 'warn' : '');
+  }
+
+  // ---------------------------------------------------------------- Liste
+  function listeZeichnen() {
+    const f = $('filter').value;
+    const rows = S.built.filter((b) => f === 'alle' || (f === 'unsicher' && b.props.status === 'Dachform unsicher') || (f === 'fehlt' && b.props.status === 'Höhe fehlt') || (f === 'manuell' && b.props.status === 'manuell') || (f === 'export' && b.material === 'export'));
+    const rang = { 'Dachform unsicher': 0, 'Höhe fehlt': 1, manuell: 2, ok: 3 };
+    rows.sort((a, b) => (rang[a.props.status] - rang[b.props.status]) || a.id.localeCompare(b.id));
+    const fmt = (v) => (v === null || v === undefined ? '–' : String(v).replace('.', ','));
+    $('listeBody').innerHTML = rows.map((b) => {
+      const p = b.props;
+      const cls = p.status === 'Dachform unsicher' ? 'gelb' : p.status === 'Höhe fehlt' ? 'orange' : p.status === 'manuell' ? 'blau' : 'grau';
+      return '<tr data-id="' + esc(b.id) + '" class="' + (b.id === S.sel ? 'sel' : '') + '"><td>' + esc(p.name || b.id) + '</td><td class="z">' + fmt(p.laenge_m) + '</td><td class="z">' + fmt(p.breite_m) + '</td><td class="z">' + fmt(p.traufhoehe_m) + '</td><td class="z">' + fmt(p.firsthoehe_m) + '</td><td>' + esc(p.dachform) + '</td><td><span class="chip ' + cls + '">' + esc(p.status) + '</span></td></tr>';
+    }).join('');
+    $('listeAnzahl').textContent = rows.length + ' von ' + S.built.length;
+  }
+  $('filter').addEventListener('change', listeZeichnen);
+  $('listeBody').addEventListener('click', (e) => { const tr = e.target.closest('tr'); if (tr) waehle(tr.dataset.id, true); });
+
+  // ---------------------------------------------------------------- Auswahl und Details
+  const ICON = {
+    flat: '<svg viewBox="0 0 40 26"><rect x="6" y="8" width="28" height="14" fill="#fff" stroke="#6b6256"/></svg>',
+    gabled: '<svg viewBox="0 0 40 26"><path d="M6 22V12L20 3l14 9v10z" fill="#fff" stroke="#6b6256"/></svg>',
+    hipped: '<svg viewBox="0 0 40 26"><path d="M6 22V13l7-9h14l7 9v9z" fill="#fff" stroke="#6b6256"/></svg>',
+    pyramidal: '<svg viewBox="0 0 40 26"><path d="M8 22V14L20 3l12 11v8z" fill="#fff" stroke="#6b6256"/><path d="M20 3v19" stroke="#6b6256"/></svg>',
+    skillion: '<svg viewBox="0 0 40 26"><path d="M6 22V14L34 5v17z" fill="#fff" stroke="#6b6256"/></svg>',
+  };
+  function waehle(id, ausListe) {
+    S.sel = id;
+    gl.setSelected();
+    zeigeDetails();
+    listeZeichnen();
+    M.dirty = true;
+    if (ausListe) gl.fokus(id);
+  }
+  function zeigeDetails() {
+    const el = $('details');
+    const b = S.sel ? S.byId.get(S.sel) : null;
+    if (!b) { el.innerHTML = '<h3>Gebäude</h3><p class="leise">Klicke ein Gebäude in der Karte, im 3D-Modell oder in der Liste an.</p>'; return; }
+    const p = b.props, rec = S.recs.find((r) => r.id === b.id), u = rec.user;
+    const fmt = (v, e) => (v === null || v === undefined || v === '' ? '<span class="leise">–</span>' : esc(String(v).replace('.', ',')) + (e ? ' ' + e : ''));
+    let h = '<h3>' + esc(p.name || b.id) + '</h3>';
+    h += '<table class="eig">';
+    [['Länge', fmt(p.laenge_m, 'm')], ['Breite', fmt(p.breite_m, 'm')], ['Traufhöhe', fmt(p.traufhoehe_m, 'm')], ['Firsthöhe', fmt(p.firsthoehe_m, 'm')], ['Dachform', fmt(p.dachform)],
+      ['Dachform-Quelle', fmt(p.dachform_quelle)], ['Höhenquelle', fmt(p.hoehenquelle)], ['Grundfläche', fmt(p.grundflaeche_m2, 'm²')], ['Geschosse (OSM)', fmt(p.geschosse)], ['Gebäudeart', fmt(p.gebaeudeart)], ['OSM-Objekt', fmt(p.osm_id)], ['Status', '<b>' + esc(p.status) + '</b>']]
+      .forEach((r) => { h += '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>'; });
+    h += '</table>';
+    if (p.hinweise) h += '<div class="hinweis">' + esc(p.hinweise) + '</div>';
+
+    // Dachform-Auswahl
+    h += '<h4>' + (b.uncertain ? 'Dachform unsicher: bitte wählen' : 'Dachform ändern') + '</h4><div class="dachwahl">';
+    const cand = b.candidates && b.candidates.length ? b.candidates : ['flat', 'gabled', 'hipped', 'pyramidal', 'skillion'];
+    cand.forEach((c, i) => {
+      const aktiv = u.shape === c || (!u.shape && !b.uncertain && b.shape === c);
+      h += '<button class="dach ' + (aktiv ? 'aktiv' : '') + '" data-shape="' + c + '">' + ICON[c] + '<span>' + U.DACH_NAMEN[c] + '</span>' + (i === 0 && b.uncertain ? '<em>Vorschlag</em>' : '') + '</button>';
+    });
+    h += '</div>';
+    if (u.shape) h += '<button class="klein" data-aktion="shapeReset">Auswahl zurücknehmen</button>';
+    if (b.shape === 'skillion') {
+      h += '<div class="zeile"><span>Tiefe Seite:</span>' + ['N', 'O', 'S', 'W'].map((d) => '<button class="klein ' + (u.lowSide === d ? 'aktiv' : '') + '" data-low="' + d + '">' + d + '</button>').join('') + '</div>';
+    }
+    if (['gabled', 'hipped'].includes(b.shape)) h += '<div class="zeile"><label><input type="checkbox" id="quer" ' + (u.across ? 'checked' : '') + '> Firstrichtung drehen</label></div>';
+
+    // Höhen
+    h += '<h4>Höhen (Meter)</h4><div class="hoehen">';
+    h += '<label>Firsthöhe<input id="hFirst" type="text" value="' + (b.first !== null && b.first !== undefined ? String(Math.round(b.first * 100) / 100).replace('.', ',') : '') + '"></label>';
+    h += '<label>Traufhöhe<input id="hEave" type="text" value="' + (b.eave !== null && b.eave !== undefined ? String(Math.round(b.eave * 100) / 100).replace('.', ',') : '') + '"></label>';
+    h += '</div><div class="zeile"><button class="klein" data-aktion="hoehe">Höhen übernehmen</button>' + (u.first !== undefined ? '<button class="klein" data-aktion="hoeheReset">zurücksetzen</button>' : '') + '</div>';
+    if (b.needsEave) {
+      h += '<div class="zeile"><label>Dachhöhe (First minus Traufe)<input id="hRoof" type="text" value="' + String(u.roofH !== undefined ? u.roofH : 3).replace('.', ',') + '"></label><button class="klein" data-aktion="roof">Übernehmen</button></div>';
+    }
+    el.innerHTML = h;
+  }
+  function numFeld(id) { const v = parseFloat(String($(id).value).replace(',', '.')); return isFinite(v) ? v : null; }
+  $('details').addEventListener('click', (e) => {
+    const b = S.sel ? S.byId.get(S.sel) : null; if (!b) return;
+    const rec = S.recs.find((r) => r.id === b.id), u = rec.user;
+    const t = e.target.closest('button'); if (!t) return;
+    if (t.dataset.shape) {
+      u.shape = t.dataset.shape;
+      if (u.shape !== 'flat' && u.shape !== undefined && b.needsEave === false && b.eave === null) { /* nichts */ }
+      if (u.shape !== 'flat' && (b.eave === null || b.eave === undefined) && u.roofH === undefined) { u.roofH = 3; u.roofHDefault = true; }
+      baueEins(b.id);
+    } else if (t.dataset.aktion === 'shapeReset') { delete u.shape; delete u.lowSide; delete u.across; baueEins(b.id); }
+    else if (t.dataset.low) { u.lowSide = t.dataset.low; baueEins(b.id); }
+    else if (t.dataset.aktion === 'hoehe') {
+      const f = numFeld('hFirst'), tr = numFeld('hEave');
+      if (f === null || f <= 0) { meldung('pruefMeldung', 'Bitte eine Firsthöhe größer 0 eingeben.', 'warn'); return; }
+      if (tr !== null && tr >= f) { meldung('pruefMeldung', 'Die Traufhöhe muss kleiner als die Firsthöhe sein.', 'warn'); return; }
+      u.first = f; u.eave = tr; baueEins(b.id);
+    } else if (t.dataset.aktion === 'hoeheReset') { delete u.first; delete u.eave; baueEins(b.id); }
+    else if (t.dataset.aktion === 'roof') {
+      const r = numFeld('hRoof');
+      if (r === null || r <= 0 || r >= (b.first || 0)) { meldung('pruefMeldung', 'Die Dachhöhe muss größer 0 und kleiner als die Firsthöhe sein.', 'warn'); return; }
+      u.roofH = r; u.roofHDefault = true; baueEins(b.id);
+    }
+  });
+  $('details').addEventListener('change', (e) => {
+    if (e.target.id === 'quer') { const b = S.byId.get(S.sel); const rec = S.recs.find((r) => r.id === b.id); rec.user.across = e.target.checked; baueEins(b.id); }
+  });
+  $('naechstes').addEventListener('click', () => {
+    const offen = S.built.filter((b) => b.props.status === 'Dachform unsicher');
+    if (!offen.length) return;
+    const i = offen.findIndex((b) => b.id === S.sel);
+    const n = offen[(i + 1) % offen.length];
+    wechselTab('d3'); waehle(n.id, true);
+  });
+
+  // ---------------------------------------------------------------- 3D-Ansicht (WebGL)
+  const gl = (function () {
+    const cv = $('ansicht3d');
+    let g = null, prog = null, bufs = {}, n = 0, owner = null, ranges = [], pos = null, cols = null, bounds = null, dirty = true;
+    const cam = { yaw: -1.0, pitch: 0.7, dist: 500, target: [0, 0, 0] };
+    const FOV = 45 * Math.PI / 180;
+    function init() {
+      try { g = cv.getContext('webgl', { antialias: true }) || cv.getContext('experimental-webgl'); } catch (e) { g = null; }
+      if (!g) { $('glFehler').style.display = 'block'; return false; }
+      const vs = 'attribute vec3 aP;attribute vec3 aN;attribute vec3 aC;uniform mat4 uM;varying vec3 vN;varying vec3 vC;void main(){vN=aN;vC=aC;gl_Position=uM*vec4(aP,1.0);}';
+      const fs = 'precision mediump float;varying vec3 vN;varying vec3 vC;void main(){vec3 L=normalize(vec3(-0.45,-0.6,0.8));float d=max(dot(normalize(vN),L),0.0);float h=0.5+0.5*normalize(vN).z;vec3 c=vC*(0.38+0.42*h*0.6+0.55*d);gl_FragColor=vec4(c,1.0);}';
+      const sh = (t, s) => { const o = g.createShader(t); g.shaderSource(o, s); g.compileShader(o); if (!g.getShaderParameter(o, g.COMPILE_STATUS)) throw new Error(g.getShaderInfoLog(o)); return o; };
+      prog = g.createProgram(); g.attachShader(prog, sh(g.VERTEX_SHADER, vs)); g.attachShader(prog, sh(g.FRAGMENT_SHADER, fs)); g.linkProgram(prog);
+      bufs = { p: g.createBuffer(), n: g.createBuffer(), c: g.createBuffer() };
+      g.enable(g.DEPTH_TEST);
+      return true;
+    }
+    const ok = init();
+    function mulM(a, b) { const o = new Array(16); for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { let s = 0; for (let k = 0; k < 4; k++) s += a[k * 4 + j] * b[i * 4 + k]; o[i * 4 + j] = s; } return o; }
+    function eyePos() { return [cam.target[0] + cam.dist * Math.cos(cam.pitch) * Math.cos(cam.yaw), cam.target[1] + cam.dist * Math.cos(cam.pitch) * Math.sin(cam.yaw), cam.target[2] + cam.dist * Math.sin(cam.pitch)]; }
+    function basis() {
+      const e = eyePos(); let f = [cam.target[0] - e[0], cam.target[1] - e[1], cam.target[2] - e[2]]; const fl = Math.hypot(...f); f = f.map((x) => x / fl);
+      let r = [f[1] * 1 - f[2] * 0, f[2] * 0 - f[0] * 1, 0]; const rl = Math.hypot(...r); r = r.map((x) => x / rl);
+      const u = [r[1] * f[2] - r[2] * f[1], r[2] * f[0] - r[0] * f[2], r[0] * f[1] - r[1] * f[0]];
+      return { e, f, r, u };
+    }
+    function matrix() {
+      const { e, f, r, u } = basis();
+      const asp = cv.clientWidth / Math.max(1, cv.clientHeight);
+      const near = Math.max(0.5, cam.dist / 200), far = cam.dist * 20 + 5000;
+      const t = 1 / Math.tan(FOV / 2);
+      const P = [t / asp, 0, 0, 0, 0, t, 0, 0, 0, 0, (far + near) / (near - far), -1, 0, 0, (2 * far * near) / (near - far), 0];
+      const V = [r[0], u[0], -f[0], 0, r[1], u[1], -f[1], 0, r[2], u[2], -f[2], 0, -(r[0] * e[0] + r[1] * e[1] + r[2] * e[2]), -(u[0] * e[0] + u[1] * e[1] + u[2] * e[2]), f[0] * e[0] + f[1] * e[1] + f[2] * e[2], 1];
+      return mulM(P, V);
+    }
+    function farbe(b, sel) {
+      if (sel) return [0.176, 0.365, 0.388];
+      const c = U.MAT[b.material] || U.MAT.ok; return c;
+    }
+    function setData() {
+      if (!ok) return;
+      const bs = S.built; let tris = 0; bs.forEach((b) => { tris += b.T.length; });
+      const P = new Float32Array((tris + 2) * 9), N = new Float32Array((tris + 2) * 9);
+      cols = new Float32Array((tris + 2) * 9); ranges = []; owner = [];
+      let o = 0;
+      const mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
+      bs.forEach((b, bi) => {
+        const start = o;
+        b.T.forEach((t) => {
+          const a = b.V[t[0]], c = b.V[t[1]], d = b.V[t[2]];
+          const ux = c[0] - a[0], uy = c[1] - a[1], uz = c[2] - a[2], vx = d[0] - a[0], vy = d[1] - a[1], vz = d[2] - a[2];
+          let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx; const l = Math.hypot(nx, ny, nz) || 1; nx /= l; ny /= l; nz /= l;
+          [a, c, d].forEach((v) => { P[o * 3] = v[0]; P[o * 3 + 1] = v[1]; P[o * 3 + 2] = v[2]; N[o * 3] = nx; N[o * 3 + 1] = ny; N[o * 3 + 2] = nz; o++; for (let k = 0; k < 3; k++) { if (v[k] < mn[k]) mn[k] = v[k]; if (v[k] > mx[k]) mx[k] = v[k]; } });
+          owner.push(bi);
+        });
+        ranges.push([start, o]);
+      });
+      bounds = bs.length ? { mn, mx } : null;
+      // Boden
+      const ext = bounds ? Math.max(mx[0] - mn[0], mx[1] - mn[1]) * 0.8 + 50 : 500;
+      const cx = bounds ? (mn[0] + mx[0]) / 2 : 0, cy = bounds ? (mn[1] + mx[1]) / 2 : 0;
+      const gq = [[-1, -1], [1, -1], [1, 1], [-1, -1], [1, 1], [-1, 1]];
+      gq.forEach((q) => { P[o * 3] = cx + q[0] * ext; P[o * 3 + 1] = cy + q[1] * ext; P[o * 3 + 2] = -0.05; N[o * 3 + 2] = 1; o++; });
+      n = o; pos = P;
+      g.bindBuffer(g.ARRAY_BUFFER, bufs.p); g.bufferData(g.ARRAY_BUFFER, P.subarray(0, n * 3), g.STATIC_DRAW);
+      g.bindBuffer(g.ARRAY_BUFFER, bufs.n); g.bufferData(g.ARRAY_BUFFER, N.subarray(0, n * 3), g.STATIC_DRAW);
+      setSelected();
+      if (bounds && !setData.fit) { fit(); setData.fit = true; }
+      if (!bounds) setData.fit = false;
+      dirty = true;
+    }
+    function setSelected() {
+      if (!ok || !cols) return;
+      S.built.forEach((b, bi) => {
+        const c = farbe(b, b.id === S.sel);
+        for (let i = ranges[bi][0]; i < ranges[bi][1]; i++) { cols[i * 3] = c[0]; cols[i * 3 + 1] = c[1]; cols[i * 3 + 2] = c[2]; }
+      });
+      for (let i = n - 6; i < n; i++) { cols[i * 3] = 0.96; cols[i * 3 + 1] = 0.94; cols[i * 3 + 2] = 0.90; }
+      g.bindBuffer(g.ARRAY_BUFFER, bufs.c); g.bufferData(g.ARRAY_BUFFER, cols.subarray(0, n * 3), g.STATIC_DRAW);
+      dirty = true;
+    }
+    function fit() {
+      if (!bounds) return;
+      cam.target = [(bounds.mn[0] + bounds.mx[0]) / 2, (bounds.mn[1] + bounds.mx[1]) / 2, (bounds.mn[2] + bounds.mx[2]) / 2];
+      cam.dist = Math.max(60, Math.max(bounds.mx[0] - bounds.mn[0], bounds.mx[1] - bounds.mn[1]) * 1.3);
+      dirty = true;
+    }
+    function fokus(id) {
+      const i = S.built.findIndex((b) => b.id === id); if (i < 0 || !ranges[i]) return;
+      const mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
+      for (let k = ranges[i][0]; k < ranges[i][1]; k++) for (let a = 0; a < 3; a++) { const v = pos[k * 3 + a]; if (v < mn[a]) mn[a] = v; if (v > mx[a]) mx[a] = v; }
+      cam.target = [(mn[0] + mx[0]) / 2, (mn[1] + mx[1]) / 2, (mn[2] + mx[2]) / 2];
+      cam.dist = Math.max(40, Math.max(mx[0] - mn[0], mx[1] - mn[1]) * 3);
+      dirty = true;
+    }
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      const w = Math.round(cv.clientWidth * dpr), h = Math.round(cv.clientHeight * dpr);
+      if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; dirty = true; }
+    }
+    function draw() {
+      if (!ok) return;
+      resize(); dirty = false;
+      g.viewport(0, 0, cv.width, cv.height);
+      g.clearColor(0.984, 0.969, 0.945, 1); g.clear(g.COLOR_BUFFER_BIT | g.DEPTH_BUFFER_BIT);
+      if (!n) return;
+      g.useProgram(prog);
+      g.uniformMatrix4fv(g.getUniformLocation(prog, 'uM'), false, new Float32Array(matrix()));
+      [['aP', bufs.p], ['aN', bufs.n], ['aC', bufs.c]].forEach(([nm, bf]) => { const l = g.getAttribLocation(prog, nm); g.bindBuffer(g.ARRAY_BUFFER, bf); g.enableVertexAttribArray(l); g.vertexAttribPointer(l, 3, g.FLOAT, false, 0, 0); });
+      g.drawArrays(g.TRIANGLES, 0, n);
+    }
+    function pick(px, py) {
+      if (!n) return null;
+      const { e, f, r, u } = basis();
+      const asp = cv.clientWidth / Math.max(1, cv.clientHeight), th = Math.tan(FOV / 2);
+      const nx = (px / cv.clientWidth) * 2 - 1, ny = 1 - (py / cv.clientHeight) * 2;
+      const d = [f[0] + nx * th * asp * r[0] + ny * th * u[0], f[1] + nx * th * asp * r[1] + ny * th * u[1], f[2] + nx * th * asp * r[2] + ny * th * u[2]];
+      const dl = Math.hypot(...d); d[0] /= dl; d[1] /= dl; d[2] /= dl;
+      let best = Infinity, who = null;
+      for (let t = 0; t < owner.length; t++) {
+        const i = t * 9;
+        const e1 = [pos[i + 3] - pos[i], pos[i + 4] - pos[i + 1], pos[i + 5] - pos[i + 2]], e2 = [pos[i + 6] - pos[i], pos[i + 7] - pos[i + 1], pos[i + 8] - pos[i + 2]];
+        const p = [d[1] * e2[2] - d[2] * e2[1], d[2] * e2[0] - d[0] * e2[2], d[0] * e2[1] - d[1] * e2[0]];
+        const det = e1[0] * p[0] + e1[1] * p[1] + e1[2] * p[2];
+        if (Math.abs(det) < 1e-12) continue;
+        const s = [e[0] - pos[i], e[1] - pos[i + 1], e[2] - pos[i + 2]];
+        const uu = (s[0] * p[0] + s[1] * p[1] + s[2] * p[2]) / det; if (uu < 0 || uu > 1) continue;
+        const q = [s[1] * e1[2] - s[2] * e1[1], s[2] * e1[0] - s[0] * e1[2], s[0] * e1[1] - s[1] * e1[0]];
+        const vv = (d[0] * q[0] + d[1] * q[1] + d[2] * q[2]) / det; if (vv < 0 || uu + vv > 1) continue;
+        const tt = (e2[0] * q[0] + e2[1] * q[1] + e2[2] * q[2]) / det;
+        if (tt > 0 && tt < best) { best = tt; who = owner[t]; }
+      }
+      return who === null ? null : S.built[who].id;
+    }
+    // Maus
+    let drag = null;
+    cv.addEventListener('contextmenu', (e) => e.preventDefault());
+    cv.addEventListener('pointerdown', (e) => { cv.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY, moved: false, pan: e.button === 2 || e.shiftKey }; });
+    cv.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if (Math.abs(dx) + Math.abs(dy) > 3) drag.moved = true;
+      if (drag.pan) {
+        const { r, u } = basis(); const k = (cam.dist * 2 * Math.tan(FOV / 2)) / cv.clientHeight;
+        for (let a = 0; a < 3; a++) cam.target[a] += (-dx * r[a] + dy * u[a]) * k;
+      } else { cam.yaw -= dx * 0.006; cam.pitch = Math.max(0.05, Math.min(1.5, cam.pitch + dy * 0.006)); }
+      drag.x = e.clientX; drag.y = e.clientY; dirty = true;
+    });
+    cv.addEventListener('pointerup', (e) => {
+      const d = drag; drag = null;
+      if (d && !d.moved) { const b = cv.getBoundingClientRect(); waehle(pick(e.clientX - b.left, e.clientY - b.top)); }
+    });
+    cv.addEventListener('wheel', (e) => { e.preventDefault(); cam.dist = Math.max(10, Math.min(20000, cam.dist * Math.exp(e.deltaY * 0.0012))); dirty = true; }, { passive: false });
+    $('ansichtZurueck').addEventListener('click', () => { fit(); });
+    function loop() { if (dirty) draw(); requestAnimationFrame(loop); }
+    requestAnimationFrame(loop);
+    return { setData, setSelected, fokus, redraw: () => { dirty = true; }, ok, cam, pick: (x, y) => pick(x, y) };
+  })();
+
+  // ---------------------------------------------------------------- Tabs
+  function wechselTab(t) {
+    ['karte', 'd3', 'liste'].forEach((k) => { $('tab_' + k).classList.toggle('aktiv', k === t); $('seite_' + k).classList.toggle('aktiv', k === t); });
+    M.dirty = true; gl.redraw();
+  }
+  ['karte', 'd3', 'liste'].forEach((k) => $('tab_' + k).addEventListener('click', () => wechselTab(k)));
+  window.addEventListener('resize', () => { M.dirty = true; gl.redraw(); });
+  setInterval(() => { if (M.dirty) mapDraw(); }, 60);
+
+  // ---------------------------------------------------------------- Export-Knöpfe
+  function meta() { return { gebiet: 'Umgebungsmodell', einheit: 'Meter', achsen: 'glTF: x = Ost, y = oben, z = Süd; Ursprung = Gebietsmitte', quelle: '© OpenStreetMap-Mitwirkende (ODbL); Höhen: ' + (S.exp ? 'TopoExport-Export ' + S.exp.name : 'OSM/manuell'), hinweis: 'Fehlende Höhen = flache Grundplatte' }; }
+  $('btnGLB').addEventListener('click', () => speichern('umgebungsmodell.glb', U.buildGLB(S.built, meta())));
+  $('btnCSV').addEventListener('click', () => speichern('gebaeude.csv', U.buildCSV(S.built)));
+  $('btnSTL').addEventListener('click', () => {
+    const mass = parseFloat($('massstab').value);
+    if (!(mass > 0)) { meldung('exportMeldung', 'Bitte einen Maßstab größer 0 eingeben, z. B. 500 für 1:500.', 'warn'); return; }
+    const bad = S.built.filter((b) => !b.props.mesh_geschlossen).length;
+    const r = U.buildSTL(S.built, 1000 / mass);
+    speichern('umgebungsmodell_1zu' + mass + '.stl', r.data);
+    if (bad) meldung('exportMeldung', 'ACHTUNG: ' + bad + ' Gebäude sind nicht wasserdicht.', 'warn');
+  });
+  $('massstab').addEventListener('input', stlInfo);
+  $('bett').addEventListener('input', stlInfo);
+
+  // ---------------------------------------------------------------- Beispiel und Voreinstellung
+  $('btnDemo').addEventListener('click', () => {
+    const d = U.demo();
+    S.area = { lat: d.lat, lon: d.lon, w: 500, l: 400 }; feldSync();
+    S.user = {};
+    osmUebernehmen(d.osm, 'Beispieldaten');
+    const res = U.parseOBJ(d.obj);
+    S.exp = { name: 'Beispiel-Export.obj', groups: res.groups };
+    verarbeiten();
+    wechselTab('d3');
+  });
+
+  // Speichern über die Plattform (nur veröffentlichte Seite)
+  try {
+    if (window.claude && window.claude.use) window.claude.use('downloads').then((d) => { if (d) { S.dl = d; $('hinweisZip').style.display = 'block'; } }).catch(() => {});
+  } catch (e) { /* ignorieren */ }
+
+  feldSync(); aktualisieren();
+  window.__S = S; window.__gl = gl; window.__waehle = waehle;
+})();
+</script>
+</body>
+</html>
