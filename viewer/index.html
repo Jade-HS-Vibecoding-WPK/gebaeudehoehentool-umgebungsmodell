@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Umgebungsmodell – Betrachter</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  html, body { margin: 0; height: 100%; font-family: system-ui, Segoe UI, Arial, sans-serif; background: #e9eef2; color: #1d2630; }
+  #szene { position: fixed; inset: 0; }
+  .panel { position: fixed; background: rgba(255,255,255,.94); border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,.18); padding: 12px 14px; font-size: 14px; }
+  #info { top: 14px; right: 14px; width: 310px; max-height: calc(100% - 60px); overflow: auto; }
+  #info h2 { margin: 0 0 8px; font-size: 16px; }
+  #info table { border-collapse: collapse; width: 100%; }
+  #info td { padding: 3px 0; vertical-align: top; }
+  #info td:first-child { color: #5b6773; padding-right: 10px; white-space: nowrap; }
+  .warn { color: #b3470a; font-weight: 600; }
+  #legende { left: 14px; bottom: 34px; }
+  #legende div { display: flex; align-items: center; gap: 8px; margin: 3px 0; }
+  .farbe { width: 14px; height: 14px; border-radius: 3px; border: 1px solid #0003; }
+  #titel { top: 14px; left: 14px; }
+  #titel b { font-size: 16px; }
+  #quelle { left: 0; right: 0; bottom: 0; text-align: center; font-size: 12px; color: #4a5560; padding: 6px; background: rgba(255,255,255,.75); }
+  #status { top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; max-width: 420px; }
+  #status.versteckt { display: none; }
+  button, label.knopf { font: inherit; padding: 6px 10px; border-radius: 6px; border: 1px solid #9aa7b3; background: #fff; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="szene"></div>
+
+<div id="titel" class="panel"><b>Umgebungsmodell</b><br><span id="gebiet">wird geladen …</span><br>
+  <small>Ziehen = drehen · Rechte Maustaste = verschieben · Mausrad = zoomen · Klick auf Gebäude = Maße</small></div>
+
+<div id="info" class="panel"><h2>Gebäude anklicken</h2><div>Klicke ein Gebäude im Modell, um seine Maße zu sehen.</div></div>
+
+<div id="legende" class="panel">
+  <div><span class="farbe" style="background:#ccc7bd"></span> Maße aus OSM / manuell</div>
+  <div><span class="farbe" style="background:#e6cc4d"></span> mit Hinweis (z. B. Dach vereinfacht)</div>
+  <div><span class="farbe" style="background:#f28019"></span> Höhe fehlt (flache Grundplatte)</div>
+</div>
+
+<div id="status" class="panel">
+  <div id="statustext">Lade ../output/umgebungsmodell.glb …</div>
+  <p><label class="knopf">GLB-Datei selbst auswählen<input id="datei" type="file" accept=".glb" hidden></label></p>
+</div>
+
+<div id="quelle">Gebäudedaten: © OpenStreetMap-Mitwirkende (ODbL) · Maße in Metern</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const behaelter = document.getElementById('szene');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+behaelter.appendChild(renderer.domElement);
+
+const szene = new THREE.Scene();
+szene.background = new THREE.Color(0xe9eef2);
+const kamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 20000);
+kamera.position.set(400, 500, 600);
+const steuerung = new OrbitControls(kamera, renderer.domElement);
+steuerung.maxPolarAngle = Math.PI / 2 - 0.02;
+
+szene.add(new THREE.HemisphereLight(0xffffff, 0x9aa5b1, 1.1));
+const sonne = new THREE.DirectionalLight(0xffffff, 1.6);
+sonne.position.set(-300, 600, 200);
+szene.add(sonne);
+
+const boden = new THREE.GridHelper(2000, 100, 0x8a97a3, 0xc3ccd4);
+szene.add(boden);
+
+let modell = null;
+let ausgewaehlt = null;
+const kantenMaterial = new THREE.LineBasicMaterial({ color: 0x3b4650 });
+
+const FELDER = [
+  ['name', 'Name'], ['id', 'ID'], ['osm_id', 'OSM-Objekt'], ['gebaeudeart', 'Gebäudeart'],
+  ['laenge_m', 'Länge', 'm'], ['breite_m', 'Breite', 'm'],
+  ['traufhoehe_m', 'Traufhöhe', 'm'], ['firsthoehe_m', 'Firsthöhe', 'm'],
+  ['dachform', 'Dachform'], ['geschosse', 'Geschosse'], ['grundflaeche_m2', 'Grundfläche', 'm²'],
+  ['status', 'Status'], ['hoehenquelle', 'Höhenquelle'], ['hinweise', 'Hinweise'], ['mesh_geschlossen', 'Wasserdicht'],
+];
+
+function zeigeInfo(daten) {
+  const feld = document.getElementById('info');
+  let html = '<h2>' + (daten.name || daten.id) + '</h2><table>';
+  for (const [schluessel, titel, einheit] of FELDER) {
+    let wert = daten[schluessel];
+    if (schluessel === 'name' && !wert) continue;
+    if (schluessel === 'hinweise' && !wert) continue;
+    let klasse = '';
+    if (wert === null || wert === undefined || wert === '') { wert = '– (unbekannt)'; klasse = 'warn'; }
+    else if (typeof wert === 'boolean') wert = wert ? 'ja' : 'nein';
+    else if (typeof wert === 'number') wert = wert.toLocaleString('de-DE') + (einheit ? ' ' + einheit : '');
+    if (schluessel === 'status' && wert === 'Höhe fehlt') klasse = 'warn';
+    html += '<tr><td>' + titel + '</td><td class="' + klasse + '">' + wert + '</td></tr>';
+  }
+  feld.innerHTML = html + '</table>';
+}
+
+function waehle(mesh) {
+  if (ausgewaehlt) ausgewaehlt.material = ausgewaehlt.userData.__material;
+  ausgewaehlt = mesh;
+  if (mesh) {
+    mesh.userData.__material = mesh.material;
+    const m = mesh.material.clone();
+    m.emissive = new THREE.Color(0x2f6fdf);
+    m.emissiveIntensity = 0.55;
+    mesh.material = m;
+    zeigeInfo(mesh.userData);
+  }
+}
+
+function zeigeModell(gltf) {
+  if (modell) szene.remove(modell);
+  modell = gltf.scene;
+  const meta = (gltf.scene.children[0] && gltf.scene.children[0].userData) || {};
+  document.getElementById('gebiet').textContent = meta.gebiet || '';
+  modell.traverse(o => {
+    if (o.isMesh) {
+      o.add(new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry, 25), kantenMaterial));
+    }
+  });
+  szene.add(modell);
+  const box = new THREE.Box3().setFromObject(modell);
+  const mitte = box.getCenter(new THREE.Vector3());
+  const groesse = box.getSize(new THREE.Vector3());
+  const r = Math.max(groesse.x, groesse.z, 50);
+  steuerung.target.copy(mitte);
+  kamera.position.set(mitte.x + r * 0.6, r * 0.8, mitte.z + r * 0.9);
+  boden.scale.setScalar(Math.max(1, r / 1000));
+  steuerung.update();
+  document.getElementById('status').classList.add('versteckt');
+}
+
+const lader = new GLTFLoader();
+function ladeUrl(url) {
+  lader.load(url, zeigeModell, undefined, () => {
+    document.getElementById('statustext').innerHTML =
+      'Die Datei <code>output/umgebungsmodell.glb</code> konnte nicht geladen werden.<br>' +
+      'Wurde der Betrachter über <code>http://localhost:8000/viewer/</code> gestartet und Schritt 2 ausgeführt?<br>' +
+      'Oder wähle die GLB-Datei unten selbst aus.';
+  });
+}
+ladeUrl('../output/umgebungsmodell.glb');
+
+document.getElementById('datei').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const url = URL.createObjectURL(f);
+  lader.load(url, zeigeModell);
+});
+
+// Klick (nur, wenn die Maus nicht gezogen wurde)
+const strahl = new THREE.Raycaster();
+let start = null;
+renderer.domElement.addEventListener('pointerdown', e => { start = [e.clientX, e.clientY]; });
+renderer.domElement.addEventListener('pointerup', e => {
+  if (!start || Math.hypot(e.clientX - start[0], e.clientY - start[1]) > 4 || !modell) return;
+  const maus = new THREE.Vector2((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+  strahl.setFromCamera(maus, kamera);
+  const treffer = strahl.intersectObject(modell, true).find(t => t.object.isMesh && t.object.userData && t.object.userData.id);
+  waehle(treffer ? treffer.object : null);
+});
+
+window.addEventListener('resize', () => {
+  kamera.aspect = window.innerWidth / window.innerHeight;
+  kamera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+renderer.setAnimationLoop(() => { steuerung.update(); renderer.render(szene, kamera); });
+</script>
+</body>
+</html>
