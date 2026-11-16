@@ -61,3 +61,5 @@ Zusammenarbeit zu zweit, abwechselnd (Annahme, bitte bestätigen).
 ## Lizenz
 
 MIT, siehe Datei `LICENSE`.
+
+
