@@ -1,0 +1,238 @@
+﻿ID;OSM-Objekt;Name;Gebäudeart;Länge [m];Breite [m];Traufhöhe [m];Firsthöhe [m];Dachform;Geschosse;Grundfläche [m²];Status;Höhenquelle;Hinweise;Wasserdicht
+way_31692672;way/31692672;;civic;42,85;27,43;;;flach (Platzhalter);2;944,40;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_32322158;way/32322158;Thales Deutschland GmbH;hotel;50,19;19,67;;;flach (Platzhalter);6;987;Höhe fehlt;;Geschosse laut OSM: 6 (nicht in Meter umgerechnet);ja
+way_32322160;way/32322160;Wattenmeerhaus, UNESCO-Weltnaturerbe Wattenmeer Besucherzentrum Wilhelmshaven;yes;39,41;19,67;;;flach (Platzhalter);;774,90;Höhe fehlt;;;ja
+way_91327814;way/91327814;;yes;26,06;9,87;;;flach (Platzhalter);;257,10;Höhe fehlt;;;ja
+way_101999961;way/101999961;;yes;28,98;13,20;;;flach (Platzhalter);;382,50;Höhe fehlt;;;ja
+way_120183510;way/120183510;Nordfrost;industrial;101,21;62,14;;;flach (Platzhalter);;6052,50;Höhe fehlt;;;ja
+way_173309796;way/173309796;;yes;83,11;38,28;;;flach (Platzhalter);;2306,20;Höhe fehlt;;;ja
+way_186607105;way/186607105;;yes;29,13;9,28;;;flach (Platzhalter);;270,30;Höhe fehlt;;;ja
+way_220758277;way/220758277;;house;39,76;9,54;;;flach (Platzhalter);;365,10;Höhe fehlt;;;ja
+way_220758279;way/220758279;;house;11,26;10,42;;;flach (Platzhalter);2;117;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_220758280;way/220758280;;house;10,70;5,69;;;flach (Platzhalter);2;60,90;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_220758281;way/220758281;;house;32,20;15,88;;;flach (Platzhalter);2;511,20;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_220758282;way/220758282;;house;12,31;10,58;;;flach (Platzhalter);2;130,10;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_220758283;way/220758283;;house;39,02;20,10;;;flach (Platzhalter);;770,10;Höhe fehlt;;;ja
+way_220758284;way/220758284;;garage;15,97;6;;;flach (Platzhalter);;95,80;Höhe fehlt;;;ja
+way_220758285;way/220758285;;house;21,02;11,47;;;flach (Platzhalter);3;241,10;Höhe fehlt;;Geschosse laut OSM: 3 (nicht in Meter umgerechnet);ja
+way_220758286;way/220758286;;house;24,66;11,97;;;flach (Platzhalter);2;295,20;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_220758287;way/220758287;;garage;16,48;9,87;;;flach (Platzhalter);;162,60;Höhe fehlt;;;ja
+way_220758289;way/220758289;;house;14,34;13,82;;;flach (Platzhalter);;198,10;Höhe fehlt;;;ja
+way_220758290;way/220758290;;house;18,31;12,63;;;flach (Platzhalter);3;224,10;Höhe fehlt;;Geschosse laut OSM: 3 (nicht in Meter umgerechnet);ja
+way_220758291;way/220758291;;house;11,43;5,49;;;flach (Platzhalter);2;62,70;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_220758293;way/220758293;;house;30,87;27,86;;;flach (Platzhalter);;542;Höhe fehlt;;;ja
+way_220758294;way/220758294;;house;19,68;11,02;;;flach (Platzhalter);4;216,40;Höhe fehlt;;Geschosse laut OSM: 4 (nicht in Meter umgerechnet);ja
+way_220758295;way/220758295;;garage;20,78;7,43;;;flach (Platzhalter);;154,40;Höhe fehlt;;;ja
+way_220758297;way/220758297;;house;30,29;28,47;;;flach (Platzhalter);5;500;Höhe fehlt;;Geschosse laut OSM: 5 (nicht in Meter umgerechnet);ja
+way_220758298;way/220758298;;garage;33,45;20,78;;;flach (Platzhalter);;375,70;Höhe fehlt;;;ja
+way_230555003;way/230555003;;yes;10,46;8,08;;;flach (Platzhalter);;84,50;Höhe fehlt;;;ja
+way_248053439;way/248053439;;yes;19,48;19,21;;;flach (Platzhalter);;374,10;Höhe fehlt;;;ja
+way_248227881;way/248227881;Fliegerdeich Hotel & Restaurant;yes;23,88;16,80;;;flach (Platzhalter);;373;Höhe fehlt;;;ja
+way_248227884;way/248227884;;government;20,82;11,60;;;flach (Platzhalter);;235,40;Höhe fehlt;;;ja
+way_296060273;way/296060273;;yes;53,97;53,79;;;flach (Platzhalter);;1241,70;Höhe fehlt;;;ja
+way_324084628;way/324084628;Le Patron am Meer;commercial;24,81;18,59;;;flach (Platzhalter);3;458,10;Höhe fehlt;;Geschosse laut OSM: 3 (nicht in Meter umgerechnet);ja
+way_358363821;way/358363821;;industrial;104,07;26,33;;;flach (Platzhalter);;2739,10;Höhe fehlt;;;ja
+way_358363822;way/358363822;Halle 2;industrial;88,86;53,20;;;flach (Platzhalter);;4727,20;Höhe fehlt;;;ja
+way_358363824;way/358363824;Halle 3;industrial;88,85;53,20;;;flach (Platzhalter);;4727;Höhe fehlt;;;ja
+way_358363831;way/358363831;;industrial;104,06;26,33;;;flach (Platzhalter);;2739,40;Höhe fehlt;;;ja
+way_358363835;way/358363835;Halle 4;industrial;88,85;53,20;;;flach (Platzhalter);;4727;Höhe fehlt;;;ja
+way_358363836;way/358363836;;industrial;24,75;13,60;;;flach (Platzhalter);;336,60;Höhe fehlt;;;ja
+way_358363838;way/358363838;;yes;162,68;144,88;;;flach (Platzhalter);;4736,40;Höhe fehlt;;;ja
+way_360489882;way/360489882;;yes;11,75;5,88;;;flach (Platzhalter);;69;Höhe fehlt;;;ja
+way_360489883;way/360489883;;office;197,91;29,81;;;flach (Platzhalter);;3664,40;Höhe fehlt;;;ja
+way_362529126;way/362529126;;service;6,66;5,47;;;flach (Platzhalter);;36,40;Höhe fehlt;;;ja
+way_362529127;way/362529127;;hotel;41,96;5,70;;;flach (Platzhalter);2;238,50;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_362529128;way/362529128;DLRG Wasserrettungsstation Wilhelmshaven;retail;10,76;5,52;;;flach (Platzhalter);1;59,40;Höhe fehlt;;Geschosse laut OSM: 1 (nicht in Meter umgerechnet);ja
+way_362529129;way/362529129;;retail;43,90;7,36;;;flach (Platzhalter);3;323;Höhe fehlt;;Geschosse laut OSM: 3 (nicht in Meter umgerechnet);ja
+way_362529130;way/362529130;;toilets;11,24;9,65;;;flach (Platzhalter);;89,60;Höhe fehlt;;;ja
+way_362529131;way/362529131;;toilets;10,81;9,60;;;flach (Platzhalter);;85,50;Höhe fehlt;;;ja
+way_362529132;way/362529132;;yes;4,56;4,26;;;flach (Platzhalter);;19,40;Höhe fehlt;;;ja
+way_362550500;way/362550500;;hotel;37,07;6,55;;;flach (Platzhalter);2;242,70;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_362612076;way/362612076;;yes;26,58;9,61;;;flach (Platzhalter);;234,10;Höhe fehlt;;;ja
+way_363083924;way/363083924;Minenjagdboot Weilheim;ship;46,25;9,73;;;flach (Platzhalter);;346,90;Höhe fehlt;;;ja
+way_363083929;way/363083929;Unterseeboot U 10;ship;40,93;5,45;;;flach (Platzhalter);;184;Höhe fehlt;;;ja
+way_363083930;way/363083930;Zerstörer Mölders;ship;132,21;16,02;;;flach (Platzhalter);;1550;Höhe fehlt;;;ja
+way_376077207;way/376077207;;yes;14,08;9,06;;;flach (Platzhalter);;127,50;Höhe fehlt;;;ja
+way_376077208;way/376077208;;yes;17,32;15,39;;;flach (Platzhalter);;266,40;Höhe fehlt;;;ja
+way_376077211;way/376077211;;apartments;34,26;11,20;;;flach (Platzhalter);5;383,60;Höhe fehlt;;Geschosse laut OSM: 5 (nicht in Meter umgerechnet);ja
+way_376077222;way/376077222;;office;61,55;12,11;;;flach (Platzhalter);;684,90;Höhe fehlt;;;ja
+way_376077224;way/376077224;;apartments;19,70;17,65;;;flach (Platzhalter);;291,10;Höhe fehlt;;;ja
+way_376077227;way/376077227;;detached;20,60;12,30;;;flach (Platzhalter);;225;Höhe fehlt;;;ja
+way_381425128;way/381425128;;yes;10,59;9,37;;;flach (Platzhalter);;99,20;Höhe fehlt;;;ja
+way_381425129;way/381425129;;yes;10,61;10,54;;;flach (Platzhalter);;111,70;Höhe fehlt;;;ja
+way_381425130;way/381425130;;yes;11,50;11,49;;;flach (Platzhalter);;132,10;Höhe fehlt;;;ja
+way_381425131;way/381425131;;yes;19,93;11,06;;;flach (Platzhalter);;220,30;Höhe fehlt;;;ja
+way_381425132;way/381425132;;yes;20,34;8,79;;;flach (Platzhalter);;178,70;Höhe fehlt;;;ja
+way_381425133;way/381425133;;yes;12,20;8,78;;;flach (Platzhalter);;107,10;Höhe fehlt;;;ja
+way_381425134;way/381425134;;yes;18,73;10,57;;;flach (Platzhalter);;197,40;Höhe fehlt;;;ja
+way_381425135;way/381425135;;yes;18,72;10,86;;;flach (Platzhalter);;203,10;Höhe fehlt;;;ja
+way_381425136;way/381425136;;yes;10,60;7,83;;;flach (Platzhalter);;82,90;Höhe fehlt;;;ja
+way_381425137;way/381425137;;yes;11,30;9,78;;;flach (Platzhalter);;110,40;Höhe fehlt;;;ja
+way_381425138;way/381425138;;yes;14,33;13,33;;;flach (Platzhalter);;191;Höhe fehlt;;;ja
+way_381425141;way/381425141;;yes;18,99;11,52;;;flach (Platzhalter);;218,20;Höhe fehlt;;;ja
+way_381425144;way/381425144;;yes;22,18;13,60;;;flach (Platzhalter);;231,20;Höhe fehlt;;;ja
+way_381425147;way/381425147;;yes;30,49;21,98;;;flach (Platzhalter);;669,90;Höhe fehlt;;;ja
+way_381425150;way/381425150;;yes;21,27;12,21;;;flach (Platzhalter);;199,90;Höhe fehlt;;;ja
+way_381425151;way/381425151;;yes;28,06;11,69;;;flach (Platzhalter);;285,30;Höhe fehlt;;;ja
+way_381425152;way/381425152;;yes;13,07;12,42;;;flach (Platzhalter);;144,50;Höhe fehlt;;;ja
+way_381425153;way/381425153;;yes;18,46;15,61;;;flach (Platzhalter);;256,50;Höhe fehlt;;;ja
+way_381425154;way/381425154;;yes;27,26;21,56;;;flach (Platzhalter);;499,70;Höhe fehlt;;;ja
+way_381425155;way/381425155;;yes;13,45;10,55;;;flach (Platzhalter);;141,90;Höhe fehlt;;;ja
+way_381425156;way/381425156;;yes;21,23;10,55;;;flach (Platzhalter);;224;Höhe fehlt;;;ja
+way_381425157;way/381425157;;yes;10,55;8,93;;;flach (Platzhalter);;94,20;Höhe fehlt;;;ja
+way_381425158;way/381425158;;yes;10,80;10,58;;;flach (Platzhalter);;113,50;Höhe fehlt;;;ja
+way_381425159;way/381425159;;yes;23,60;10,21;;;flach (Platzhalter);;240,80;Höhe fehlt;;;ja
+way_381425160;way/381425160;;yes;15,39;14,26;;;flach (Platzhalter);;219,30;Höhe fehlt;;;ja
+way_381425161;way/381425161;;yes;14,26;6,33;;;flach (Platzhalter);;90,10;Höhe fehlt;;;ja
+way_381425162;way/381425162;;yes;14,26;7,95;;;flach (Platzhalter);;113,40;Höhe fehlt;;;ja
+way_381425163;way/381425163;;yes;14,26;9,31;;;flach (Platzhalter);;132,70;Höhe fehlt;;;ja
+way_381425164;way/381425164;;yes;14,26;6,63;;;flach (Platzhalter);;94,60;Höhe fehlt;;;ja
+way_381425165;way/381425165;;yes;15,56;14,26;;;flach (Platzhalter);;220,60;Höhe fehlt;;;ja
+way_381425680;way/381425680;;yes;9,69;7,39;;;flach (Platzhalter);;71,60;Höhe fehlt;;;ja
+way_381425681;way/381425681;;yes;11,68;8,97;;;flach (Platzhalter);;104,70;Höhe fehlt;;;ja
+way_381425682;way/381425682;;yes;19,02;10,78;;;flach (Platzhalter);;205;Höhe fehlt;;;ja
+way_381425683;way/381425683;;yes;11,68;7,80;;;flach (Platzhalter);;91,10;Höhe fehlt;;;ja
+way_381425684;way/381425684;;yes;19,16;11,37;;;flach (Platzhalter);;217,90;Höhe fehlt;;;ja
+way_381425685;way/381425685;;yes;11,68;11,57;;;flach (Platzhalter);;135,10;Höhe fehlt;;;ja
+way_381425686;way/381425686;;house;16,33;12,02;;;flach (Platzhalter);;196,30;Höhe fehlt;;;ja
+way_381425687;way/381425687;;yes;13,25;9,37;;;flach (Platzhalter);;124,10;Höhe fehlt;;;ja
+way_381425688;way/381425688;;yes;21,87;15,06;;;flach (Platzhalter);;251,20;Höhe fehlt;;;ja
+way_381428855;way/381428855;;yes;32,96;13,83;;;flach (Platzhalter);;322,40;Höhe fehlt;;;ja
+way_381428856;way/381428856;;retail;12,66;11,34;;;flach (Platzhalter);2;143,10;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_381428857;way/381428857;;apartments;12,63;11,16;;;flach (Platzhalter);;140,80;Höhe fehlt;;;ja
+way_381428858;way/381428858;;yes;20,70;8,77;;;flach (Platzhalter);;181,60;Höhe fehlt;;;ja
+way_381428859;way/381428859;;apartments;12,62;11,16;;;flach (Platzhalter);3;140,70;Höhe fehlt;;Geschosse laut OSM: 3 (nicht in Meter umgerechnet);ja
+way_381428860;way/381428860;;yes;16,89;16,84;;;flach (Platzhalter);;193,80;Höhe fehlt;;;ja
+way_381428861;way/381428861;;yes;23,12;11,34;;;flach (Platzhalter);;262;Höhe fehlt;;;ja
+way_381428863;way/381428863;;yes;23,03;11,35;;;flach (Platzhalter);;261,20;Höhe fehlt;;;ja
+way_381428864;way/381428864;;yes;18,74;11,99;;;flach (Platzhalter);;224,70;Höhe fehlt;;;ja
+way_381428865;way/381428865;;yes;19,51;11,99;;;flach (Platzhalter);;233,90;Höhe fehlt;;;ja
+way_381428866;way/381428866;;yes;13,44;12,91;;;flach (Platzhalter);;161;Höhe fehlt;;;ja
+way_381428867;way/381428867;;yes;26,57;11,99;;;flach (Platzhalter);;318,50;Höhe fehlt;;;ja
+way_381428868;way/381428868;;yes;24,12;15,04;;;flach (Platzhalter);;318,30;Höhe fehlt;;;ja
+way_381428869;way/381428869;;yes;11,96;9,62;;;flach (Platzhalter);;115;Höhe fehlt;;;ja
+way_381428870;way/381428870;;yes;16,15;11,94;;;flach (Platzhalter);;192,80;Höhe fehlt;;;ja
+way_381428871;way/381428871;;yes;16,64;11,94;;;flach (Platzhalter);;198,70;Höhe fehlt;;;ja
+way_381428872;way/381428872;;yes;13,72;11,94;;;flach (Platzhalter);;163,80;Höhe fehlt;;;ja
+way_381428873;way/381428873;;yes;13,51;11;;;flach (Platzhalter);;148,60;Höhe fehlt;;;ja
+way_381428874;way/381428874;;yes;19,60;16,56;;;flach (Platzhalter);;272,70;Höhe fehlt;;;ja
+way_381428875;way/381428875;;yes;13,51;6,82;;;flach (Platzhalter);;92,10;Höhe fehlt;;;ja
+way_381428876;way/381428876;;yes;16,69;11,11;;;flach (Platzhalter);;183,60;Höhe fehlt;;;ja
+way_381428877;way/381428877;;yes;13,51;7,05;;;flach (Platzhalter);;95,10;Höhe fehlt;;;ja
+way_381428878;way/381428878;;yes;13,51;8,33;;;flach (Platzhalter);;112,50;Höhe fehlt;;;ja
+way_381428879;way/381428879;;yes;13,51;5,46;;;flach (Platzhalter);;73,70;Höhe fehlt;;;ja
+way_381428880;way/381428880;;yes;13,79;13,51;;;flach (Platzhalter);;186,10;Höhe fehlt;;;ja
+way_382207137;way/382207137;;yes;32,32;29,39;;;flach (Platzhalter);;509,70;Höhe fehlt;;;ja
+way_382207138;way/382207138;;yes;47,68;22,47;;;flach (Platzhalter);;621,60;Höhe fehlt;;;ja
+way_382207139;way/382207139;;yes;24,18;11,62;;;flach (Platzhalter);;281;Höhe fehlt;;;ja
+way_382207140;way/382207140;;yes;23,41;13,06;;;flach (Platzhalter);;305,60;Höhe fehlt;;;ja
+way_382207141;way/382207141;;yes;14,68;10,78;;;flach (Platzhalter);;158,10;Höhe fehlt;;;ja
+way_382207142;way/382207142;;yes;19,90;10,78;;;flach (Platzhalter);;214,40;Höhe fehlt;;;ja
+way_382207143;way/382207143;;yes;28,10;10,45;;;flach (Platzhalter);;293,60;Höhe fehlt;;;ja
+way_382207144;way/382207144;;yes;13,36;12,21;;;flach (Platzhalter);;163;Höhe fehlt;;;ja
+way_382207145;way/382207145;;yes;14,58;11,62;;;flach (Platzhalter);;169,50;Höhe fehlt;;;ja
+way_382207147;way/382207147;;yes;18,87;7,18;;;flach (Platzhalter);;135,50;Höhe fehlt;;;ja
+way_382207148;way/382207148;;yes;13,03;11,89;;;flach (Platzhalter);;154,90;Höhe fehlt;;;ja
+way_382207149;way/382207149;;yes;21,65;13,18;;;flach (Platzhalter);;285,10;Höhe fehlt;;;ja
+way_382207151;way/382207151;;yes;18,21;14,91;;;flach (Platzhalter);;203,50;Höhe fehlt;;;ja
+way_382207152;way/382207152;;yes;13,14;8,53;;;flach (Platzhalter);;72,10;Höhe fehlt;;;ja
+way_382207153;way/382207153;;yes;18,22;14,74;;;flach (Platzhalter);;268,50;Höhe fehlt;;;ja
+way_382207155;way/382207155;;yes;14,74;14,55;;;flach (Platzhalter);;214,40;Höhe fehlt;;;ja
+way_382207156;way/382207156;;yes;18,42;6,11;;;flach (Platzhalter);;112,50;Höhe fehlt;;;ja
+way_382207157;way/382207157;;yes;27,54;7,12;;;flach (Platzhalter);;176,20;Höhe fehlt;;;ja
+way_382207158;way/382207158;;yes;11,29;8,66;;;flach (Platzhalter);;97,70;Höhe fehlt;;;ja
+way_382207159;way/382207159;;apartments;18,37;13,84;;;flach (Platzhalter);4;199,30;Höhe fehlt;;Geschosse laut OSM: 4 (nicht in Meter umgerechnet);ja
+way_382207160;way/382207160;;yes;17,96;9,80;;;flach (Platzhalter);;176,10;Höhe fehlt;;;ja
+way_382207161;way/382207161;;yes;18,48;13,60;;;flach (Platzhalter);;204,40;Höhe fehlt;;;ja
+way_382207162;way/382207162;;yes;18,39;7,25;;;flach (Platzhalter);;131,50;Höhe fehlt;;;ja
+way_382207163;way/382207163;;yes;18,45;10,51;;;flach (Platzhalter);;193,90;Höhe fehlt;;;ja
+way_382207164;way/382207164;;yes;20,58;10,50;;;flach (Platzhalter);;216,10;Höhe fehlt;;;ja
+way_382207165;way/382207165;;yes;18,65;14,06;;;flach (Platzhalter);;261,60;Höhe fehlt;;;ja
+way_382207166;way/382207166;;yes;14,06;12,87;;;flach (Platzhalter);;180,80;Höhe fehlt;;;ja
+way_382207167;way/382207167;;yes;23,77;10,80;;;flach (Platzhalter);;222,90;Höhe fehlt;;;ja
+way_382207168;way/382207168;;yes;17,43;12,81;;;flach (Platzhalter);;223,20;Höhe fehlt;;;ja
+way_382207169;way/382207169;;yes;21,83;12,82;;;flach (Platzhalter);;279,70;Höhe fehlt;;;ja
+way_382207170;way/382207170;;yes;25,42;13,04;;;flach (Platzhalter);;328,20;Höhe fehlt;;;ja
+way_382207171;way/382207171;;yes;16,71;9,81;;;flach (Platzhalter);;163,90;Höhe fehlt;;;ja
+way_382234469;way/382234469;;office;12,51;4,90;;;flach (Platzhalter);;61,30;Höhe fehlt;;;ja
+way_382234474;way/382234474;;office;15,61;10,58;;;flach (Platzhalter);;165;Höhe fehlt;;;ja
+way_382234483;way/382234483;;office;14,89;9,57;;;flach (Platzhalter);;117,60;Höhe fehlt;;;ja
+way_445029128;way/445029128;;yes;16,36;4,73;;;flach (Platzhalter);;77,30;Höhe fehlt;;;ja
+way_445029428;way/445029428;;yes;43,49;5,53;;;flach (Platzhalter);;240,30;Höhe fehlt;;;ja
+way_445029429;way/445029429;;house;8,72;6,30;;;flach (Platzhalter);;54,80;Höhe fehlt;;;ja
+way_445029430;way/445029430;;yes;19,10;10,88;;;flach (Platzhalter);;108,80;Höhe fehlt;;;ja
+way_445029431;way/445029431;;yes;14,05;12,20;;;flach (Platzhalter);;171,30;Höhe fehlt;;;ja
+way_445029432;way/445029432;;house;9,59;6,15;;;flach (Platzhalter);;59;Höhe fehlt;;;ja
+way_482015286;way/482015286;;apartments;19,36;12,74;;;flach (Platzhalter);5;246,60;Höhe fehlt;;Geschosse laut OSM: 5 (nicht in Meter umgerechnet);ja
+way_487030717;way/487030717;;yes;23,79;15,70;;;flach (Platzhalter);;263,30;Höhe fehlt;;;ja
+way_497835985;way/497835985;Schnellboot Gepard;ship;50,46;6,93;;;flach (Platzhalter);;309,60;Höhe fehlt;;;ja
+way_529691184;way/529691184;;bridge;10,15;3,91;;;flach (Platzhalter);;39,60;Höhe fehlt;;;ja
+way_659157903;way/659157903;;yes;26,28;10,36;;;flach (Platzhalter);;229,30;Höhe fehlt;;;ja
+way_744828709;way/744828709;;yes;26,08;10,25;;;flach (Platzhalter);;225,40;Höhe fehlt;;;ja
+way_744828710;way/744828710;;yes;10,66;7,58;;;flach (Platzhalter);;73,80;Höhe fehlt;;;ja
+way_916886324;way/916886324;;yes;40,53;7,18;;;flach (Platzhalter);;230,70;Höhe fehlt;;;ja
+way_916886325;way/916886325;;yes;25,88;20,38;;;flach (Platzhalter);;260,40;Höhe fehlt;;;ja
+way_916886326;way/916886326;;yes;16,92;13,95;;;flach (Platzhalter);;215;Höhe fehlt;;;ja
+way_916886327;way/916886327;;yes;19,22;15,28;;;flach (Platzhalter);;232,80;Höhe fehlt;;;ja
+way_916886328;way/916886328;;yes;18,27;13,02;;;flach (Platzhalter);;237,80;Höhe fehlt;;;ja
+way_1097854150;way/1097854150;;yes;30,70;24,09;;;flach (Platzhalter);;703,90;Höhe fehlt;;;ja
+way_1097854152;way/1097854152;;yes;12,58;7,56;;;flach (Platzhalter);;85,40;Höhe fehlt;;;ja
+way_1175978760;way/1175978760;;yes;15,72;8,40;;;flach (Platzhalter);;132;Höhe fehlt;;;ja
+way_1175978761;way/1175978761;;yes;19,79;8,78;;;flach (Platzhalter);;173,70;Höhe fehlt;;;ja
+way_1175978762;way/1175978762;;yes;13,33;7,44;;;flach (Platzhalter);;99,10;Höhe fehlt;;;ja
+way_1175978763;way/1175978763;;yes;11,29;8,89;;;flach (Platzhalter);;100,30;Höhe fehlt;;;ja
+way_1175978764;way/1175978764;;yes;9,74;9,69;;;flach (Platzhalter);;94,40;Höhe fehlt;;;ja
+way_1175978765;way/1175978765;;yes;15,29;10,58;;;flach (Platzhalter);;161,80;Höhe fehlt;;;ja
+way_1175978766;way/1175978766;;yes;12,54;7,87;;;flach (Platzhalter);;98,60;Höhe fehlt;;;ja
+way_1175978767;way/1175978767;;yes;14,59;11,29;;;flach (Platzhalter);;164,50;Höhe fehlt;;;ja
+way_1175978768;way/1175978768;;yes;13,56;13,18;;;flach (Platzhalter);;178,60;Höhe fehlt;;;ja
+way_1175988905;way/1175988905;;apartments;19,36;12,74;;;flach (Platzhalter);5;246,60;Höhe fehlt;;Geschosse laut OSM: 5 (nicht in Meter umgerechnet);ja
+way_1175988906;way/1175988906;;apartments;19,36;12,74;;;flach (Platzhalter);5;246,60;Höhe fehlt;;Geschosse laut OSM: 5 (nicht in Meter umgerechnet);ja
+way_1175988907;way/1175988907;;apartments;13,30;11,21;;;flach (Platzhalter);5;149;Höhe fehlt;;Geschosse laut OSM: 5 (nicht in Meter umgerechnet);ja
+way_1175988909;way/1175988909;;house;10,58;5,88;;;flach (Platzhalter);2;62;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_1175988910;way/1175988910;;house;11,43;5,49;;;flach (Platzhalter);2;62,70;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_1175988911;way/1175988911;;yes;11,50;10,49;;;flach (Platzhalter);;120,30;Höhe fehlt;;;ja
+way_1175988912;way/1175988912;;house;19,33;11,47;;;flach (Platzhalter);3;221,70;Höhe fehlt;;Geschosse laut OSM: 3 (nicht in Meter umgerechnet);ja
+way_1175988913;way/1175988913;;house;19,24;11,47;;;flach (Platzhalter);3;220,50;Höhe fehlt;;Geschosse laut OSM: 3 (nicht in Meter umgerechnet);ja
+way_1175988914;way/1175988914;;house;17,91;12,85;;;flach (Platzhalter);3;228,10;Höhe fehlt;;Geschosse laut OSM: 3 (nicht in Meter umgerechnet);ja
+way_1175988915;way/1175988915;;house;18,04;12,77;;;flach (Platzhalter);3;226,70;Höhe fehlt;;Geschosse laut OSM: 3 (nicht in Meter umgerechnet);ja
+way_1175988916;way/1175988916;;house;18,18;12,70;;;flach (Platzhalter);3;225,40;Höhe fehlt;;Geschosse laut OSM: 3 (nicht in Meter umgerechnet);ja
+way_1190471305;way/1190471305;;yes;3,79;3,25;;;flach (Platzhalter);;12,30;Höhe fehlt;;;ja
+way_1190471306;way/1190471306;;yes;3,79;3,25;;;flach (Platzhalter);;12,30;Höhe fehlt;;;ja
+way_1190471307;way/1190471307;;service;3,79;3,25;;;flach (Platzhalter);;12,30;Höhe fehlt;;;ja
+way_1190471308;way/1190471308;;service;3,79;3,25;;;flach (Platzhalter);;12,30;Höhe fehlt;;;ja
+way_1272882206;way/1272882206;;retail;20,64;14,25;;;flach (Platzhalter);;293,90;Höhe fehlt;;;ja
+way_1305733503;way/1305733503;;yes;14,48;8,40;;;flach (Platzhalter);;89;Höhe fehlt;;;ja
+way_1305733504;way/1305733504;;yes;16,46;10,25;;;flach (Platzhalter);;168,60;Höhe fehlt;;;ja
+way_1324841114;way/1324841114;;yes;30,23;24,13;;;flach (Platzhalter);;607,30;Höhe fehlt;;;ja
+way_1324841131;way/1324841131;;yes;4,92;4,59;;;flach (Platzhalter);;22,60;Höhe fehlt;;;ja
+way_1368029597;way/1368029597;;house;9,97;5,69;;;flach (Platzhalter);;56,70;Höhe fehlt;;;ja
+way_1368029598;way/1368029598;;house;11,26;10,37;;;flach (Platzhalter);;116,60;Höhe fehlt;;;ja
+way_1368037443;way/1368037443;;house;14,91;12,57;;;flach (Platzhalter);;183,90;Höhe fehlt;;;ja
+way_1417570840;way/1417570840;Langeness;ship;15,16;4,32;;;flach (Platzhalter);;51,40;Höhe fehlt;;;ja
+way_1417570941;way/1417570941;Kleines Torpedoschnellboot;ship;19,11;4,29;;;flach (Platzhalter);;70,80;Höhe fehlt;;;ja
+way_1481429896;way/1481429896;;yes;14,72;9,94;;;flach (Platzhalter);;103,70;Höhe fehlt;;;ja
+way_1559987129;way/1559987129;;apartments;15,92;12,82;;;flach (Platzhalter);4;204;Höhe fehlt;;Geschosse laut OSM: 4 (nicht in Meter umgerechnet);ja
+way_1559987130;way/1559987130;;yes;18,26;13,02;;;flach (Platzhalter);;237,60;Höhe fehlt;;;ja
+way_1560004586;way/1560004586;;retail;12,63;10,99;;;flach (Platzhalter);2;138,70;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_1560004587;way/1560004587;;apartments;12,63;11,16;;;flach (Platzhalter);3;140,80;Höhe fehlt;;Geschosse laut OSM: 3 (nicht in Meter umgerechnet);ja
+way_1560004588;way/1560004588;;apartments;12,63;11,11;;;flach (Platzhalter);;140,20;Höhe fehlt;;;ja
+way_1560004589;way/1560004589;;yes;21,61;12,66;;;flach (Platzhalter);;273,40;Höhe fehlt;;;ja
+way_1560004594;way/1560004594;;yes;19,40;13,26;;;flach (Platzhalter);;257,30;Höhe fehlt;;;ja
+way_1560004595;way/1560004595;;yes;17,51;11,10;;;flach (Platzhalter);;192,70;Höhe fehlt;;;ja
+way_1560004596;way/1560004596;;yes;9,56;7,96;;;flach (Platzhalter);;76;Höhe fehlt;;;ja
+way_1560004597;way/1560004597;;yes;9,56;7,96;;;flach (Platzhalter);;76;Höhe fehlt;;;ja
+way_1560004598;way/1560004598;;yes;9,57;7,96;;;flach (Platzhalter);;76,10;Höhe fehlt;;;ja
+way_1560006002;way/1560006002;;house;17,15;12,08;;;flach (Platzhalter);4;207,10;Höhe fehlt;;Geschosse laut OSM: 4 (nicht in Meter umgerechnet);ja
+way_1560006003;way/1560006003;;house;11,12;10,72;;;flach (Platzhalter);4;119,10;Höhe fehlt;;Geschosse laut OSM: 4 (nicht in Meter umgerechnet);ja
+way_1560006004;way/1560006004;;house;17,15;11,02;;;flach (Platzhalter);4;188,40;Höhe fehlt;;Geschosse laut OSM: 4 (nicht in Meter umgerechnet);ja
+way_1560006005;way/1560006005;;house;17,16;12,08;;;flach (Platzhalter);4;207,20;Höhe fehlt;;Geschosse laut OSM: 4 (nicht in Meter umgerechnet);ja
+way_1560006006;way/1560006006;;yes;13,45;10,55;;;flach (Platzhalter);;141,80;Höhe fehlt;;;ja
+way_1561431480;way/1561431480;;house;15,32;9,15;;;flach (Platzhalter);;94,20;Höhe fehlt;;;ja
+way_1561431481;way/1561431481;;house;10,58;6,46;;;flach (Platzhalter);2;68,10;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_1561431482;way/1561431482;;yes;15,82;7,97;;;flach (Platzhalter);;126;Höhe fehlt;;;ja
+way_1561431483;way/1561431483;;house;11,43;5,48;;;flach (Platzhalter);2;62,60;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_1561431484;way/1561431484;;house;11,43;5,49;;;flach (Platzhalter);2;62,70;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_1561431485;way/1561431485;;house;9,97;5,30;;;flach (Platzhalter);;52,70;Höhe fehlt;;;ja
+way_1561431486;way/1561431486;;house;10,70;5,30;;;flach (Platzhalter);2;56,60;Höhe fehlt;;Geschosse laut OSM: 2 (nicht in Meter umgerechnet);ja
+way_1561431487;way/1561431487;;house;14,34;13,83;;;flach (Platzhalter);;198,10;Höhe fehlt;;;ja

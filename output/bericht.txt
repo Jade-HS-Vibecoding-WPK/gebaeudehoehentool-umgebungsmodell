@@ -1,0 +1,14 @@
+BERICHT Umgebungsmodell
+=======================
+Gebiet: Südzentrale Wilhelmshaven (Testgebiet) (800 m x 1000 m)
+
+Gebäude im Modell:               237
+  davon mit Höhe aus OSM:        0
+  davon mit Höhe manuell/Google: 0
+  davon OHNE Höhe (Grundplatte): 237
+  davon mit Dach (Trauf<>First): 0
+  davon mit Hinweisen:           43
+Außerhalb des Gebiets ignoriert: 10
+Nicht gebaut (Problem):          0
+Nicht wasserdicht:               0
+Anteil ohne Höhe:                100%

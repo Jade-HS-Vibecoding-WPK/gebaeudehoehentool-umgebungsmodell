@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Umgebungsmodell – Web-App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { --bg:#eef1f4; --card:#fff; --line:#d5dbe1; --text:#1d2630; --leise:#5b6773; --blau:#2f6fdf; --gelb:#e6cc4d; --orange:#f28019; --gruen:#2e7d4f; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--text); font:14px/1.45 system-ui, "Segoe UI", Arial, sans-serif; }
+  header { height:48px; display:flex; align-items:center; gap:16px; padding:0 16px; background:#fff; border-bottom:1px solid var(--line); }
+  header h1 { font-size:16px; margin:0; }
+  header #zaehler { margin-left:auto; font-size:13px; }
+  main { display:grid; grid-template-columns:340px minmax(0,1fr) 310px; height:calc(100% - 48px); }
+  aside, section.mitte { min-height:0; }
+  aside { overflow:auto; padding:12px; }
+  aside.links { border-right:1px solid var(--line); }
+  aside.rechts { border-left:1px solid var(--line); background:#fff; }
+  .schritt { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-bottom:10px; }
+  .schritt h2 { margin:0 0 6px; font-size:14px; display:flex; align-items:center; gap:8px; }
+  .nr { display:inline-flex; width:20px; height:20px; border-radius:50%; background:var(--blau); color:#fff; font-size:12px; align-items:center; justify-content:center; flex:none; }
+  .schritt p { margin:4px 0 8px; color:var(--leise); font-size:13px; }
+  label { display:block; font-size:12px; color:var(--leise); margin:4px 0; }
+  input[type=text], select { width:100%; padding:5px 7px; border:1px solid #b9c3cc; border-radius:5px; font:inherit; background:#fff; }
+  .zwei { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  button, .knopf { font:inherit; padding:6px 10px; border:1px solid #9aa7b3; border-radius:6px; background:#fff; cursor:pointer; }
+  button:hover:not(:disabled), .knopf:hover { background:#f2f5f8; }
+  button:disabled { opacity:.45; cursor:default; }
+  button.haupt { background:var(--blau); border-color:var(--blau); color:#fff; }
+  button.haupt:hover:not(:disabled) { background:#2a62c4; }
+  button.klein { padding:3px 8px; font-size:12px; }
+  button.aktiv { background:#dfe9fb; border-color:var(--blau); }
+  .reihe { display:flex; gap:6px; flex-wrap:wrap; margin:6px 0; }
+  .meldung { font-size:12.5px; margin-top:6px; color:var(--leise); }
+  .meldung.ok { color:var(--gruen); } .meldung.warn { color:#b3470a; }
+  .leise { color:var(--leise); }
+  .chip { display:inline-block; padding:1px 8px; border-radius:10px; font-size:12px; background:#e6eaee; }
+  .chip.gelb { background:#f6ebb0; } .chip.orange { background:#fbd6b3; } .chip.blau { background:#d5e3fb; } .chip.grau { background:#e6eaee; }
+  .mitte { display:flex; flex-direction:column; }
+  .tabs { display:flex; gap:2px; padding:8px 12px 0; }
+  .tabs button { border-radius:6px 6px 0 0; border-bottom:none; background:#e3e8ed; }
+  .tabs button.aktiv { background:#fff; font-weight:600; }
+  .seiten { flex:1; min-height:0; margin:0 12px 12px; background:#fff; border:1px solid var(--line); position:relative; }
+  .seite { display:none; position:absolute; inset:0; } .seite.aktiv { display:block; }
+  canvas { width:100%; height:100%; display:block; touch-action:none; }
+  #karte { cursor:grab; }
+  .overlay { position:absolute; left:10px; top:10px; background:rgba(255,255,255,.92); padding:6px 10px; border-radius:6px; font-size:12px; border:1px solid var(--line); }
+  #glFehler { display:none; position:absolute; inset:30% 10% auto; padding:16px; background:#fff3e0; border:1px solid var(--orange); border-radius:8px; }
+  .legende { position:absolute; left:10px; bottom:10px; background:rgba(255,255,255,.92); padding:6px 10px; border-radius:6px; font-size:12px; border:1px solid var(--line); }
+  .legende span.f { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-2px; border:1px solid #0003; }
+  table { border-collapse:collapse; width:100%; }
+  #seite_liste { overflow:auto; }
+  #liste th { text-align:left; position:sticky; top:0; background:#f2f5f8; padding:6px 8px; border-bottom:1px solid var(--line); font-weight:600; }
+  #liste td { padding:5px 8px; border-bottom:1px solid #eef1f4; }
+  #liste tr[data-id] { cursor:pointer; } #liste tr[data-id]:hover { background:#f6f9fc; } #liste tr.sel { background:#dfe9fb; }
+  td.z { text-align:right; font-variant-numeric:tabular-nums; }
+  .listenkopf { display:flex; gap:10px; align-items:center; padding:8px; border-bottom:1px solid var(--line); position:sticky; top:0; background:#fff; z-index:2; }
+  .listenkopf select { width:auto; }
+  aside.rechts h3 { margin:0 0 8px; font-size:15px; } aside.rechts h4 { margin:14px 0 6px; font-size:13px; }
+  table.eig td { padding:2px 0; vertical-align:top; } table.eig td:first-child { color:var(--leise); width:48%; padding-right:8px; }
+  .hinweis { margin:8px 0; padding:6px 8px; background:#fff6dc; border:1px solid #ecd98a; border-radius:6px; font-size:12.5px; }
+  .dachwahl { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; }
+  button.dach { display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 2px; position:relative; font-size:12px; }
+  button.dach svg { width:40px; height:26px; } button.dach em { position:absolute; top:-7px; right:-2px; background:var(--blau); color:#fff; font-style:normal; font-size:10px; padding:0 5px; border-radius:8px; }
+  .hoehen { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .zeile { display:flex; gap:6px; align-items:center; margin:6px 0; flex-wrap:wrap; }
+  .zeile label { margin:0; flex:1; }
+  #hinweisZip { display:none; font-size:12px; color:var(--leise); margin-top:6px; }
+  @media (max-width: 1100px) { main { grid-template-columns:300px minmax(0,1fr); } aside.rechts { display:none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Umgebungsmodell</h1>
+  <span class="leise">Grundrisse aus OpenStreetMap, Höhen und Dachformen aus einem TopoExport-Export</span>
+  <div id="zaehler">Noch keine Gebäude geladen.</div>
+</header>
+<main>
+  <aside class="links">
+    <div class="schritt">
+      <h2><span class="nr">1</span> Gebiet</h2>
+      <p>Verschiebe das Rechteck in der Karte oder trage Werte ein. Die Ecken ändern die Größe.</p>
+      <div class="zwei"><div><label>Breite Ost-West (m)</label><input type="text" id="fBreite"></div><div><label>Länge Nord-Süd (m)</label><input type="text" id="fLaenge"></div></div>
+      <div class="zwei"><div><label>Mitte Breitengrad</label><input type="text" id="fLat"></div><div><label>Mitte Längengrad</label><input type="text" id="fLon"></div></div>
+      <div class="reihe"><button id="btnSued" class="klein">Südzentrale Wilhelmshaven</button><button id="btnDemo" class="klein">Beispieldaten ausprobieren</button></div>
+    </div>
+    <div class="schritt">
+      <h2><span class="nr">2</span> Gebäude aus OpenStreetMap</h2>
+      <p>Lädt Grundrisse, Namen und Gebäudeart im Rechteck.</p>
+      <div class="reihe"><button id="osmLaden" class="haupt">Von OpenStreetMap laden</button></div>
+      <div class="reihe"><label class="knopf" style="margin:0">Oder Datei laden (data/osm_gebaeude.json)<input id="osmDatei" type="file" accept=".json" hidden></label></div>
+      <div id="osmMeldung" class="meldung"></div>
+    </div>
+    <div class="schritt">
+      <h2><span class="nr">3</span> TopoExport-Datei</h2>
+      <p>3D-Export der Gebäude (OBJ, DXF oder STL). Du kannst die Datei auch auf die Seite ziehen.</p>
+      <div class="reihe"><label class="knopf haupt" style="margin:0;background:var(--blau);color:#fff;border-color:var(--blau)">Datei auswählen<input id="expDatei" type="file" accept=".obj,.dxf,.stl,.txt" hidden></label></div>
+      <div class="zwei">
+        <div><label>Höhenachse <span id="achseInfo" class="leise"></span></label><select id="achse"><option value="auto">automatisch</option><option value="z">Z</option><option value="y">Y</option><option value="x">X</option></select></div>
+        <div><label>Einheit <span id="einheitInfo" class="leise"></span></label><select id="einheit"><option value="auto">automatisch</option><option value="m">Meter</option><option value="cm">Zentimeter</option><option value="mm">Millimeter</option></select></div>
+      </div>
+      <div id="expMeldung" class="meldung"></div>
+    </div>
+    <div class="schritt">
+      <h2><span class="nr">4</span> Prüfen</h2>
+      <p>Wo die Dachform unsicher ist (gelb), bietest du die Dachformen zur Auswahl an. Klicke dazu das Gebäude an.</p>
+      <div class="reihe"><button id="naechstes" disabled>Nächstes unsicheres Gebäude</button></div>
+      <div id="pruefMeldung" class="meldung"></div>
+    </div>
+    <div class="schritt">
+      <h2><span class="nr">5</span> Export</h2>
+      <div class="zwei"><div><label>Maßstab 1 :</label><input type="text" id="massstab" value="500"></div><div><label>Druckbett (mm)</label><input type="text" id="bett" value="220"></div></div>
+      <div id="stlInfo" class="meldung"></div>
+      <div class="reihe"><button id="btnGLB" disabled>3D-Modell (GLB)</button><button id="btnCSV" disabled>Maßliste (CSV)</button><button id="btnSTL" disabled>Druckdatei (STL)</button></div>
+      <div id="hinweisZip">In dieser Ansicht werden GLB und STL als ZIP-Datei gespeichert.</div>
+      <div id="exportMeldung" class="meldung"></div>
+    </div>
+  </aside>
+  <section class="mitte">
+    <div class="tabs"><button id="tab_karte" class="aktiv">Karte</button><button id="tab_d3">3D-Modell</button><button id="tab_liste">Liste</button></div>
+    <div class="seiten">
+      <div id="seite_karte" class="seite aktiv"><canvas id="karte"></canvas>
+        <div class="overlay"><label style="margin:0;display:flex;gap:6px;align-items:center;color:var(--text)"><input type="checkbox" id="kachelnAn" checked> Kartenkacheln anzeigen</label></div>
+      </div>
+      <div id="seite_d3" class="seite"><canvas id="ansicht3d"></canvas>
+        <div class="overlay">Ziehen: drehen · Umschalt + Ziehen oder rechte Maustaste: verschieben · Mausrad: zoomen · Klick: Gebäude wählen <button id="ansichtZurueck" class="klein">Ansicht zurücksetzen</button></div>
+        <div class="legende"><div><span class="f" style="background:#ccc7bd"></span>Maße vollständig</div><div><span class="f" style="background:#e6cc4d"></span>Dachform unsicher / Hinweis</div><div><span class="f" style="background:#f28019"></span>Höhe fehlt (Grundplatte)</div><div><span class="f" style="background:#9e8ccc"></span>Nur im Export</div></div>
+        <div id="glFehler">3D-Darstellung (WebGL) ist in diesem Browser nicht verfügbar. Die Liste und der Export funktionieren trotzdem.</div>
+      </div>
+      <div id="seite_liste" class="seite">
+        <div class="listenkopf"><label style="margin:0">Anzeigen</label><select id="filter"><option value="alle">alle Gebäude</option><option value="unsicher">Dachform unsicher</option><option value="fehlt">Höhe fehlt</option><option value="manuell">manuell</option><option value="export">nur im Export</option></select><span id="listeAnzahl" class="leise"></span></div>
+        <table id="liste"><thead><tr><th>Gebäude</th><th>Länge m</th><th>Breite m</th><th>Traufe m</th><th>First m</th><th>Dachform</th><th>Status</th></tr></thead><tbody id="listeBody"></tbody></table>
+      </div>
+    </div>
+  </section>
+  <aside class="rechts" id="details"></aside>
+</main>
+<script>/*CORE*/</script>
+<script>/*APP*/</script>
+</body>
+</html>
