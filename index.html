@@ -235,9 +235,34 @@
     input.nameFeld { font-size:inherit; min-height:0; height:30px; }
     .listenkopf { flex-wrap:wrap; }
   }
+  /* Startbildschirm */
+  #splash { position:fixed; inset:0; z-index:100000; background:#a6625b; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:34px; padding:24px; text-align:center; transition:opacity .6s ease, visibility .6s; }
+  #splash.weg { opacity:0; visibility:hidden; pointer-events:none; }
+  #splash h1 { margin:0; color:#fbf8f1; font-size:clamp(26px, 5.2vw, 62px); font-weight:700; letter-spacing:.07em; line-height:1.15; text-transform:uppercase; }
+  #splash button#splashBtn { padding:11px 26px; border:1.5px solid #fbf8f1; border-radius:999px; background:transparent; color:#fbf8f1; font:inherit; font-size:14px; letter-spacing:.06em; cursor:pointer; transition:background .2s, color .2s; }
+  #splash button#splashBtn:hover:not(:disabled) { background:#fbf8f1; color:#a6625b; border-color:#fbf8f1; }
+  #splash button#splashBtn:focus { outline:none; }
+  @media (prefers-reduced-motion: reduce) { #splash { transition:none; } }
 </style>
 </head>
 <body>
+<div id="splash" role="dialog" aria-label="Startbildschirm">
+  <h1>Höhentool Umgebungsmodell</h1>
+  <button id="splashBtn" type="button">Klicke hier zum Öffnen</button>
+</div>
+<script>
+  (function () {
+    var sp = document.getElementById('splash'), btn = document.getElementById('splashBtn');
+    document.documentElement.style.overflow = 'hidden';
+    function oeffnen() {
+      sp.classList.add('weg');
+      document.documentElement.style.overflow = '';
+      setTimeout(function () { if (sp.parentNode) sp.parentNode.removeChild(sp); }, 700);
+    }
+    btn.addEventListener('click', oeffnen);
+    try { btn.focus(); } catch (e) {}
+  })();
+</script>
 <header>
   <h1>Höhentool Umgebungsmodell</h1>
   <div id="zaehler">Noch keine Gebäude geladen.</div>
@@ -266,21 +291,16 @@
       <div id="massstabInfo" class="meldung"></div>
     </div>
     <div class="schritt">
-      <h2>Gebäude aus OpenStreetMap</h2>
-      <p>Lädt Grundrisse, Namen und Gebäudeart aus einer OSM-Datei.</p>
-      <div class="reihe"><label class="knopf" style="margin:0">OSM-Datei laden (.osm)<input id="osmDatei" type="file" accept=".osm,.xml,.json,.geojson" hidden></label></div>
-      <div class="meldung">So bekommst du die Datei: auf openstreetmap.org oben „Exportieren“ wählen, Bereich markieren und „Exportieren“ klicken. Das ergibt eine .osm-Datei. Bilder (PNG, JPEG, WEBP, SVG, PDF) gehen nicht, sie enthalten keine Gebäudedaten.</div>
-      <div id="osmMeldung" class="meldung"></div>
-    </div>
-    <div class="schritt">
-      <h2>TopoExport-Datei</h2>
-      <p>3D-Export der Gebäude (OBJ, DXF oder STL). Du kannst die Datei auch auf die Seite ziehen.</p>
-      <div class="reihe"><label class="knopf haupt" style="margin:0;background:#fff;color:#000;border-color:var(--rahmen)">Datei auswählen<input id="expDatei" type="file" accept=".obj,.dxf,.stl,.txt" hidden></label></div>
+      <h2>3D-Datei</h2>
+      <p>3D-Export der Gebäude (OBJ, DXF oder STL). Auch OSM-Dateien (.osm) werden erkannt. Du kannst die Datei auch auf die Seite ziehen.</p>
+      <div class="reihe"><label class="knopf haupt" style="margin:0;background:#fff;color:#000;border-color:var(--rahmen)">Datei auswählen<input id="expDatei" type="file" accept=".obj,.dxf,.stl,.txt,.osm,.xml,.json,.geojson" hidden></label></div>
       <div class="zwei">
         <div><label>Höhenachse <span id="achseInfo" class="leise"></span></label><select id="achse"><option value="auto">automatisch</option><option value="z">Z</option><option value="y">Y</option><option value="x">X</option></select></div>
         <div><label>Einheit <span id="einheitInfo" class="leise"></span></label><select id="einheit"><option value="auto">automatisch</option><option value="m">Meter</option><option value="cm">Zentimeter</option><option value="mm">Millimeter</option></select></div>
       </div>
       <div id="expMeldung" class="meldung"></div>
+      <div id="osmMeldung" class="meldung"></div>
+      <input id="osmDatei" type="file" accept=".osm,.xml,.json,.geojson" hidden>
     </div>
     <div class="schritt">
       <h2>Prüfen</h2>
@@ -301,7 +321,7 @@
     <div class="tabs"><button id="tab_karte" class="aktiv">Karte</button><button id="tab_d3">3D-Modell</button><button id="tab_liste">Liste</button><button id="tab_split" title="3D-Modell und Liste nebeneinander anzeigen">3D + Liste</button><div class="tabExtras"><button type="button" id="nrSchalter" class="an" aria-pressed="true" title="Laufende Nummern der Gebäude ein- oder ausblenden">Nummern</button></div></div>
     <div class="seiten">
       <div id="seite_karte" class="seite aktiv"><canvas id="karte"></canvas>
-        <div id="dropHinweis"><div class="dropbox"><div class="dropgross"><span class="nurDesktop">Datei hierher ziehen</span><span class="nurMobil">Kein Modell</span></div><div class="dropklein"><span class="nurDesktop">Drag &amp; Drop: 3D-Export (.obj, .dxf, .stl) oder OSM-Daten (.osm) einfach auf diese Fläche ziehen.</span><span class="nurMobil">Noch kein Modell geladen. Wähle unter „Einstellungen“ eine OSM- oder TopoExport-Datei aus.<br><button type="button" id="zuEinst" class="haupt" style="margin-top:12px">Zu den Einstellungen</button></span></div></div></div>
+        <div id="dropHinweis"><div class="dropbox"><div class="dropgross"><span class="nurDesktop">Datei hierher ziehen</span><span class="nurMobil">Kein Modell</span></div><div class="dropklein"><span class="nurDesktop">Drag &amp; Drop: 3D-Export (.obj, .dxf, .stl) oder OSM-Daten (.osm) einfach auf diese Fläche ziehen.</span><span class="nurMobil">Noch kein Modell geladen. Wähle unter „Einstellungen“ eine 3D- oder OSM-Datei aus.<br><button type="button" id="zuEinst" class="haupt" style="margin-top:12px">Zu den Einstellungen</button></span></div></div></div>
       </div>
       <div id="seite_d3" class="seite"><canvas id="ansicht3d"></canvas>
         <div class="overlay"><span class="nurDesktop">Ziehen: drehen · Strg + Ziehen: verschieben · Mausrad: zoomen · Klick: Gebäude wählen</span><span class="nurMobil">1 Finger: drehen · 2 Finger: zoomen und verschieben · Tippen: wählen</span> <button id="ansichtZurueck" class="klein">Ansicht zurücksetzen</button></div>
@@ -1720,7 +1740,7 @@
   $('btnTausch').addEventListener('click', () => { const a = $('fBreite').value; $('fBreite').value = $('fLaenge').value; $('fLaenge').value = a; felderLesen(); });
   function hinweisGebietGeaendert() {
     if (S.osmRaw && S.proj && (Math.abs(S.proj.lat0 - S.area.lat) > 1e-5 || Math.abs(S.proj.lon0 - S.area.lon) > 1e-5)) {
-      meldung('osmMeldung', 'Das Rechteck wurde verschoben. Bitte die Gebäude neu von OpenStreetMap laden.', 'warn');
+      meldung('osmMeldung', 'Das Rechteck wurde verschoben. Bitte die Datei neu laden.', 'warn');
     }
   }
   function mapZoomAufGebiet() {
@@ -1873,7 +1893,13 @@
       verarbeiten();
     } catch (err) { meldung('expMeldung', 'Datei konnte nicht gelesen werden: ' + err.message, 'warn'); }
   }
-  $('expDatei').addEventListener('change', (e) => { const f = e.target.files[0]; if (f) exportDateiLaden(f); e.target.value = ''; });
+  $('expDatei').addEventListener('change', async (e) => {
+    const f = e.target.files[0]; e.target.value = '';
+    if (!f) return;
+    if (BILD.test(f.name)) { bildHinweis(f.name, 'expMeldung'); return; }
+    if (/\.(osm|xml|json|geojson)$/i.test(f.name)) osmDateiVerarbeiten(new TextDecoder().decode(await dateiLaden(f)), f.name);
+    else exportDateiLaden(f);
+  });
   window.addEventListener('dragleave', (e) => { if (!e.relatedTarget) document.body.classList.remove('zieht'); });
   ['dragover', 'drop'].forEach((ev) => window.addEventListener(ev, (e) => {
     e.preventDefault();
