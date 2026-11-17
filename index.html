@@ -2,179 +2,99 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<title>Höhentool Umgebungsmodell</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Umgebungsmodell – Web-App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-  :root { --bg:#fbf8f1; --card:#fefcf8; --panel:#fcfaf5; --line:#ece4d3; --text:#000; --leise:#3a3a3a; --blau:#ffffff; --blau-dunkel:#f1ece0; --blau-hell:#ffffff; --gelb:#c98d86; --orange:#e0b8b2; --gruen:#000; --auswahl:#2d5d63; --feld:#fffefb; --rand:#d9cfba; --rahmen:#6b6256; --weiss:rgba(255,255,255,.75); }
+  :root { --bg:#eef1f4; --card:#fff; --line:#d5dbe1; --text:#1d2630; --leise:#5b6773; --blau:#2f6fdf; --gelb:#e6cc4d; --orange:#f28019; --gruen:#2e7d4f; }
   * { box-sizing: border-box; }
-  html, body { margin:0; height:100%; background:var(--bg); color:var(--text); font:14px/1.5 "Century Gothic", "CenturyGothic", "URW Gothic", "Avant Garde", "Questrial", "Didact Gothic", Futura, "Trebuchet MS", sans-serif; }
-  header { height:56px; display:flex; align-items:center; gap:18px; padding:0 20px; background:var(--panel); border-bottom:1px solid var(--line); }
-  header h1 { font-size:17px; margin:0; font-weight:700; letter-spacing:.04em; color:#000; text-transform:uppercase; white-space:nowrap; }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--text); font:14px/1.45 system-ui, "Segoe UI", Arial, sans-serif; }
+  header { height:48px; display:flex; align-items:center; gap:16px; padding:0 16px; background:#fff; border-bottom:1px solid var(--line); }
+  header h1 { font-size:16px; margin:0; }
   header #zaehler { margin-left:auto; font-size:13px; }
-  main { display:grid; grid-template-columns:350px minmax(0,1fr) 320px; height:calc(100% - 56px); }
+  main { display:grid; grid-template-columns:340px minmax(0,1fr) 310px; height:calc(100% - 48px); }
   aside, section.mitte { min-height:0; }
-  aside { overflow:auto; padding:14px; }
+  aside { overflow:auto; padding:12px; }
   aside.links { border-right:1px solid var(--line); }
-  aside.rechts { border-left:1px solid var(--line); background:var(--panel); }
-  .schritt { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:12px; box-shadow:0 1px 2px rgba(90,60,40,.06); }
-  .schritt h2 { margin:0 0 6px; font-size:14px; letter-spacing:.02em; display:flex; align-items:center; gap:8px; }
-  .nr { display:inline-flex; width:20px; height:20px; border-radius:50%; background:#fff; color:#000; border:1px solid var(--rahmen); font-size:12px; font-weight:700; align-items:center; justify-content:center; flex:none; }
+  aside.rechts { border-left:1px solid var(--line); background:#fff; }
+  .schritt { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-bottom:10px; }
+  .schritt h2 { margin:0 0 6px; font-size:14px; display:flex; align-items:center; gap:8px; }
+  .nr { display:inline-flex; width:20px; height:20px; border-radius:50%; background:var(--blau); color:#fff; font-size:12px; align-items:center; justify-content:center; flex:none; }
   .schritt p { margin:4px 0 8px; color:var(--leise); font-size:13px; }
   label { display:block; font-size:12px; color:var(--leise); margin:4px 0; }
-  input[type=text], select { width:100%; padding:6px 8px; border:1px solid var(--rand); border-radius:6px; font:inherit; background:var(--feld); color:var(--text); }
-  input[type=text]:focus, select:focus { outline:2px solid var(--weiss); border-color:var(--rahmen); }
-  input[type=checkbox] { accent-color:#6b6256; }
-  .massstabzeile { display:flex; align-items:center; gap:8px; } .massstabzeile span { font-size:1.15em; } .massstabzeile input { width:110px; }
-  .modell { color:var(--leise); font-size:.92em; }
+  input[type=text], select { width:100%; padding:5px 7px; border:1px solid #b9c3cc; border-radius:5px; font:inherit; background:#fff; }
   .zwei { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  button, .knopf { font:inherit; padding:7px 12px; border:1px solid var(--rand); border-radius:7px; background:var(--feld); color:var(--text); cursor:pointer; transition:background .15s, border-color .15s; }
-  button:hover:not(:disabled), .knopf:hover { background:var(--weiss); border-color:var(--rahmen); }
+  button, .knopf { font:inherit; padding:6px 10px; border:1px solid #9aa7b3; border-radius:6px; background:#fff; cursor:pointer; }
+  button:hover:not(:disabled), .knopf:hover { background:#f2f5f8; }
   button:disabled { opacity:.45; cursor:default; }
-  button.haupt { background:#fff; border-color:var(--rahmen); color:#000; font-weight:700; }
-  button.haupt:hover:not(:disabled) { background:var(--blau-dunkel); border-color:#000; }
+  button.haupt { background:var(--blau); border-color:var(--blau); color:#fff; }
+  button.haupt:hover:not(:disabled) { background:#2a62c4; }
   button.klein { padding:3px 8px; font-size:12px; }
-  button.aktiv { background:var(--weiss); border-color:var(--rahmen); box-shadow:inset 0 0 0 1px var(--rahmen); }
+  button.aktiv { background:#dfe9fb; border-color:var(--blau); }
   .reihe { display:flex; gap:6px; flex-wrap:wrap; margin:6px 0; }
   .meldung { font-size:12.5px; margin-top:6px; color:var(--leise); }
-  .meldung.ok { color:var(--gruen); } .meldung.warn { color:#000; font-weight:700; }
+  .meldung.ok { color:var(--gruen); } .meldung.warn { color:#b3470a; }
   .leise { color:var(--leise); }
-  .chip { display:inline-block; padding:1px 9px; border-radius:10px; font-size:12px; background:#ece3d2; }
-  .chip.gelb { background:#c98d86; } .chip.orange { background:#e0b8b2; } .chip.blau { background:var(--weiss); border:1px solid var(--rahmen); } .chip.grau { background:#ece3d2; }
+  .chip { display:inline-block; padding:1px 8px; border-radius:10px; font-size:12px; background:#e6eaee; }
+  .chip.gelb { background:#f6ebb0; } .chip.orange { background:#fbd6b3; } .chip.blau { background:#d5e3fb; } .chip.grau { background:#e6eaee; }
   .mitte { display:flex; flex-direction:column; }
   .tabs { display:flex; gap:2px; padding:8px 12px 0; }
-  .tabs button { border-radius:8px 8px 0 0; border-bottom:none; background:#f1eadb; }
-  .tabs button.aktiv { background:var(--weiss); font-weight:700; color:#000; }
-  .seiten { flex:1; min-height:0; margin:0 14px 14px; background:var(--feld); border:1px solid var(--line); border-radius:0 8px 8px 8px; position:relative; overflow:hidden; }
+  .tabs button { border-radius:6px 6px 0 0; border-bottom:none; background:#e3e8ed; }
+  .tabs button.aktiv { background:#fff; font-weight:600; }
+  .seiten { flex:1; min-height:0; margin:0 12px 12px; background:#fff; border:1px solid var(--line); position:relative; }
   .seite { display:none; position:absolute; inset:0; } .seite.aktiv { display:block; }
   canvas { width:100%; height:100%; display:block; touch-action:none; }
   #karte { cursor:grab; }
-  .overlay { position:absolute; left:10px; top:10px; background:rgba(254,252,248,.94); padding:6px 10px; border-radius:6px; font-size:12px; border:1px solid var(--line); }
-  #dropHinweis { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:24px; pointer-events:none; } #dropHinweis button { pointer-events:auto; }
-  .dropbox { text-align:center; max-width:520px; padding:44px 36px; border:2px dashed var(--rahmen); border-radius:14px; background:rgba(255,255,255,.45); }
-  .dropgross { font-size:26px; font-weight:700; letter-spacing:.02em; color:#000; }
-  .dropklein { margin-top:10px; font-size:14px; color:#000; }
-  body.zieht .dropbox { background:var(--weiss); border-style:solid; }
-  body.zieht #seite_karte { background:var(--weiss); }
-  #glFehler { display:none; position:absolute; inset:30% 10% auto; padding:16px; background:#fff; border:1px solid var(--rahmen); border-radius:8px; }
-  .legende { position:absolute; left:10px; bottom:10px; background:rgba(254,252,248,.94); padding:6px 10px; border-radius:6px; font-size:12px; border:1px solid var(--line); }
+  .overlay { position:absolute; left:10px; top:10px; background:rgba(255,255,255,.92); padding:6px 10px; border-radius:6px; font-size:12px; border:1px solid var(--line); }
+  #glFehler { display:none; position:absolute; inset:30% 10% auto; padding:16px; background:#fff3e0; border:1px solid var(--orange); border-radius:8px; }
+  .legende { position:absolute; left:10px; bottom:10px; background:rgba(255,255,255,.92); padding:6px 10px; border-radius:6px; font-size:12px; border:1px solid var(--line); }
   .legende span.f { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-2px; border:1px solid #0003; }
   table { border-collapse:collapse; width:100%; }
   #seite_liste { overflow:auto; }
-  #liste th { text-align:left; position:sticky; top:0; background:#f5efe2; padding:8px; border-bottom:1px solid var(--line); font-weight:700; }
-  #liste td { padding:6px 8px; border-bottom:1px solid #f0e9da; }
-  #liste tr[data-id] { cursor:pointer; } #liste tr[data-id]:hover { background:var(--weiss); } #liste tr.sel { background:var(--weiss); box-shadow:inset 3px 0 0 var(--rahmen); }
+  #liste th { text-align:left; position:sticky; top:0; background:#f2f5f8; padding:6px 8px; border-bottom:1px solid var(--line); font-weight:600; }
+  #liste td { padding:5px 8px; border-bottom:1px solid #eef1f4; }
+  #liste tr[data-id] { cursor:pointer; } #liste tr[data-id]:hover { background:#f6f9fc; } #liste tr.sel { background:#dfe9fb; }
   td.z { text-align:right; font-variant-numeric:tabular-nums; }
-  .listenkopf { display:flex; gap:10px; align-items:center; padding:8px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--feld); z-index:2; }
+  .listenkopf { display:flex; gap:10px; align-items:center; padding:8px; border-bottom:1px solid var(--line); position:sticky; top:0; background:#fff; z-index:2; }
   .listenkopf select { width:auto; }
   aside.rechts h3 { margin:0 0 8px; font-size:15px; } aside.rechts h4 { margin:14px 0 6px; font-size:13px; }
   table.eig td { padding:2px 0; vertical-align:top; } table.eig td:first-child { color:var(--leise); width:48%; padding-right:8px; }
-  .hinweis { margin:8px 0; padding:7px 9px; background:#fff; border:1px solid var(--line); border-radius:6px; font-size:12.5px; }
+  .hinweis { margin:8px 0; padding:6px 8px; background:#fff6dc; border:1px solid #ecd98a; border-radius:6px; font-size:12.5px; }
   .dachwahl { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; }
   button.dach { display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 2px; position:relative; font-size:12px; }
-  button.dach svg { width:40px; height:26px; } button.dach em { position:absolute; top:-7px; right:-2px; background:#fff; color:#000; border:1px solid var(--rahmen); font-style:normal; font-size:10px; padding:0 5px; border-radius:8px; }
+  button.dach svg { width:40px; height:26px; } button.dach em { position:absolute; top:-7px; right:-2px; background:var(--blau); color:#fff; font-style:normal; font-size:10px; padding:0 5px; border-radius:8px; }
   .hoehen { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
   .zeile { display:flex; gap:6px; align-items:center; margin:6px 0; flex-wrap:wrap; }
   .zeile label { margin:0; flex:1; }
   #hinweisZip { display:none; font-size:12px; color:var(--leise); margin-top:6px; }
   @media (max-width: 1100px) { main { grid-template-columns:300px minmax(0,1fr); } aside.rechts { display:none; } }
-
-  .loeschen { display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
-  .loeschen.bestaetigen { background:var(--weiss); border-color:#000; box-shadow:inset 0 0 0 1px #000; }
-  .tausch { display:grid; grid-template-columns:1fr auto 1fr; gap:6px; align-items:end; }
-  .tauschknopf { width:34px; height:34px; padding:0; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; margin-bottom:0; }
-  /* Schrift: mittlere Größe, normale Stärke */
-  html, body { font-size:13.5px; }
-  header h1 { font-size:15px; font-weight:400; letter-spacing:.08em; }
-  header #zaehler { font-size:13px; }
-  .schritt h2 { font-size:14.5px; font-weight:400; }
-  .nr { font-size:12px; font-weight:400; width:21px; height:21px; }
-  .schritt p { font-size:13px; }
-  label { font-size:12.5px; }
-  button.haupt { font-weight:400; }
-  button.klein { font-size:12px; }
-  .meldung { font-size:13px; } .meldung.warn { font-weight:400; }
-  .chip { font-size:12px; }
-  .tabs button.aktiv { font-weight:400; }
-  .overlay, .legende { font-size:12.5px; }
-  .dropgross { font-size:23px; font-weight:400; letter-spacing:.04em; }
-  .dropklein { font-size:14px; }
-  #liste th { font-weight:400; font-size:13px; }
-  aside.rechts h3 { font-size:15.5px; font-weight:400; } aside.rechts h4 { font-size:13px; font-weight:400; }
-  .hinweis { font-size:13px; }
-  button.dach { font-size:12px; }
-  b, strong { font-weight:400; }
-
-  /* Handy- und Tablet-Ansicht (schmale Bildschirme) */
-  .nurMobil, .zu, #mnav { display:none; }
-  @media (max-width: 820px) {
-    html, body { overflow:hidden; overscroll-behavior:none; }
-    .nurDesktop { display:none !important; } .nurMobil { display:inline; }
-    header { height:48px; padding:0 10px; gap:8px; }
-    header h1 { font-size:12.5px; letter-spacing:.05em; overflow:hidden; text-overflow:ellipsis; min-width:0; flex:1; }
-    header .untertitel, header #zaehler { display:none; }
-    header button { padding:5px 9px; font-size:12.5px; }
-    main { display:block; height:calc(100% - 48px - 58px - env(safe-area-inset-bottom)); position:relative; }
-    main > aside.links, main > section.mitte { display:none; height:100%; }
-    body.v-einst main > aside.links { display:block; border-right:0; }
-    body.v-modell main > section.mitte { display:flex; }
-    aside.links { padding:10px; }
-    #mnav { display:flex; position:fixed; left:0; right:0; bottom:0; height:calc(58px + env(safe-area-inset-bottom)); padding-bottom:env(safe-area-inset-bottom); background:var(--panel); border-top:1px solid var(--line); z-index:40; }
-    #mnav button { flex:1; border:0; border-radius:0; background:transparent; font-size:13.5px; min-height:0; }
-    #mnav button.aktiv { background:var(--weiss); box-shadow:inset 0 3px 0 var(--rahmen); }
-    aside.rechts { display:block; position:fixed; left:0; right:0; bottom:calc(58px + env(safe-area-inset-bottom)); max-height:52vh; overflow:auto; z-index:30; border:1px solid var(--line); border-bottom:0; border-radius:14px 14px 0 0; box-shadow:0 -6px 20px rgba(60,40,30,.18); transform:translateY(110%); visibility:hidden; transition:transform .22s, visibility .22s; padding:12px 14px 22px; }
-    body.sheet aside.rechts { transform:none; visibility:visible; }
-    .zu { display:flex; float:right; align-items:center; justify-content:center; width:34px; height:34px; padding:0; font-size:20px; line-height:1; border-radius:50%; position:sticky; top:0; z-index:2; }
-    input[type=text], select { font-size:16px; min-height:40px; }
-    button, .knopf { min-height:38px; }
-    button.klein { min-height:34px; padding:4px 10px; }
-    .tabs { padding:6px 8px 0; } .tabs button { min-height:36px; }
-    .seiten { margin:0 8px 8px; }
-    .overlay { left:6px; right:6px; top:6px; font-size:11.5px; padding:5px 8px; }
-    .overlay button { min-height:28px; margin-top:4px; }
-    .legende { font-size:11px; padding:4px 8px; left:6px; bottom:6px; }
-    .dropbox { padding:26px 18px; } .dropgross { font-size:19px; }
-    .dachwahl { gap:5px; }
-    #liste th, #liste td { padding:6px; white-space:nowrap; }
-    .listenkopf { flex-wrap:wrap; }
-  }
 </style>
 </head>
 <body>
 <header>
-  <h1>Höhentool Umgebungsmodell</h1>
-  <span class="leise untertitel">Grundrisse aus OpenStreetMap, Höhen und Dachformen aus einem TopoExport-Export</span>
+  <h1>Umgebungsmodell</h1>
+  <span class="leise">Grundrisse aus OpenStreetMap, Höhen und Dachformen aus einem TopoExport-Export</span>
   <div id="zaehler">Noch keine Gebäude geladen.</div>
-  <button id="btnLoeschen" type="button" class="loeschen" disabled><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg><span id="loeschenText">Modell löschen</span></button>
 </header>
 <main>
   <aside class="links">
     <div class="schritt">
-      <h2>Testversion</h2>
-      <p>Zum Ausprobieren ohne eigene Dateien: lädt elf ausgedachte Testgebäude. Nur möglich, solange kein Modell geladen ist.</p>
-      <div class="reihe"><button id="btnDemo" type="button" class="klein">Beispieldaten ausprobieren</button></div>
-    </div>
-    <div class="schritt">
       <h2><span class="nr">1</span> Gebiet</h2>
-      <p>Größe des Bereichs um deine Gebäude. Sie wird beim Laden einer OSM-Datei automatisch gesetzt. Gebäude außerhalb des Bereichs werden ignoriert.</p>
-      <div class="tausch"><div><label>Breite Ost-West (m)</label><input type="text" id="fBreite"></div><button id="btnTausch" type="button" class="tauschknopf" title="Breite und Länge tauschen" aria-label="Breite und Länge tauschen"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h15M15.5 4.5L19 8l-3.5 3.5"/><path d="M20 16H5M8.5 12.5L5 16l3.5 3.5"/></svg></button><div><label>Länge Nord-Süd (m)</label><input type="text" id="fLaenge"></div></div>
+      <p>Verschiebe das Rechteck in der Karte oder trage Werte ein. Die Ecken ändern die Größe.</p>
+      <div class="zwei"><div><label>Breite Ost-West (m)</label><input type="text" id="fBreite"></div><div><label>Länge Nord-Süd (m)</label><input type="text" id="fLaenge"></div></div>
+      <div class="zwei"><div><label>Mitte Breitengrad</label><input type="text" id="fLat"></div><div><label>Mitte Längengrad</label><input type="text" id="fLon"></div></div>
+      <div class="reihe"><button id="btnSued" class="klein">Südzentrale Wilhelmshaven</button><button id="btnDemo" class="klein">Beispieldaten ausprobieren</button></div>
     </div>
     <div class="schritt">
-      <h2><span class="nr">2</span> Maßstab</h2>
-      <p>Trage den Maßstab deines Modells ein. Alle Maße werden dann zusätzlich in Modellgröße (cm) angezeigt, ebenso in Liste, Maßliste und Druckdatei.</p>
-      <div class="massstabzeile"><span>1 :</span><input type="text" id="massstab" value="500" inputmode="numeric" aria-label="Maßstab, Nenner"></div>
-      <div id="massstabInfo" class="meldung"></div>
-    </div>
-    <div class="schritt">
-      <h2><span class="nr">3</span> Gebäude aus OpenStreetMap</h2>
-      <p>Lädt Grundrisse, Namen und Gebäudeart aus einer OSM-Datei.</p>
-      <div class="reihe"><label class="knopf" style="margin:0">OSM-Datei laden (.osm)<input id="osmDatei" type="file" accept=".osm,.xml,.json,.geojson" hidden></label></div>
-      <div class="meldung">So bekommst du die Datei: auf openstreetmap.org oben „Exportieren“ wählen, Bereich markieren und „Exportieren“ klicken. Das ergibt eine .osm-Datei. Bilder (PNG, JPEG, WEBP, SVG, PDF) gehen nicht, sie enthalten keine Gebäudedaten.</div>
+      <h2><span class="nr">2</span> Gebäude aus OpenStreetMap</h2>
+      <p>Lädt Grundrisse, Namen und Gebäudeart im Rechteck.</p>
+      <div class="reihe"><button id="osmLaden" class="haupt">Von OpenStreetMap laden</button></div>
+      <div class="reihe"><label class="knopf" style="margin:0">Oder Datei laden (data/osm_gebaeude.json)<input id="osmDatei" type="file" accept=".json" hidden></label></div>
       <div id="osmMeldung" class="meldung"></div>
     </div>
     <div class="schritt">
-      <h2><span class="nr">4</span> TopoExport-Datei</h2>
+      <h2><span class="nr">3</span> TopoExport-Datei</h2>
       <p>3D-Export der Gebäude (OBJ, DXF oder STL). Du kannst die Datei auch auf die Seite ziehen.</p>
-      <div class="reihe"><label class="knopf haupt" style="margin:0;background:#fff;color:#000;border-color:var(--rahmen)">Datei auswählen<input id="expDatei" type="file" accept=".obj,.dxf,.stl,.txt" hidden></label></div>
+      <div class="reihe"><label class="knopf haupt" style="margin:0;background:var(--blau);color:#fff;border-color:var(--blau)">Datei auswählen<input id="expDatei" type="file" accept=".obj,.dxf,.stl,.txt" hidden></label></div>
       <div class="zwei">
         <div><label>Höhenachse <span id="achseInfo" class="leise"></span></label><select id="achse"><option value="auto">automatisch</option><option value="z">Z</option><option value="y">Y</option><option value="x">X</option></select></div>
         <div><label>Einheit <span id="einheitInfo" class="leise"></span></label><select id="einheit"><option value="auto">automatisch</option><option value="m">Meter</option><option value="cm">Zentimeter</option><option value="mm">Millimeter</option></select></div>
@@ -182,14 +102,14 @@
       <div id="expMeldung" class="meldung"></div>
     </div>
     <div class="schritt">
-      <h2><span class="nr">5</span> Prüfen</h2>
-      <p>Wo die Dachform unsicher ist (helleres Rot), bietest du die Dachformen zur Auswahl an. Klicke dazu das Gebäude an.</p>
+      <h2><span class="nr">4</span> Prüfen</h2>
+      <p>Wo die Dachform unsicher ist (gelb), bietest du die Dachformen zur Auswahl an. Klicke dazu das Gebäude an.</p>
       <div class="reihe"><button id="naechstes" disabled>Nächstes unsicheres Gebäude</button></div>
       <div id="pruefMeldung" class="meldung"></div>
     </div>
     <div class="schritt">
-      <h2><span class="nr">6</span> Export</h2>
-      <div class="zwei"><div><label>Druckbett (mm)</label><input type="text" id="bett" value="220"></div><div></div></div>
+      <h2><span class="nr">5</span> Export</h2>
+      <div class="zwei"><div><label>Maßstab 1 :</label><input type="text" id="massstab" value="500"></div><div><label>Druckbett (mm)</label><input type="text" id="bett" value="220"></div></div>
       <div id="stlInfo" class="meldung"></div>
       <div class="reihe"><button id="btnGLB" disabled>3D-Modell (GLB)</button><button id="btnCSV" disabled>Maßliste (CSV)</button><button id="btnSTL" disabled>Druckdatei (STL)</button></div>
       <div id="hinweisZip">In dieser Ansicht werden GLB und STL als ZIP-Datei gespeichert.</div>
@@ -200,22 +120,21 @@
     <div class="tabs"><button id="tab_karte" class="aktiv">Karte</button><button id="tab_d3">3D-Modell</button><button id="tab_liste">Liste</button></div>
     <div class="seiten">
       <div id="seite_karte" class="seite aktiv"><canvas id="karte"></canvas>
-        <div id="dropHinweis"><div class="dropbox"><div class="dropgross"><span class="nurDesktop">Datei hierher ziehen</span><span class="nurMobil">Kein Modell</span></div><div class="dropklein"><span class="nurDesktop">Drag &amp; Drop: 3D-Export (.obj, .dxf, .stl) oder OSM-Daten (.osm) einfach auf diese Fläche ziehen.</span><span class="nurMobil">Noch kein Modell geladen. Wähle unter „Einstellungen“ eine OSM- oder TopoExport-Datei aus.<br><button type="button" id="zuEinst" class="haupt" style="margin-top:12px">Zu den Einstellungen</button></span></div></div></div>
+        <div class="overlay"><label style="margin:0;display:flex;gap:6px;align-items:center;color:var(--text)"><input type="checkbox" id="kachelnAn" checked> Kartenkacheln anzeigen</label></div>
       </div>
       <div id="seite_d3" class="seite"><canvas id="ansicht3d"></canvas>
-        <div class="overlay"><span class="nurDesktop">Ziehen: drehen · Umschalt + Ziehen oder rechte Maustaste: verschieben · Mausrad: zoomen · Klick: Gebäude wählen</span><span class="nurMobil">1 Finger: drehen · 2 Finger: zoomen und verschieben · Tippen: wählen</span> <button id="ansichtZurueck" class="klein">Ansicht zurücksetzen</button></div>
-        <div class="legende"><div><span class="f" style="background:#a6625b"></span>Maße vollständig</div><div><span class="f" style="background:#c98d86"></span>Dachform unsicher / Hinweis</div><div><span class="f" style="background:#e0b8b2"></span>Höhe fehlt (Grundplatte)</div><div><span class="f" style="background:#6f3a35"></span>Nur im Export</div></div>
+        <div class="overlay">Ziehen: drehen · Umschalt + Ziehen oder rechte Maustaste: verschieben · Mausrad: zoomen · Klick: Gebäude wählen <button id="ansichtZurueck" class="klein">Ansicht zurücksetzen</button></div>
+        <div class="legende"><div><span class="f" style="background:#ccc7bd"></span>Maße vollständig</div><div><span class="f" style="background:#e6cc4d"></span>Dachform unsicher / Hinweis</div><div><span class="f" style="background:#f28019"></span>Höhe fehlt (Grundplatte)</div><div><span class="f" style="background:#9e8ccc"></span>Nur im Export</div></div>
         <div id="glFehler">3D-Darstellung (WebGL) ist in diesem Browser nicht verfügbar. Die Liste und der Export funktionieren trotzdem.</div>
       </div>
       <div id="seite_liste" class="seite">
         <div class="listenkopf"><label style="margin:0">Anzeigen</label><select id="filter"><option value="alle">alle Gebäude</option><option value="unsicher">Dachform unsicher</option><option value="fehlt">Höhe fehlt</option><option value="manuell">manuell</option><option value="export">nur im Export</option></select><span id="listeAnzahl" class="leise"></span></div>
-        <table id="liste"><thead><tr><th>Gebäude</th><th>Länge m</th><th>Breite m</th><th>Traufe m</th><th>First m</th><th title="Länge × Breite × Traufe / First im Modell, in cm">Modell cm</th><th>Dachform</th><th>Status</th></tr></thead><tbody id="listeBody"></tbody></table>
+        <table id="liste"><thead><tr><th>Gebäude</th><th>Länge m</th><th>Breite m</th><th>Traufe m</th><th>First m</th><th>Dachform</th><th>Status</th></tr></thead><tbody id="listeBody"></tbody></table>
       </div>
     </div>
   </section>
   <aside class="rechts" id="details"></aside>
 </main>
-<nav id="mnav"><button type="button" data-v="einst">Einstellungen</button><button type="button" data-v="modell">Modell</button><button type="button" data-v="details">Details</button></nav>
 <script>/* Umgebungsmodell – Kern der Web-App (ohne Oberfläche, ohne Abhängigkeiten).
    Alles in Metern. Koordinaten im Modell: x = Ost, y = Nord, z = oben. */
 (function (root, factory) {
@@ -891,59 +810,6 @@
     }
     return { V, T, ok: tr.ok };
   }
-
-  // Dreiecke an einer Linie (nx*x + ny*y = d) zerschneiden; Umlaufsinn bleibt erhalten
-  function schneide(tris, ln) {
-    const EPS = 1e-7, out = [];
-    const dist = (q) => ln.nx * q[0] + ln.ny * q[1] - ln.d;
-    const mix = (p, q, dp, dq) => { const t = dp / (dp - dq); return [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t]; };
-    for (const T of tris) {
-      const d = T.map(dist);
-      const pos = d.filter((x) => x > EPS).length, neg = d.filter((x) => x < -EPS).length;
-      if (!pos || !neg) { out.push(T); continue; }
-      const nul = d.findIndex((x) => Math.abs(x) <= EPS);
-      if (nul >= 0) {
-        const Z = T[nul], a = T[(nul + 1) % 3], b = T[(nul + 2) % 3];
-        const X = mix(a, b, d[(nul + 1) % 3], d[(nul + 2) % 3]);
-        out.push([Z, a, X], [Z, X, b]);
-      } else {
-        let k = 0;
-        for (let i = 0; i < 3; i++) if ((d[i] > 0) !== (d[(i + 1) % 3] > 0) && (d[i] > 0) !== (d[(i + 2) % 3] > 0)) k = i;
-        const A = T[k], B = T[(k + 1) % 3], C = T[(k + 2) % 3];
-        const X = mix(A, B, d[k], d[(k + 1) % 3]), Y = mix(A, C, d[k], d[(k + 2) % 3]);
-        out.push([A, X, Y], [X, B, C], [X, C, Y]);
-      }
-    }
-    return out;
-  }
-  // Körper über beliebigem Grundriss: Wände bis zur Höhe hz(x, y), Dachfläche folgt dem Umriss
-  function koerperRing(ring, hz, lines) {
-    const tr = U.triangulate(ring);
-    let tris = tr.tris.map((t) => t.map((i) => ring[i]));
-    for (const ln of lines) tris = schneide(tris, ln);
-    const ids = new Map(), P = [];
-    const vid = (q) => {
-      const key = Math.round(q[0] * 1e5) + ',' + Math.round(q[1] * 1e5);
-      let i = ids.get(key);
-      if (i === undefined) { i = P.length; ids.set(key, i); P.push(q); }
-      return i;
-    };
-    const F = [];
-    for (const t of tris) { const a = vid(t[0]), b = vid(t[1]), c = vid(t[2]); if (a !== b && b !== c && a !== c) F.push([a, b, c]); }
-    const m = P.length;
-    const V = P.map((q) => [q[0], q[1], 0]).concat(P.map((q) => [q[0], q[1], hz(q)]));
-    const T = [], kanten = new Set();
-    for (const f of F) for (let k = 0; k < 3; k++) kanten.add(f[k] + ',' + f[(k + 1) % 3]);
-    for (const f of F) {
-      T.push([f[0], f[2], f[1]]);
-      T.push([m + f[0], m + f[1], m + f[2]]);
-      for (let k = 0; k < 3; k++) {
-        const a = f[k], b = f[(k + 1) % 3];
-        if (!kanten.has(b + ',' + a)) { T.push([a, b, m + b]); T.push([a, m + b, m + a]); }
-      }
-    }
-    return { V, T, ok: tr.ok };
-  }
   U.edgesClosed = function (T) {
     const c = new Map();
     for (const t of T) for (let k = 0; k < 3; k++) { const key = t[k] + ',' + t[(k + 1) % 3]; c.set(key, (c.get(key) || 0) + 1); }
@@ -972,25 +838,11 @@
     let ringSrc = osm ? osm.ring : comp.hull;
     let ring = U.cleanRing(ringSrc);
     if (ring.length < 3) return null;
-    let rect = U.minRect(ring);
-    if (!rect || Math.abs(U.signedArea(ring)) < 0.5) return null;
-    // Länge/Breite manuell geändert: Umriss entlang der Rechteckachsen dehnen oder stauchen
-    const masseManuell = (user.laenge > 0 && user.breite > 0);
-    if (masseManuell) {
-      const e = rect.ecken;
-      const lx = e[1][0] - e[0][0], ly = e[1][1] - e[0][1], bx2 = e[3][0] - e[0][0], by2 = e[3][1] - e[0][1];
-      const L0 = Math.hypot(lx, ly), B0 = Math.hypot(bx2, by2);
-      const au = [lx / L0, ly / L0], av = [bx2 / B0, by2 / B0];
-      const ctr = [(e[0][0] + e[2][0]) / 2, (e[0][1] + e[2][1]) / 2];
-      const fu = user.laenge / L0, fv = user.breite / B0;
-      ring = ring.map((q) => {
-        const dx = q[0] - ctr[0], dy = q[1] - ctr[1];
-        const u2 = (dx * au[0] + dy * au[1]) * fu, v2 = (dx * av[0] + dy * av[1]) * fv;
-        return [ctr[0] + u2 * au[0] + v2 * av[0], ctr[1] + u2 * au[1] + v2 * av[1]];
-      });
-      rect = U.minRect(ring) || rect;
-    }
     const area = Math.abs(U.signedArea(ring));
+    const rect = U.minRect(ring);
+    if (!rect || area < 0.5) return null;
+    const fill = area / (rect.laenge * rect.breite);
+    const rectOk = fill >= (cfg.rectTol || 0.95);
     if (!osm) hints.push('Nur im Export vorhanden (Umriss vereinfacht als konvexe Hülle)');
     if (osm && osm.holeHint) hints.push(osm.holeHint);
 
@@ -1030,24 +882,27 @@
       if (rh && rh > 0 && rh < first) { eave = first - rh; roofHAssumed = user.roofHDefault === true; }
     }
 
-    // Maße und Körper: der Umriss bleibt erhalten, das Dach folgt dem Grundriss
-    let plate = false, hz = null, lines = [];
+    // Maße und Körper
+    let tops = null, roof = null, bodyRing = ring, plate = false;
     let outEave = null, outFirst = null, shapeText = DACH_NAMEN[shape];
+    const needsRect = ['gabled', 'hipped', 'pyramidal', 'skillion'].includes(shape);
     if (first === null) {
       plate = true;
-      const dick = cfg.plateThickness || 1; hz = () => dick;
+      tops = ring.map(() => cfg.plateThickness || 1);
       shapeText = 'flach (Platzhalter)';
       shape = 'flat';
     } else if (shape === 'flat') {
-      hz = () => first; outEave = first; outFirst = first;
+      tops = ring.map(() => first); outEave = first; outFirst = first;
     } else if (eave === null || eave === undefined) {
-      hz = () => first; outFirst = first; outEave = null;
+      tops = ring.map(() => first); outFirst = first; outEave = null;
       shapeText = DACH_NAMEN[shape] + ' (nur Höhe bekannt, als Flachdach gebaut)';
       hints.push('Traufhöhe unbekannt: Dach wird erst nach Eingabe der Dachhöhe gebaut');
+    } else if (!rectOk) {
+      tops = ring.map(() => eave); outEave = eave; outFirst = first;
+      shapeText = DACH_NAMEN[shape] + ' (vereinfacht, Grundriss nicht rechteckig)';
+      hints.push('Grundriss nicht rechteckig: Körper nur bis Traufhöhe mit flachem Dach');
     } else {
       let ecken = rect.ecken;
-      const rise = first - eave;
-      outEave = eave; outFirst = first;
       if (shape === 'skillion') {
         // tiefe Seite bestimmen (Richtung, in die das Dach abfällt)
         let az = comp && comp.azimuth !== null && comp.azimuth !== undefined ? comp.azimuth : null;
@@ -1056,16 +911,16 @@
         const dir = [Math.cos(az), Math.sin(az)];
         let bestK = 0, bestD = -Infinity;
         for (let k = 0; k < 4; k++) {
-          const a0 = ecken[k], b0 = ecken[(k + 1) % 4];
-          const ex = b0[0] - a0[0], ey = b0[1] - a0[1], l = Math.hypot(ex, ey);
-          const d = (ey / l) * dir[0] + (-ex / l) * dir[1];
+          const a = ecken[k], b = ecken[(k + 1) % 4];
+          const ex = b[0] - a[0], ey = b[1] - a[1], l = Math.hypot(ex, ey);
+          const nrm = [ey / l, -ex / l];
+          const d = nrm[0] * dir[0] + nrm[1] * dir[1];
           if (d > bestD) { bestD = d; bestK = k; }
         }
-        const A = ecken[bestK], B1 = ecken[(bestK + 1) % 4], C = ecken[(bestK + 2) % 4];
-        const ex = B1[0] - A[0], ey = B1[1] - A[1], l = Math.hypot(ex, ey);
-        const w = [-ey / l, ex / l];
-        const D = Math.hypot(C[0] - B1[0], C[1] - B1[1]);
-        hz = (q) => { const t = ((q[0] - A[0]) * w[0] + (q[1] - A[1]) * w[1]) / D; return eave + rise * Math.max(0, Math.min(1, t)); };
+        bodyRing = ecken;
+        const lowA = bestK, lowB = (bestK + 1) % 4;
+        tops = ecken.map((_, i) => (i === lowA || i === lowB ? eave : first));
+        outEave = eave; outFirst = first;
       } else {
         const orient = (tags['roof:orientation'] || '').trim().toLowerCase();
         if (comp && !lod1 && comp.azimuth !== null && comp.azimuth !== undefined && comp.confidence >= 0.8 && shape === comp.shape) {
@@ -1075,44 +930,23 @@
           if (d > Math.PI / 4) ecken = [ecken[1], ecken[2], ecken[3], ecken[0]];
         } else if (orient === 'across') ecken = [ecken[1], ecken[2], ecken[3], ecken[0]];
         if (user.across) ecken = [ecken[1], ecken[2], ecken[3], ecken[0]];
-        const ctr = [(ecken[0][0] + ecken[2][0]) / 2, (ecken[0][1] + ecken[2][1]) / 2];
-        const lu = Math.hypot(ecken[1][0] - ecken[0][0], ecken[1][1] - ecken[0][1]);
-        const lv = Math.hypot(ecken[3][0] - ecken[0][0], ecken[3][1] - ecken[0][1]);
-        const ax = [(ecken[1][0] - ecken[0][0]) / lu, (ecken[1][1] - ecken[0][1]) / lu];
-        const bx = [(ecken[3][0] - ecken[0][0]) / lv, (ecken[3][1] - ecken[0][1]) / lv];
-        const ha = lu / 2, hb = lv / 2;
-        const lok = (q) => { const dx = q[0] - ctr[0], dy = q[1] - ctr[1]; return [dx * ax[0] + dy * ax[1], dx * bx[0] + dy * bx[1]]; };
-        const mkLine = (al, be, ga) => {
-          let nx = al * ax[0] + be * bx[0], ny = al * ax[1] + be * bx[1];
-          const ln = Math.hypot(nx, ny); nx /= ln; ny /= ln;
-          return { nx, ny, d: nx * ctr[0] + ny * ctr[1] + ga / ln };
-        };
-        let art = shape;
-        if (art === 'hipped' && !(ha > hb + 1e-6)) art = 'pyramidal';
-        if (art === 'gabled') {
-          hz = (q) => eave + rise * Math.max(0, 1 - Math.abs(lok(q)[1]) / hb);
-          lines = [mkLine(0, 1, 0)];
-        } else if (art === 'hipped') {
-          const cc = ha - hb;
-          hz = (q) => { const uv = lok(q); return eave + rise * Math.max(0, Math.min(1 - Math.abs(uv[1]) / hb, (ha - Math.abs(uv[0])) / hb)); };
-          lines = [mkLine(0, 1, 0), mkLine(1, -1, cc), mkLine(1, -1, -cc), mkLine(1, 1, cc), mkLine(1, 1, -cc)];
-        } else {
-          hz = (q) => { const uv = lok(q); return eave + rise * Math.max(0, 1 - Math.max(Math.abs(uv[0]) / ha, Math.abs(uv[1]) / hb)); };
-          lines = [mkLine(1 / ha, -1 / hb, 0), mkLine(1 / ha, 1 / hb, 0)];
-        }
+        bodyRing = ecken;
+        tops = ecken.map(() => eave);
+        roof = { ecken, zFirst: first, art: shape };
+        outEave = eave; outFirst = first;
       }
+      if (fill < 0.99) hints.push('Grundriss durch umschließendes Rechteck ersetzt (Füllgrad ' + Math.round(fill * 100) + ' %)');
     }
     if (roofHAssumed) hints.push('Dachhöhe ' + (first - eave).toFixed(1) + ' m ist ein Eingabewert, bitte prüfen');
-    if (masseManuell) hints.push('Länge und Breite manuell geändert');
 
-    const m = koerperRing(ring, hz, lines);
+    const m = koerper(bodyRing, tops, roof);
     const closed = m.ok && U.edgesClosed(m.T);
     if (!closed) hints.push('Körper nicht wasserdicht (Grundriss evtl. ungültig)');
 
     let status;
     if (plate) status = 'Höhe fehlt';
     else if (uncertain) status = 'Dachform unsicher';
-    else if (heightSrc === 'manuell' || shapeSrc === 'manuell gewählt' || masseManuell) status = 'manuell';
+    else if (heightSrc === 'manuell' || shapeSrc === 'manuell gewählt') status = 'manuell';
     else status = 'ok';
     const r2 = (x) => (x === null || x === undefined ? null : Math.round(x * 100) / 100);
     const levels = U.parseNum(tags['building:levels']);
@@ -1136,7 +970,7 @@
     };
     let material = 'ok';
     if (plate) material = 'fehlt'; else if (uncertain) material = 'unsicher'; else if (!osm) material = 'export'; else if (hints.length) material = 'hinweis';
-    return { id: rec.id, V: m.V, T: m.T, ring, props, material, shape, uncertain, candidates, needsEave: first !== null && shape !== 'flat' && (eave === null || eave === undefined), lod1, hasComp: !!comp, first, eave };
+    return { id: rec.id, V: m.V, T: m.T, props, material, shape, uncertain, candidates, needsEave: first !== null && shape !== 'flat' && (eave === null || eave === undefined), lod1, hasComp: !!comp, first, eave };
   };
 
   // ------------------------------------------------------------------ OSM lesen
@@ -1167,7 +1001,7 @@
 
   // ------------------------------------------------------------------ Export
   const MAT = {
-    ok: [0.651, 0.384, 0.357], hinweis: [0.788, 0.553, 0.525], fehlt: [0.878, 0.722, 0.698], unsicher: [0.788, 0.553, 0.525], export: [0.435, 0.227, 0.208],
+    ok: [0.80, 0.78, 0.74], hinweis: [0.90, 0.80, 0.30], fehlt: [0.95, 0.50, 0.10], unsicher: [0.90, 0.80, 0.30], export: [0.62, 0.55, 0.80],
   };
   U.MAT = MAT;
   const MAT_ORDER = ['ok', 'hinweis', 'fehlt', 'export'];
@@ -1263,7 +1097,7 @@
     ['traufhoehe_m', 'Traufhöhe [m]'], ['firsthoehe_m', 'Firsthöhe [m]'], ['dachform', 'Dachform'], ['dachform_quelle', 'Dachform-Quelle'], ['hoehenquelle', 'Höhenquelle'],
     ['geschosse', 'Geschosse'], ['grundflaeche_m2', 'Grundfläche [m²]'], ['status', 'Status'], ['hinweise', 'Hinweise'], ['mesh_geschlossen', 'Wasserdicht']];
   U.CSV_COLS = CSV_COLS;
-  U.buildCSV = function (buildings, nenner) {
+  U.buildCSV = function (buildings) {
     const fmt = (v) => {
       if (v === null || v === undefined) return '';
       if (typeof v === 'boolean') return v ? 'ja' : 'nein';
@@ -1271,13 +1105,8 @@
       const s = String(v);
       return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
     };
-    const mm = nenner > 0 ? [['laenge_m', 'Länge im Modell [cm]'], ['breite_m', 'Breite im Modell [cm]'], ['traufhoehe_m', 'Traufhöhe im Modell [cm]'], ['firsthoehe_m', 'Firsthöhe im Modell [cm]']] : [];
-    const lines = [CSV_COLS.map((c) => c[1]).concat(nenner > 0 ? ['Maßstab 1:'].concat(mm.map((c) => c[1])) : []).join(';')];
-    for (const b of buildings) {
-      const zeile = CSV_COLS.map((c) => fmt(b.props[c[0]]));
-      if (nenner > 0) { zeile.push(fmt(nenner)); mm.forEach((c) => { const v = b.props[c[0]]; zeile.push(fmt(v === null || v === undefined ? null : Math.round(v * 100 / nenner * 100) / 100)); }); }
-      lines.push(zeile.join(';'));
-    }
+    const lines = [CSV_COLS.map((c) => c[1]).join(';')];
+    for (const b of buildings) lines.push(CSV_COLS.map((c) => fmt(b.props[c[0]])).join(';'));
     return '﻿' + lines.join('\r\n') + '\r\n';
   };
 
@@ -1361,16 +1190,16 @@
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s === null || s === undefined ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-  const START = { lat: 51.1657, lon: 10.4515, w: 500, l: 500 }; // Kartenmitte Deutschland, neutraler Startpunkt
+  const SUED = { lat: 53.5149291, lon: 8.1358768, w: 800, l: 1000 };
   const S = {
-    area: Object.assign({}, START),
+    area: Object.assign({}, SUED),
     proj: null, osmRaw: null, osmList: [], osmSkipped: [],
     exp: null, expInfo: null,
     recs: [], built: [], byId: new Map(), user: {},
     sel: null, match: null, lod1: false, filter: 'alle', dl: null, warnings: [],
   };
   const CFG = { plateThickness: 1, rectTol: 0.95 };
-  const STATUS_FARBE = { ok: '#a6625b', hinweis: '#c98d86', fehlt: '#e0b8b2', unsicher: '#c98d86', export: '#6f3a35' };
+  const STATUS_FARBE = { ok: '#c9c4ba', hinweis: '#e6cc4d', fehlt: '#f28019', unsicher: '#e6cc4d', export: '#9e8ccc' };
 
   // ---------------------------------------------------------------- Hilfen
   function meldung(id, text, art) {
@@ -1434,7 +1263,7 @@
   }
 
   // ---------------------------------------------------------------- Karte
-  const M = { lat: START.lat, lon: START.lon, z: 6, tiles: new Map(), drag: null, dirty: true };
+  const M = { lat: SUED.lat, lon: SUED.lon, z: 15, tiles: new Map(), drag: null, dirty: true };
   const mapCv = $('karte');
   const mctx = mapCv.getContext('2d');
   const lon2x = (lon, z) => ((lon + 180) / 360) * Math.pow(2, z) * 256;
@@ -1459,38 +1288,60 @@
     if (!w || !h) return;
     if (mapCv.width !== Math.round(w * dpr)) { mapCv.width = Math.round(w * dpr); mapCv.height = Math.round(h * dpr); }
     mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    mctx.fillStyle = '#f8f3e8'; mctx.fillRect(0, 0, w, h);
+    mctx.fillStyle = '#e6eaee'; mctx.fillRect(0, 0, w, h);
     const v = mapView();
+    const t0x = Math.floor(v.x0 / 256), t1x = Math.floor((v.x0 + w) / 256), t0y = Math.floor(v.y0 / 256), t1y = Math.floor((v.y0 + h) / 256);
+    const n = Math.pow(2, M.z);
+    if ($('kachelnAn').checked) {
+      for (let tx = t0x; tx <= t1x; tx++) for (let ty = t0y; ty <= t1y; ty++) {
+        if (ty < 0 || ty >= n) continue;
+        const key = M.z + '/' + (((tx % n) + n) % n) + '/' + ty;
+        let im = M.tiles.get(key);
+        if (!im) {
+          im = new Image(); im.dataset.ok = '0';
+          im.onload = () => { im.dataset.ok = '1'; M.dirty = true; };
+          im.onerror = () => { im.dataset.ok = 'x'; };
+          im.src = 'https://tile.openstreetmap.org/' + key + '.png';
+          M.tiles.set(key, im);
+        }
+        if (im.dataset.ok === '1') mctx.drawImage(im, tx * 256 - v.x0, ty * 256 - v.y0, 256, 256);
+      }
+    }
     // Grundrisse
     const rings = [];
-    if (S.recs.length) S.recs.forEach((r) => { const b = S.byId.get(r.id); rings.push({ ring: (b && b.ring) || (r.osm ? r.osm.ring : r.comp.hull), farbe: b ? STATUS_FARBE[b.material] : '#ccc', id: r.id }); });
-    else S.osmList.forEach((o) => rings.push({ ring: o.ring, farbe: '#d3b3ad', id: null }));
+    if (S.recs.length) S.recs.forEach((r) => { const b = S.byId.get(r.id); rings.push({ ring: r.osm ? r.osm.ring : r.comp.hull, farbe: b ? STATUS_FARBE[b.material] : '#ccc', id: r.id }); });
+    else S.osmList.forEach((o) => rings.push({ ring: o.ring, farbe: '#b9c3cc', id: null }));
     if (S.proj) {
       for (const r of rings) {
         mctx.beginPath();
         r.ring.forEach((p, i) => { const ll = S.proj.inv(p[0], p[1]); const q = toPx(ll[0], ll[1], v); if (i) mctx.lineTo(q[0], q[1]); else mctx.moveTo(q[0], q[1]); });
         mctx.closePath();
-        mctx.fillStyle = r.id && r.id === S.sel ? '#2d5d63' : r.farbe;
+        mctx.fillStyle = r.id && r.id === S.sel ? '#2f6fdf' : r.farbe;
         mctx.globalAlpha = 0.85; mctx.fill(); mctx.globalAlpha = 1;
-        mctx.strokeStyle = '#4a2a25'; mctx.lineWidth = 0.7; mctx.stroke();
+        mctx.strokeStyle = '#4a5560'; mctx.lineWidth = 0.7; mctx.stroke();
       }
     }
+    // Rechteck
+    const r = rectPx(v);
+    mctx.fillStyle = 'rgba(47,111,223,0.07)'; mctx.fillRect(r.x1, r.y1, r.x2 - r.x1, r.y2 - r.y1);
+    mctx.setLineDash([8, 5]); mctx.strokeStyle = '#2f6fdf'; mctx.lineWidth = 2; mctx.strokeRect(r.x1, r.y1, r.x2 - r.x1, r.y2 - r.y1); mctx.setLineDash([]);
+    mctx.fillStyle = '#fff'; mctx.strokeStyle = '#2f6fdf';
+    for (const [cx, cy] of [[r.x1, r.y1], [r.x2, r.y1], [r.x1, r.y2], [r.x2, r.y2]]) { mctx.fillRect(cx - 6, cy - 6, 12, 12); mctx.strokeRect(cx - 6, cy - 6, 12, 12); }
+    // Kartenhinweis
+    mctx.fillStyle = 'rgba(255,255,255,0.8)'; mctx.fillRect(0, h - 18, 330, 18);
+    mctx.fillStyle = '#3b4650'; mctx.font = '11px system-ui, sans-serif'; mctx.fillText('Karte und Gebäudedaten © OpenStreetMap-Mitwirkende (ODbL)', 6, h - 5);
   }
   function mapPointer(e) { const b = mapCv.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; }
-  const mPtrs = new Map(); let mPinch = null;
-  const mDist = () => { const [a, b] = [...mPtrs.values()]; return Math.hypot(a[0] - b[0], a[1] - b[1]) || 1; };
   mapCv.addEventListener('pointerdown', (e) => {
-    try { mapCv.setPointerCapture(e.pointerId); } catch (x) { /* ignorieren */ }
-    mPtrs.set(e.pointerId, [e.clientX, e.clientY]);
-    if (mPtrs.size === 2) { mPinch = { d: mDist(), z: M.z }; M.drag = null; return; }
-    if (mPtrs.size > 2) return;
+    mapCv.setPointerCapture(e.pointerId);
     const [px, py] = mapPointer(e);
+    const v = mapView(), r = rectPx(v);
     let mode = 'pan';
-        M.drag = { mode, px, py, lat: M.lat, lon: M.lon, alat: S.area.lat, alon: S.area.lon, moved: false };
+    for (const [cx, cy] of [[r.x1, r.y1], [r.x2, r.y1], [r.x1, r.y2], [r.x2, r.y2]]) if (Math.abs(px - cx) < 10 && Math.abs(py - cy) < 10) mode = 'resize';
+    if (mode === 'pan' && px > r.x1 && px < r.x2 && py > r.y1 && py < r.y2) mode = 'move';
+    M.drag = { mode, px, py, lat: M.lat, lon: M.lon, alat: S.area.lat, alon: S.area.lon, moved: false };
   });
   mapCv.addEventListener('pointermove', (e) => {
-    if (mPtrs.has(e.pointerId)) mPtrs.set(e.pointerId, [e.clientX, e.clientY]);
-    if (mPinch && mPtrs.size === 2) { M.z = Math.max(3, Math.min(19, mPinch.z + Math.log2(mDist() / mPinch.d))); M.dirty = true; return; }
     if (!M.drag) return;
     const [px, py] = mapPointer(e);
     const d = M.drag;
@@ -1510,154 +1361,48 @@
     }
     M.dirty = true;
   });
-  mapCv.addEventListener('pointercancel', (e) => { mPtrs.delete(e.pointerId); if (mPtrs.size < 2) mPinch = null; M.drag = null; });
   mapCv.addEventListener('pointerup', (e) => {
-    mPtrs.delete(e.pointerId);
-    if (mPinch) { if (mPtrs.size < 2) mPinch = null; M.drag = null; return; }
     const d = M.drag; M.drag = null;
     if (d && !d.moved && d.mode !== 'resize' && S.proj) {
       const [px, py] = mapPointer(e); const v = mapView(); const ll = fromPx(px, py, v);
       const p = S.proj.fwd(ll[0], ll[1]);
-      const hit = S.recs.find((r) => { const bb = S.byId.get(r.id); return U.pointInPoly(p, (bb && bb.ring) || (r.osm ? r.osm.ring : r.comp.hull)); });
+      const hit = S.recs.find((r) => U.pointInPoly(p, r.osm ? r.osm.ring : r.comp.hull));
       if (hit) waehle(hit.id);
     }
+    if (d && d.mode !== 'pan') hinweisGebietGeaendert();
   });
   mapCv.addEventListener('wheel', (e) => {
     e.preventDefault();
     M.z = Math.max(3, Math.min(19, M.z + (e.deltaY < 0 ? 1 : -1)));
     M.dirty = true;
   }, { passive: false });
+  $('kachelnAn').addEventListener('change', () => { M.dirty = true; });
   function feldSync() {
+    $('fLat').value = S.area.lat.toFixed(6); $('fLon').value = S.area.lon.toFixed(6);
     $('fBreite').value = S.area.w; $('fLaenge').value = S.area.l;
   }
   function felderLesen() {
     const f = (id) => parseFloat(String($(id).value).replace(',', '.'));
-    const w = f('fBreite'), l = f('fLaenge');
-    if (!(w > 0 && l > 0)) { feldSync(); return; }
-    S.area.w = w; S.area.l = l;
-    // Bereich geändert: bereits geladene Daten neu zuschneiden
-    if (S.osmRaw) osmUebernehmen(S.osmRaw, 'der Datei'); else if (S.exp) verarbeiten();
-    M.dirty = true;
+    const lat = f('fLat'), lon = f('fLon'), w = f('fBreite'), l = f('fLaenge');
+    if (isFinite(lat) && isFinite(lon) && w > 0 && l > 0) { S.area = { lat, lon, w, l }; M.lat = lat; M.lon = lon; M.dirty = true; hinweisGebietGeaendert(); }
   }
-  ['fBreite', 'fLaenge'].forEach((id) => $(id).addEventListener('change', felderLesen));
-  $('btnTausch').addEventListener('click', () => { const a = $('fBreite').value; $('fBreite').value = $('fLaenge').value; $('fLaenge').value = a; felderLesen(); });
+  ['fLat', 'fLon', 'fBreite', 'fLaenge'].forEach((id) => $(id).addEventListener('change', felderLesen));
   function hinweisGebietGeaendert() {
     if (S.osmRaw && S.proj && (Math.abs(S.proj.lat0 - S.area.lat) > 1e-5 || Math.abs(S.proj.lon0 - S.area.lon) > 1e-5)) {
       meldung('osmMeldung', 'Das Rechteck wurde verschoben. Bitte die Gebäude neu von OpenStreetMap laden.', 'warn');
     }
   }
   function mapZoomAufGebiet() {
-    // Ansicht auf die geladenen Grundrisse einpassen
-    if (!S.proj) return;
-    const rings = S.recs.length ? S.recs.map((r) => (r.osm ? r.osm.ring : r.comp.hull)) : S.osmList.map((o) => o.ring);
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    rings.forEach((ring) => ring.forEach((p) => { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; }));
-    if (!isFinite(x0)) return;
-    const a = S.proj.inv(x0, y0), b = S.proj.inv(x1, y1);
-    M.lat = (a[0] + b[0]) / 2; M.lon = (a[1] + b[1]) / 2;
+    M.lat = S.area.lat; M.lon = S.area.lon;
+    const b = U.bboxFromCenter(S.area.lat, S.area.lon, S.area.w, S.area.l);
     const w = mapCv.clientWidth || 800, h = mapCv.clientHeight || 600;
     for (let z = 19; z >= 3; z--) {
-      if (Math.abs(lon2x(b[1], z) - lon2x(a[1], z)) < w * 0.85 && Math.abs(lat2y(a[0], z) - lat2y(b[0], z)) < h * 0.85) { M.z = z; break; }
+      if (Math.abs(lon2x(b.e, z) - lon2x(b.w, z)) < w * 0.8 && Math.abs(lat2y(b.s, z) - lat2y(b.n, z)) < h * 0.8) { M.z = z; break; }
     }
     M.dirty = true;
   }
 
   // ---------------------------------------------------------------- OSM
-
-  // ---- OSM-Dateien einlesen: Overpass-JSON, GeoJSON und .osm-XML werden vereinheitlicht
-  function osmAufloesen(d) {
-    const nodes = new Map(), ways = new Map();
-    for (const e of d.elements) if (e.type === 'node' && isFinite(e.lat)) nodes.set(e.id, { lat: e.lat, lon: e.lon });
-    for (const e of d.elements) {
-      if (e.type !== 'way') continue;
-      if (!e.geometry && e.nodes) { const g = e.nodes.map((id) => nodes.get(id)); if (g.length && g.every(Boolean)) e.geometry = g; }
-      ways.set(e.id, e);
-    }
-    for (const e of d.elements) if (e.type === 'relation') for (const m of e.members || []) {
-      if (!m.geometry && m.type === 'way' && ways.get(m.ref) && ways.get(m.ref).geometry) m.geometry = ways.get(m.ref).geometry;
-    }
-    const alle = d.elements.filter((e) => e.type === 'way' || e.type === 'relation');
-    const hatGeo = (e) => !!e.geometry || (e.members || []).some((m) => m.geometry);
-    const geb = alle.filter((e) => e.tags && e.tags.building && hatGeo(e));
-    return { elements: geb.length ? geb : alle.filter(hatGeo), bounds: d.bounds };
-  }
-  function osmAusGeoJSON(d) {
-    const feats = d.type === 'Feature' ? [d] : (d.features || []);
-    const els = [];
-    let n = 0;
-    for (const f of feats) {
-      const g = f.geometry; if (!g || (g.type !== 'Polygon' && g.type !== 'MultiPolygon')) continue;
-      const props = f.properties || {};
-      const rohTags = props.tags && typeof props.tags === 'object' ? props.tags : props;
-      const tags = {}; for (const k in rohTags) if (k[0] !== '@' && rohTags[k] !== null && typeof rohTags[k] !== 'object') tags[k] = String(rohTags[k]);
-      const idText = String(f.id || props['@id'] || props.id || '');
-      const num = (idText.match(/(\d+)\s*$/) || [])[1];
-      const polys = g.type === 'Polygon' ? [g.coordinates] : g.coordinates;
-      polys.forEach((poly, k) => {
-        n++;
-        const id = (num ? num : 'g' + n) + (polys.length > 1 ? '_' + k : '');
-        const ring = (r) => r.map((c) => ({ lat: c[1], lon: c[0] }));
-        if (poly.length === 1) els.push({ type: 'way', id, tags, geometry: ring(poly[0]) });
-        else els.push({ type: 'relation', id, tags, members: [{ role: 'outer', type: 'way', geometry: ring(poly[0]) }].concat(poly.slice(1).map((r) => ({ role: 'inner', type: 'way', geometry: ring(r) }))) });
-      });
-    }
-    return osmAufloesen({ elements: els });
-  }
-  function osmAusXml(t) {
-    const x = new DOMParser().parseFromString(t, 'application/xml');
-    if (x.getElementsByTagName('parsererror').length) throw new Error('XML nicht lesbar');
-    const kinder = (el, name) => Array.prototype.filter.call(el.children, (c) => c.tagName === name);
-    const tagsVon = (el) => { const o = {}; kinder(el, 'tag').forEach((c) => { o[c.getAttribute('k')] = c.getAttribute('v'); }); return o; };
-    const els = [];
-    for (const nd of Array.prototype.slice.call(x.getElementsByTagName('node'))) els.push({ type: 'node', id: +nd.getAttribute('id'), lat: +nd.getAttribute('lat'), lon: +nd.getAttribute('lon') });
-    for (const w of Array.prototype.slice.call(x.getElementsByTagName('way'))) {
-      const nds = kinder(w, 'nd');
-      const e = { type: 'way', id: +w.getAttribute('id'), nodes: nds.map((c) => +c.getAttribute('ref')), tags: tagsVon(w) };
-      if (nds.length && nds.every((c) => c.hasAttribute('lat'))) e.geometry = nds.map((c) => ({ lat: +c.getAttribute('lat'), lon: +c.getAttribute('lon') }));
-      els.push(e);
-    }
-    for (const r of Array.prototype.slice.call(x.getElementsByTagName('relation'))) {
-      els.push({ type: 'relation', id: +r.getAttribute('id'), tags: tagsVon(r), members: kinder(r, 'member').map((c) => {
-        const nds = kinder(c, 'nd');
-        const m = { type: c.getAttribute('type'), ref: +c.getAttribute('ref'), role: c.getAttribute('role') };
-        if (nds.length && nds.every((q) => q.hasAttribute('lat'))) m.geometry = nds.map((q) => ({ lat: +q.getAttribute('lat'), lon: +q.getAttribute('lon') }));
-        return m;
-      }) });
-    }
-    return osmAufloesen({ elements: els });
-  }
-  function osmNormalisieren(text) {
-    const t = String(text).replace(/^﻿/, '').trim();
-    if (!t) throw new Error('Die Datei ist leer');
-    if (t[0] === '<') return osmAusXml(t);
-    const d = JSON.parse(t);
-    if (d.type === 'FeatureCollection' || d.type === 'Feature') return osmAusGeoJSON(d);
-    if (Array.isArray(d.elements)) return osmAufloesen(d);
-    throw new Error('Format nicht erkannt. Erwartet: Overpass-JSON, GeoJSON oder .osm-Datei');
-  }
-  function gebietAusDaten(daten) {
-    let a = Infinity, b = -Infinity, c = Infinity, d = -Infinity, n = 0;
-    const pt = (p) => { if (!p || !isFinite(p.lat)) return; n++; if (p.lat < a) a = p.lat; if (p.lat > b) b = p.lat; if (p.lon < c) c = p.lon; if (p.lon > d) d = p.lon; };
-    for (const e of daten.elements || []) { (e.geometry || []).forEach(pt); (e.members || []).forEach((m) => (m.geometry || []).forEach(pt)); }
-    if (!n) return false;
-    const lat = (a + b) / 2, lon = (c + d) / 2;
-    const ky = (Math.PI / 180) * 6378137, kx = ky * Math.cos((lat * Math.PI) / 180);
-    const w = Math.max(50, Math.ceil(((d - c) * kx + 20) / 10) * 10), l = Math.max(50, Math.ceil(((b - a) * ky + 20) / 10) * 10);
-    S.area = { lat, lon, w, l }; M.lat = lat; M.lon = lon; feldSync();
-    return true;
-  }
-  const BILD = /\.(png|jpe?g|webp|gif|svg|pdf)$/i;
-  function bildHinweis(name, wo) {
-    meldung(wo, '„' + name + '“ ist ein Bild bzw. PDF und enthält nur ein Kartenbild, keine Gebäudedaten (Umrisse, Höhen). ' +
-      (wo === 'osmMeldung' ? 'Bitte auf openstreetmap.org „Exportieren“ wählen und die .osm-Datei laden.' : 'Hier werden 3D-Dateien gebraucht: OBJ, DXF oder STL. Bilder von OpenStreetMap gehören nicht hierher.'), 'warn');
-  }
-  function osmDateiVerarbeiten(text, name) {
-    try {
-      const daten = osmNormalisieren(text);
-      if (!gebietAusDaten(daten)) { meldung('osmMeldung', 'In der Datei wurden keine Gebäude mit Grundriss gefunden.', 'warn'); return; }
-      osmUebernehmen(daten, 'Datei ' + name);
-    } catch (err) { meldung('osmMeldung', 'Datei konnte nicht gelesen werden: ' + err.message, 'warn'); }
-  }
   function osmUebernehmen(daten, quelle) {
     S.proj = U.projection(S.area.lat, S.area.lon);
     S.proj.lat0 = S.area.lat; S.proj.lon0 = S.area.lon;
@@ -1667,22 +1412,44 @@
     const alle = r.buildings.length;
     S.osmList = r.buildings.filter((b) => Math.abs(b.centroid[0]) <= hw && Math.abs(b.centroid[1]) <= hl);
     S.osmSkipped = r.skipped;
-    meldung('osmMeldung', S.osmList.length + ' Gebäude aus ' + quelle + ' geladen' + (alle > S.osmList.length ? ' (' + (alle - S.osmList.length) + ' außerhalb ignoriert)' : '') +
+    meldung('osmMeldung', S.osmList.length + ' Gebäude aus ' + quelle + ' im Rechteck' + (alle > S.osmList.length ? ' (' + (alle - S.osmList.length) + ' außerhalb ignoriert)' : '') +
       (r.skipped.length ? ', ' + r.skipped.length + ' übersprungen (z. B. Multipolygone)' : '') + '.', 'ok');
-    if (!S.osmList.length) meldung('osmMeldung', 'Keine Gebäude im Gebiet gefunden' + (alle ? ' (' + alle + ' liegen außerhalb des eingetragenen Gebiets)' : (r.skipped.length ? ' (' + r.skipped.length + ' Objekte übersprungen, z. B. ' + r.skipped[0][1] + ')' : '')) + '.', 'warn');
     verarbeiten();
     M.dirty = true;
   }
+  async function osmLaden() {
+    const b = U.bboxFromCenter(S.area.lat, S.area.lon, S.area.w, S.area.l);
+    const q = '[out:json][timeout:120];(way["building"](' + [b.s, b.w, b.n, b.e].join(',') + ');relation["building"](' + [b.s, b.w, b.n, b.e].join(',') + '););out geom;';
+    const urls = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://overpass.private.coffee/api/interpreter'];
+    $('osmLaden').disabled = true;
+    let letzter = '';
+    for (const url of urls) {
+      for (let versuch = 1; versuch <= 2; versuch++) {
+        meldung('osmMeldung', 'Lade von ' + new URL(url).host + ' (Versuch ' + versuch + ') …', '');
+        try {
+          const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 90000);
+          const res = await fetch(url, { method: 'POST', body: 'data=' + encodeURIComponent(q), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: ctl.signal });
+          clearTimeout(to);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const daten = await res.json();
+          $('osmLaden').disabled = false;
+          return osmUebernehmen(daten, 'OpenStreetMap');
+        } catch (e) { letzter = String((e && e.message) || e); await new Promise((r) => setTimeout(r, 4000)); }
+      }
+    }
+    $('osmLaden').disabled = false;
+    meldung('osmMeldung', 'OpenStreetMap ist von hier aus nicht erreichbar (' + letzter + '). Lade stattdessen die Datei "data/osm_gebaeude.json" aus dem Projektordner hoch (Knopf darunter).', 'warn');
+  }
+  $('osmLaden').addEventListener('click', osmLaden);
   $('osmDatei').addEventListener('change', async (e) => {
     const f = e.target.files[0]; if (!f) return;
-    if (BILD.test(f.name)) { bildHinweis(f.name, 'osmMeldung'); e.target.value = ''; return; }
-    osmDateiVerarbeiten(new TextDecoder().decode(await dateiLaden(f)), f.name);
+    try { osmUebernehmen(JSON.parse(new TextDecoder().decode(await dateiLaden(f))), 'Datei ' + f.name); }
+    catch (err) { meldung('osmMeldung', 'Datei konnte nicht gelesen werden: ' + err.message, 'warn'); }
     e.target.value = '';
   });
 
   // ---------------------------------------------------------------- Export-Datei (TopoExport)
   async function exportDateiLaden(file) {
-    if (BILD.test(file.name)) { bildHinweis(file.name, 'expMeldung'); return; }
     meldung('expMeldung', 'Lese ' + file.name + ' …', '');
     await new Promise((r) => setTimeout(r, 30));
     try {
@@ -1694,14 +1461,11 @@
     } catch (err) { meldung('expMeldung', 'Datei konnte nicht gelesen werden: ' + err.message, 'warn'); }
   }
   $('expDatei').addEventListener('change', (e) => { const f = e.target.files[0]; if (f) exportDateiLaden(f); e.target.value = ''; });
-  window.addEventListener('dragleave', (e) => { if (!e.relatedTarget) document.body.classList.remove('zieht'); });
   ['dragover', 'drop'].forEach((ev) => window.addEventListener(ev, (e) => {
     e.preventDefault();
-    document.body.classList.toggle('zieht', ev === 'dragover');
     if (ev === 'drop' && e.dataTransfer.files[0]) {
       const f = e.dataTransfer.files[0];
-      if (BILD.test(f.name)) bildHinweis(f.name, 'osmMeldung');
-      else if (/\.(json|geojson|osm|xml)$/i.test(f.name)) f.arrayBuffer().then((b) => osmDateiVerarbeiten(new TextDecoder().decode(b), f.name));
+      if (/\.json$/i.test(f.name)) f.arrayBuffer().then((b) => osmUebernehmen(JSON.parse(new TextDecoder().decode(b)), 'Datei ' + f.name));
       else exportDateiLaden(f);
     }
   }));
@@ -1758,7 +1522,7 @@
       rest.forEach((ci) => { const id = 'export_' + analyzed[ci].name; S.recs.push({ id, osm: null, comp: analyzed[ci], user: S.user[id] || (S.user[id] = {}) }); });
       info = comps.length + ' Gebäude in ' + S.exp.name + ' erkannt (Höhenachse ' + up.toUpperCase() + ', Einheit ' + einheitName + ')';
       if (match) {
-        info += '; ' + match.matches.size + ' mit OSM-Gebäuden verbunden' + (rest.length ? ', ' + rest.length + ' weitere nur im Export (dunkelrot, ohne OSM-Grundriss)' : '');
+        info += '; ' + match.matches.size + ' mit OSM-Gebäuden verbunden' + (rest.length ? ', ' + rest.length + ' weitere nur im Export (lila, ohne OSM-Grundriss)' : '');
         const verw = [];
         if (drop.teil) verw.push(drop.teil + ' Teile/Anbauten von OSM-Gebäuden');
         if (drop.klein) verw.push(drop.klein + ' Kleinstobjekte unter 5 m²');
@@ -1779,7 +1543,6 @@
       S.osmList.forEach((o) => { const id = o.osm_typ + '_' + o.osm_id; S.recs.push({ id, osm: o, comp: null, user: S.user[id] || (S.user[id] = {}) }); });
     }
     baueAlle();
-    mapZoomAufGebiet();
   }
   function baueAlle() {
     S.built = []; S.byId = new Map();
@@ -1805,14 +1568,9 @@
     return z;
   }
   function aktualisieren() {
-    $('dropHinweis').style.display = S.built.length ? 'none' : 'flex';
-    if (S.built.length && !window.__mobilGezeigt) { window.__mobilGezeigt = true; if (istMobil()) { ansicht('modell'); } } else if (!S.built.length) { window.__mobilGezeigt = false; if (istMobil()) { sheet(false); } }
-    $('btnLoeschen').disabled = !(S.built.length || S.osmRaw || S.exp);
-    $('btnDemo').disabled = !!(S.built.length || S.osmRaw || S.exp);
-    loeschenZurueck();
     const z = zaehlen();
     $('zaehler').innerHTML = z.gesamt ? '<b>' + z.gesamt + '</b> Gebäude · <span class="chip gelb">' + z.unsicher + ' Dachform unsicher</span> <span class="chip orange">' + z.fehlt + ' Höhe fehlt</span> <span class="chip blau">' + z.manuell + ' manuell</span>' : 'Noch keine Gebäude geladen.';
-    meldung('pruefMeldung', z.gesamt ? (z.unsicher ? z.unsicher + ' Gebäude brauchen eine Dachform-Auswahl (helleres Rot). Klicke ein Gebäude an oder nutze den Knopf.' : 'Keine offenen Dachform-Fragen.') : '', z.unsicher ? 'warn' : 'ok');
+    meldung('pruefMeldung', z.gesamt ? (z.unsicher ? z.unsicher + ' Gebäude brauchen eine Dachform-Auswahl (gelb). Klicke ein Gebäude an oder nutze den Knopf.' : 'Keine offenen Dachform-Fragen.') : '', z.unsicher ? 'warn' : 'ok');
     $('naechstes').disabled = !z.unsicher;
     ['btnGLB', 'btnCSV', 'btnSTL'].forEach((i) => { $(i).disabled = !z.gesamt; });
     stlInfo();
@@ -1821,33 +1579,9 @@
     M.dirty = true;
     zeigeDetails();
   }
-  // Maßstab: Nenner aus dem Feld (z. B. 500 für 1:500); null, wenn ungültig
-  function massNenner() { const v = parseFloat(String($('massstab').value).replace(',', '.')); return v > 0 && isFinite(v) ? v : null; }
-  // Meter in der Wirklichkeit -> Zentimeter im Modell (Text mit Einheit)
-  function modellMM(m, hoch2) {
-    const n = massNenner(); if (n === null || m === null || m === undefined || !isFinite(m)) return '';
-    const f = hoch2 ? 1e4 / (n * n) : 100 / n;   // m -> cm bzw. m² -> cm²
-    const v = m * f;
-    const t = v >= 100 ? Math.round(v) : v >= 10 ? Math.round(v * 10) / 10 : Math.round(v * 100) / 100;
-    return String(t).replace('.', ',') + (hoch2 ? ' cm²' : ' cm');
-  }
   function stlInfo() {
-    const n = massNenner();
-    if ($('massstabInfo')) {
-      let t = '';
-      if (n === null) t = 'Bitte den Maßstab als Zahl eingeben, z. B. 500 für 1:500.';
-      else if (S.built.length) {
-        const mn = [Infinity, Infinity], mx = [-Infinity, -Infinity];
-        S.built.forEach((b) => b.V.forEach((v) => { for (let k = 0; k < 2; k++) { if (v[k] < mn[k]) mn[k] = v[k]; if (v[k] > mx[k]) mx[k] = v[k]; } }));
-        t = '1 m in der Wirklichkeit = ' + String(Math.round(100000 / n) / 1000).replace('.', ',') + ' cm im Modell. Die Gebäude brauchen bei 1:' + String(n).replace('.', ',') + ' etwa ' + modellMM(mx[0] - mn[0]) + ' × ' + modellMM(mx[1] - mn[1]) + '.';
-      } else t = '1 m in der Wirklichkeit = ' + String(Math.round(100000 / n) / 1000).replace('.', ',') + ' cm im Modell.';
-      $('massstabInfo').textContent = t; $('massstabInfo').className = 'meldung ' + (n === null ? 'warn' : '');
-    }
-    stlInfo2();
-  }
-  function stlInfo2() {
     if (!S.built.length) { $('stlInfo').textContent = ''; return; }
-    const mass = massNenner() || NaN, bett = parseFloat($('bett').value);
+    const mass = parseFloat($('massstab').value), bett = parseFloat($('bett').value);
     const mn = [Infinity, Infinity], mx = [-Infinity, -Infinity];
     S.built.forEach((b) => b.V.forEach((v) => { for (let k = 0; k < 2; k++) { if (v[k] < mn[k]) mn[k] = v[k]; if (v[k] > mx[k]) mx[k] = v[k]; } }));
     const bx = ((mx[0] - mn[0]) * 1000) / mass, by = ((mx[1] - mn[1]) * 1000) / mass;
@@ -1867,7 +1601,7 @@
     $('listeBody').innerHTML = rows.map((b) => {
       const p = b.props;
       const cls = p.status === 'Dachform unsicher' ? 'gelb' : p.status === 'Höhe fehlt' ? 'orange' : p.status === 'manuell' ? 'blau' : 'grau';
-      return '<tr data-id="' + esc(b.id) + '" class="' + (b.id === S.sel ? 'sel' : '') + '"><td>' + esc(p.name || b.id) + '</td><td class="z">' + fmt(p.laenge_m) + '</td><td class="z">' + fmt(p.breite_m) + '</td><td class="z">' + fmt(p.traufhoehe_m) + '</td><td class="z">' + fmt(p.firsthoehe_m) + '</td><td class="z modell">' + [p.laenge_m, p.breite_m, p.traufhoehe_m, p.firsthoehe_m].map((v) => (v === null || v === undefined ? '–' : modellMM(v).replace(' cm', ''))).join(' × ').replace(/ × ([^×]*) × ([^×]*)$/, ' × $1 / $2') + '</td><td>' + esc(p.dachform) + '</td><td><span class="chip ' + cls + '">' + esc(p.status) + '</span></td></tr>';
+      return '<tr data-id="' + esc(b.id) + '" class="' + (b.id === S.sel ? 'sel' : '') + '"><td>' + esc(p.name || b.id) + '</td><td class="z">' + fmt(p.laenge_m) + '</td><td class="z">' + fmt(p.breite_m) + '</td><td class="z">' + fmt(p.traufhoehe_m) + '</td><td class="z">' + fmt(p.firsthoehe_m) + '</td><td>' + esc(p.dachform) + '</td><td><span class="chip ' + cls + '">' + esc(p.status) + '</span></td></tr>';
     }).join('');
     $('listeAnzahl').textContent = rows.length + ' von ' + S.built.length;
   }
@@ -1876,11 +1610,11 @@
 
   // ---------------------------------------------------------------- Auswahl und Details
   const ICON = {
-    flat: '<svg viewBox="0 0 40 26"><rect x="6" y="8" width="28" height="14" fill="#fff" stroke="#6b6256"/></svg>',
-    gabled: '<svg viewBox="0 0 40 26"><path d="M6 22V12L20 3l14 9v10z" fill="#fff" stroke="#6b6256"/></svg>',
-    hipped: '<svg viewBox="0 0 40 26"><path d="M6 22V13l7-9h14l7 9v9z" fill="#fff" stroke="#6b6256"/></svg>',
-    pyramidal: '<svg viewBox="0 0 40 26"><path d="M8 22V14L20 3l12 11v8z" fill="#fff" stroke="#6b6256"/><path d="M20 3v19" stroke="#6b6256"/></svg>',
-    skillion: '<svg viewBox="0 0 40 26"><path d="M6 22V14L34 5v17z" fill="#fff" stroke="#6b6256"/></svg>',
+    flat: '<svg viewBox="0 0 40 26"><rect x="6" y="8" width="28" height="14" fill="#d8d2c6" stroke="#4a5560"/></svg>',
+    gabled: '<svg viewBox="0 0 40 26"><path d="M6 22V12L20 3l14 9v10z" fill="#d8d2c6" stroke="#4a5560"/></svg>',
+    hipped: '<svg viewBox="0 0 40 26"><path d="M6 22V13l7-9h14l7 9v9z" fill="#d8d2c6" stroke="#4a5560"/></svg>',
+    pyramidal: '<svg viewBox="0 0 40 26"><path d="M8 22V14L20 3l12 11v8z" fill="#d8d2c6" stroke="#4a5560"/><path d="M20 3v19" stroke="#4a5560"/></svg>',
+    skillion: '<svg viewBox="0 0 40 26"><path d="M6 22V14L34 5v17z" fill="#d8d2c6" stroke="#4a5560"/></svg>',
   };
   function waehle(id, ausListe) {
     S.sel = id;
@@ -1889,19 +1623,17 @@
     listeZeichnen();
     M.dirty = true;
     if (ausListe) gl.fokus(id);
-    if (istMobil()) { if (id) { ansicht('modell'); sheet(true); } else sheet(false); }
   }
   function zeigeDetails() {
     const el = $('details');
     const b = S.sel ? S.byId.get(S.sel) : null;
-    if (!b) { el.innerHTML = '<button type="button" class="zu" aria-label="Schließen">×</button><h3>Gebäude</h3><p class="leise">Tippe oder klicke ein Gebäude in der Karte, im 3D-Modell oder in der Liste an.</p>'; return; }
+    if (!b) { el.innerHTML = '<h3>Gebäude</h3><p class="leise">Klicke ein Gebäude in der Karte, im 3D-Modell oder in der Liste an.</p>'; return; }
     const p = b.props, rec = S.recs.find((r) => r.id === b.id), u = rec.user;
     const fmt = (v, e) => (v === null || v === undefined || v === '' ? '<span class="leise">–</span>' : esc(String(v).replace('.', ',')) + (e ? ' ' + e : ''));
     let h = '<h3>' + esc(p.name || b.id) + '</h3>';
     h += '<table class="eig">';
-    const mo = (v, h2) => { const t = modellMM(v, h2); return t ? ' <span class="modell">· Modell ' + t + '</span>' : ''; };
-    [['Länge', fmt(p.laenge_m, 'm') + (p.laenge_m != null ? mo(p.laenge_m) : '')], ['Breite', fmt(p.breite_m, 'm') + (p.breite_m != null ? mo(p.breite_m) : '')], ['Traufhöhe', fmt(p.traufhoehe_m, 'm') + (p.traufhoehe_m != null ? mo(p.traufhoehe_m) : '')], ['Firsthöhe', fmt(p.firsthoehe_m, 'm') + (p.firsthoehe_m != null ? mo(p.firsthoehe_m) : '')], ['Dachform', fmt(p.dachform)],
-      ['Dachform-Quelle', fmt(p.dachform_quelle)], ['Höhenquelle', fmt(p.hoehenquelle)], ['Grundfläche', fmt(p.grundflaeche_m2, 'm²') + (p.grundflaeche_m2 != null ? mo(p.grundflaeche_m2, true) : '')], ['Geschosse (OSM)', fmt(p.geschosse)], ['Gebäudeart', fmt(p.gebaeudeart)], ['OSM-Objekt', fmt(p.osm_id)], ['Status', '<b>' + esc(p.status) + '</b>']]
+    [['Länge', fmt(p.laenge_m, 'm')], ['Breite', fmt(p.breite_m, 'm')], ['Traufhöhe', fmt(p.traufhoehe_m, 'm')], ['Firsthöhe', fmt(p.firsthoehe_m, 'm')], ['Dachform', fmt(p.dachform)],
+      ['Dachform-Quelle', fmt(p.dachform_quelle)], ['Höhenquelle', fmt(p.hoehenquelle)], ['Grundfläche', fmt(p.grundflaeche_m2, 'm²')], ['Geschosse (OSM)', fmt(p.geschosse)], ['Gebäudeart', fmt(p.gebaeudeart)], ['OSM-Objekt', fmt(p.osm_id)], ['Status', '<b>' + esc(p.status) + '</b>']]
       .forEach((r) => { h += '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>'; });
     h += '</table>';
     if (p.hinweise) h += '<div class="hinweis">' + esc(p.hinweise) + '</div>';
@@ -1920,31 +1652,16 @@
     }
     if (['gabled', 'hipped'].includes(b.shape)) h += '<div class="zeile"><label><input type="checkbox" id="quer" ' + (u.across ? 'checked' : '') + '> Firstrichtung drehen</label></div>';
 
-    // Maße
-    h += '<h4>Maße (Meter)</h4><div class="hoehen">';
-    h += '<label>Länge<input id="mLaenge" type="text" value="' + (p.laenge_m !== null && p.laenge_m !== undefined ? String(p.laenge_m).replace('.', ',') : '') + '"></label>';
-    h += '<label>Breite<input id="mBreite" type="text" value="' + (p.breite_m !== null && p.breite_m !== undefined ? String(p.breite_m).replace('.', ',') : '') + '"></label>';
-    h += '</div><div class="modell" id="mHinweis"></div><div class="zeile"><button class="klein" data-aktion="masse">Maße übernehmen</button>' + (u.laenge !== undefined ? '<button class="klein" data-aktion="masseReset">zurücksetzen</button>' : '') + '</div>';
-
     // Höhen
     h += '<h4>Höhen (Meter)</h4><div class="hoehen">';
     h += '<label>Firsthöhe<input id="hFirst" type="text" value="' + (b.first !== null && b.first !== undefined ? String(Math.round(b.first * 100) / 100).replace('.', ',') : '') + '"></label>';
     h += '<label>Traufhöhe<input id="hEave" type="text" value="' + (b.eave !== null && b.eave !== undefined ? String(Math.round(b.eave * 100) / 100).replace('.', ',') : '') + '"></label>';
-    h += '</div><div class="modell" id="hHinweis"></div><div class="zeile"><button class="klein" data-aktion="hoehe">Höhen übernehmen</button>' + (u.first !== undefined ? '<button class="klein" data-aktion="hoeheReset">zurücksetzen</button>' : '') + '</div>';
+    h += '</div><div class="zeile"><button class="klein" data-aktion="hoehe">Höhen übernehmen</button>' + (u.first !== undefined ? '<button class="klein" data-aktion="hoeheReset">zurücksetzen</button>' : '') + '</div>';
     if (b.needsEave) {
       h += '<div class="zeile"><label>Dachhöhe (First minus Traufe)<input id="hRoof" type="text" value="' + String(u.roofH !== undefined ? u.roofH : 3).replace('.', ',') + '"></label><button class="klein" data-aktion="roof">Übernehmen</button></div>';
     }
-    el.innerHTML = '<button type="button" class="zu" aria-label="Schließen">×</button>' + h;
-    eingabeHinweise();
+    el.innerHTML = h;
   }
-  // zeigt unter den Eingabefeldern live, was der eingegebene Wert im Modell ergibt
-  function eingabeHinweise() {
-    const f = (id) => { const e = $(id); if (!e) return null; const v = parseFloat(String(e.value).replace(',', '.')); return isFinite(v) ? v : null; };
-    const z = (a, b, an, bn) => { const x = modellMM(f(a)), y = modellMM(f(b)); return x || y ? 'Im Modell: ' + an + ' ' + (x || '–') + ' · ' + bn + ' ' + (y || '–') : ''; };
-    if ($('mHinweis')) $('mHinweis').textContent = z('mLaenge', 'mBreite', 'Länge', 'Breite');
-    if ($('hHinweis')) $('hHinweis').textContent = z('hFirst', 'hEave', 'First', 'Traufe');
-  }
-  $('details').addEventListener('input', eingabeHinweise);
   function numFeld(id) { const v = parseFloat(String($(id).value).replace(',', '.')); return isFinite(v) ? v : null; }
   $('details').addEventListener('click', (e) => {
     const b = S.sel ? S.byId.get(S.sel) : null; if (!b) return;
@@ -1957,11 +1674,6 @@
       baueEins(b.id);
     } else if (t.dataset.aktion === 'shapeReset') { delete u.shape; delete u.lowSide; delete u.across; baueEins(b.id); }
     else if (t.dataset.low) { u.lowSide = t.dataset.low; baueEins(b.id); }
-    else if (t.dataset.aktion === 'masse') {
-      const ml = numFeld('mLaenge'), mb = numFeld('mBreite');
-      if (ml === null || mb === null || ml <= 0 || mb <= 0) { meldung('pruefMeldung', 'Bitte Länge und Breite größer 0 eingeben.', 'warn'); return; }
-      u.laenge = ml; u.breite = mb; baueEins(b.id);
-    } else if (t.dataset.aktion === 'masseReset') { delete u.laenge; delete u.breite; baueEins(b.id); }
     else if (t.dataset.aktion === 'hoehe') {
       const f = numFeld('hFirst'), tr = numFeld('hEave');
       if (f === null || f <= 0) { meldung('pruefMeldung', 'Bitte eine Firsthöhe größer 0 eingeben.', 'warn'); return; }
@@ -2021,7 +1733,7 @@
       return mulM(P, V);
     }
     function farbe(b, sel) {
-      if (sel) return [0.176, 0.365, 0.388];
+      if (sel) return [0.18, 0.43, 0.87];
       const c = U.MAT[b.material] || U.MAT.ok; return c;
     }
     function setData() {
@@ -2062,7 +1774,7 @@
         const c = farbe(b, b.id === S.sel);
         for (let i = ranges[bi][0]; i < ranges[bi][1]; i++) { cols[i * 3] = c[0]; cols[i * 3 + 1] = c[1]; cols[i * 3 + 2] = c[2]; }
       });
-      for (let i = n - 6; i < n; i++) { cols[i * 3] = 0.96; cols[i * 3 + 1] = 0.94; cols[i * 3 + 2] = 0.90; }
+      for (let i = n - 6; i < n; i++) { cols[i * 3] = 0.86; cols[i * 3 + 1] = 0.89; cols[i * 3 + 2] = 0.9; }
       g.bindBuffer(g.ARRAY_BUFFER, bufs.c); g.bufferData(g.ARRAY_BUFFER, cols.subarray(0, n * 3), g.STATIC_DRAW);
       dirty = true;
     }
@@ -2089,7 +1801,7 @@
       if (!ok) return;
       resize(); dirty = false;
       g.viewport(0, 0, cv.width, cv.height);
-      g.clearColor(0.984, 0.969, 0.945, 1); g.clear(g.COLOR_BUFFER_BIT | g.DEPTH_BUFFER_BIT);
+      g.clearColor(0.91, 0.93, 0.95, 1); g.clear(g.COLOR_BUFFER_BIT | g.DEPTH_BUFFER_BIT);
       if (!n) return;
       g.useProgram(prog);
       g.uniformMatrix4fv(g.getUniformLocation(prog, 'uM'), false, new Float32Array(matrix()));
@@ -2122,25 +1834,8 @@
     // Maus
     let drag = null;
     cv.addEventListener('contextmenu', (e) => e.preventDefault());
-    const ptrs = new Map(); let pinch = null;
-    const pinchWerte = () => { const [a, b] = [...ptrs.values()]; return { d: Math.hypot(a[0] - b[0], a[1] - b[1]) || 1, mx: (a[0] + b[0]) / 2, my: (a[1] + b[1]) / 2 }; };
-    cv.addEventListener('pointerdown', (e) => {
-      try { cv.setPointerCapture(e.pointerId); } catch (x) { /* ignorieren */ }
-      ptrs.set(e.pointerId, [e.clientX, e.clientY]);
-      if (ptrs.size === 2) { pinch = pinchWerte(); drag = null; return; }
-      if (ptrs.size > 2) return;
-      drag = { x: e.clientX, y: e.clientY, moved: false, pan: e.button === 2 || e.shiftKey };
-    });
+    cv.addEventListener('pointerdown', (e) => { cv.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY, moved: false, pan: e.button === 2 || e.shiftKey }; });
     cv.addEventListener('pointermove', (e) => {
-      if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, [e.clientX, e.clientY]);
-      if (pinch && ptrs.size === 2) {
-        const n = pinchWerte();
-        cam.dist = Math.max(10, Math.min(20000, cam.dist * pinch.d / n.d));
-        const { r, u } = basis(); const k = (cam.dist * 2 * Math.tan(FOV / 2)) / cv.clientHeight;
-        const dx = n.mx - pinch.mx, dy = n.my - pinch.my;
-        for (let a = 0; a < 3; a++) cam.target[a] += (-dx * r[a] + dy * u[a]) * k;
-        pinch = n; dirty = true; return;
-      }
       if (!drag) return;
       const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
       if (Math.abs(dx) + Math.abs(dy) > 3) drag.moved = true;
@@ -2150,14 +1845,10 @@
       } else { cam.yaw -= dx * 0.006; cam.pitch = Math.max(0.05, Math.min(1.5, cam.pitch + dy * 0.006)); }
       drag.x = e.clientX; drag.y = e.clientY; dirty = true;
     });
-    const ende = (e) => {
-      ptrs.delete(e.pointerId);
-      if (pinch) { if (ptrs.size < 2) pinch = null; drag = null; return; }
+    cv.addEventListener('pointerup', (e) => {
       const d = drag; drag = null;
-      if (e.type === 'pointerup' && d && !d.moved) { const b = cv.getBoundingClientRect(); waehle(pick(e.clientX - b.left, e.clientY - b.top)); }
-    };
-    cv.addEventListener('pointerup', ende);
-    cv.addEventListener('pointercancel', ende);
+      if (d && !d.moved) { const b = cv.getBoundingClientRect(); waehle(pick(e.clientX - b.left, e.clientY - b.top)); }
+    });
     cv.addEventListener('wheel', (e) => { e.preventDefault(); cam.dist = Math.max(10, Math.min(20000, cam.dist * Math.exp(e.deltaY * 0.0012))); dirty = true; }, { passive: false });
     $('ansichtZurueck').addEventListener('click', () => { fit(); });
     function loop() { if (dirty) draw(); requestAnimationFrame(loop); }
@@ -2166,26 +1857,6 @@
   })();
 
   // ---------------------------------------------------------------- Tabs
-  // ---------------------------------------------------------------- Handy-Ansicht
-  const mobilMQ = window.matchMedia('(max-width: 820px)');
-  function istMobil() { return mobilMQ.matches; }
-  function ansicht(v) {
-    document.body.classList.toggle('v-einst', v === 'einst'); document.body.classList.toggle('v-modell', v !== 'einst');
-    document.querySelectorAll('#mnav button[data-v]').forEach((b) => b.classList.toggle('aktiv', b.dataset.v === v));
-    M.dirty = true; gl.redraw(); setTimeout(() => { M.dirty = true; gl.redraw(); }, 60);
-  }
-  function sheet(auf) {
-    document.body.classList.toggle('sheet', !!auf);
-    const nb = document.querySelector('#mnav button[data-v="details"]'); if (nb) nb.classList.toggle('aktiv', !!auf);
-  }
-  document.querySelectorAll('#mnav button').forEach((b) => b.addEventListener('click', () => {
-    if (b.dataset.v === 'details') { ansicht('modell'); sheet(!document.body.classList.contains('sheet')); }
-    else { ansicht(b.dataset.v); sheet(false); }
-  }));
-  $('zuEinst').addEventListener('click', () => ansicht('einst'));
-  $('details').addEventListener('click', (e) => { if (e.target.closest('.zu')) sheet(false); });
-  mobilMQ.addEventListener('change', () => { M.dirty = true; gl.redraw(); });
-  ansicht('einst');
   function wechselTab(t) {
     ['karte', 'd3', 'liste'].forEach((k) => { $('tab_' + k).classList.toggle('aktiv', k === t); $('seite_' + k).classList.toggle('aktiv', k === t); });
     M.dirty = true; gl.redraw();
@@ -2197,51 +1868,23 @@
   // ---------------------------------------------------------------- Export-Knöpfe
   function meta() { return { gebiet: 'Umgebungsmodell', einheit: 'Meter', achsen: 'glTF: x = Ost, y = oben, z = Süd; Ursprung = Gebietsmitte', quelle: '© OpenStreetMap-Mitwirkende (ODbL); Höhen: ' + (S.exp ? 'TopoExport-Export ' + S.exp.name : 'OSM/manuell'), hinweis: 'Fehlende Höhen = flache Grundplatte' }; }
   $('btnGLB').addEventListener('click', () => speichern('umgebungsmodell.glb', U.buildGLB(S.built, meta())));
-  $('btnCSV').addEventListener('click', () => speichern('gebaeude.csv', U.buildCSV(S.built, massNenner())));
+  $('btnCSV').addEventListener('click', () => speichern('gebaeude.csv', U.buildCSV(S.built)));
   $('btnSTL').addEventListener('click', () => {
-    const mass = massNenner();
+    const mass = parseFloat($('massstab').value);
     if (!(mass > 0)) { meldung('exportMeldung', 'Bitte einen Maßstab größer 0 eingeben, z. B. 500 für 1:500.', 'warn'); return; }
     const bad = S.built.filter((b) => !b.props.mesh_geschlossen).length;
     const r = U.buildSTL(S.built, 1000 / mass);
     speichern('umgebungsmodell_1zu' + mass + '.stl', r.data);
     if (bad) meldung('exportMeldung', 'ACHTUNG: ' + bad + ' Gebäude sind nicht wasserdicht.', 'warn');
   });
-  $('massstab').addEventListener('input', () => { stlInfo(); listeZeichnen(); zeigeDetails(); });
+  $('massstab').addEventListener('input', stlInfo);
   $('bett').addEventListener('input', stlInfo);
 
-
-  // ---------------------------------------------------------------- Modell löschen
-  let loeschenTimer = null;
-  function loeschenZurueck() {
-    clearTimeout(loeschenTimer); loeschenTimer = null;
-    $('btnLoeschen').classList.remove('bestaetigen');
-    $('loeschenText').textContent = 'Modell löschen';
-  }
-  function modellLoeschen() {
-    S.area = Object.assign({}, START);
-    S.proj = null; S.osmRaw = null; S.osmList = []; S.osmSkipped = [];
-    S.exp = null; S.recs = []; S.built = []; S.byId = new Map(); S.user = {};
-    S.sel = null; S.match = null; S.lod1 = false; S.warnings = [];
-    M.lat = START.lat; M.lon = START.lon; M.z = 6; M.drag = null;
-    $('achse').value = 'auto'; $('einheit').value = 'auto'; $('filter').value = 'alle';
-    $('achseInfo').textContent = ''; $('einheitInfo').textContent = '';
-    ['osmMeldung', 'expMeldung', 'exportMeldung', 'pruefMeldung'].forEach((id) => meldung(id, ''));
-    feldSync();
-    wechselTab('karte');
-    aktualisieren();
-    meldung('osmMeldung', 'Modell gelöscht. Du kannst neue Dateien einspielen.', 'ok');
-  }
-  $('btnLoeschen').addEventListener('click', () => {
-    const b = $('btnLoeschen');
-    if (b.classList.contains('bestaetigen')) { loeschenZurueck(); modellLoeschen(); return; }
-    b.classList.add('bestaetigen'); $('loeschenText').textContent = 'Wirklich löschen?';
-    loeschenTimer = setTimeout(loeschenZurueck, 4000);
-  });
-
   // ---------------------------------------------------------------- Beispiel und Voreinstellung
+  $('btnSued').addEventListener('click', () => { S.area = Object.assign({}, SUED); feldSync(); mapZoomAufGebiet(); });
   $('btnDemo').addEventListener('click', () => {
     const d = U.demo();
-    S.area = { lat: d.lat, lon: d.lon, w: 500, l: 400 }; feldSync();
+    S.area = { lat: d.lat, lon: d.lon, w: 500, l: 400 }; feldSync(); mapZoomAufGebiet();
     S.user = {};
     osmUebernehmen(d.osm, 'Beispieldaten');
     const res = U.parseOBJ(d.obj);
@@ -2255,7 +1898,7 @@
     if (window.claude && window.claude.use) window.claude.use('downloads').then((d) => { if (d) { S.dl = d; $('hinweisZip').style.display = 'block'; } }).catch(() => {});
   } catch (e) { /* ignorieren */ }
 
-  feldSync(); aktualisieren();
+  feldSync(); mapZoomAufGebiet(); aktualisieren();
   window.__S = S; window.__gl = gl; window.__waehle = waehle;
 })();
 </script>
